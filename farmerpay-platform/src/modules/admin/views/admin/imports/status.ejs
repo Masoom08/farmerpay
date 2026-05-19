@@ -1,0 +1,76 @@
+<%- include('../../partials/header') %>
+
+<% if (result.status === 'processing') { %>
+  <meta http-equiv="refresh" content="2">
+<% } %>
+
+<h1>Import <code><%= result.importUuid.slice(0, 8) %></code></h1>
+
+<div class="grid grid-4">
+  <div class="kpi">
+    <div class="label">Status</div>
+    <div class="value">
+      <% if (result.status === 'completed') { %>
+        <span class="pill pill-green">completed</span>
+      <% } else if (result.status === 'partial') { %>
+        <span class="pill pill-amber">partial</span>
+      <% } else if (result.status === 'failed') { %>
+        <span class="pill pill-red">failed</span>
+      <% } else { %>
+        <span class="pill pill-blue">processing…</span>
+      <% } %>
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="label">Total rows</div>
+    <div class="value"><%= result.totalRows %></div>
+  </div>
+  <div class="kpi">
+    <div class="label">Imported</div>
+    <div class="value" style="color: var(--green);"><%= result.importedRows %></div>
+  </div>
+  <div class="kpi">
+    <div class="label">Failed</div>
+    <div class="value" style="color: <%= result.failedRows > 0 ? 'var(--red)' : 'var(--muted)' %>;"><%= result.failedRows %></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top: 16px;">
+  <h2 style="margin-top:0;">Details</h2>
+  <table>
+    <tr><th>UUID</th><td><code><%= result.importUuid %></code></td></tr>
+    <tr><th>Bank</th><td><%= result.bankName %></td></tr>
+    <tr><th>Branch</th><td><%= result.branchCode || '—' %></td></tr>
+    <tr><th>File</th><td><%= result.fileName %></td></tr>
+    <tr><th>Started</th><td class="muted"><%= result.startedAt ? result.startedAt.toISOString().slice(0,16).replace('T',' ') : '' %></td></tr>
+    <tr><th>Completed</th><td class="muted"><%= result.completedAt ? result.completedAt.toISOString().slice(0,16).replace('T',' ') : '—' %></td></tr>
+  </table>
+</div>
+
+<% if (result.errorLog && result.errorLog.length > 0) { %>
+  <div class="card">
+    <h2 style="margin-top:0; color: var(--red);">Errors (<%= result.errorLog.length %>)</h2>
+    <table>
+      <thead><tr><th>Tab</th><th>Row</th><th>Account</th><th>Error</th></tr></thead>
+      <tbody>
+        <% for (const e of result.errorLog) { %>
+          <tr>
+            <td><%= e.tab || '—' %></td>
+            <td class="muted"><%= e.row || '—' %></td>
+            <td><code><%= e.account || '—' %></code></td>
+            <td><%= e.error %></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<p>
+  <a href="/admin/imports" class="btn btn-secondary">Back to history</a>
+  <% if (result.status === 'completed') { %>
+    <a href="/admin/reports/aggregate" class="btn">View cohort report →</a>
+  <% } %>
+</p>
+
+<%- include('../../partials/footer') %>

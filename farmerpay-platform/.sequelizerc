@@ -1,0 +1,18 @@
+/**
+ * Sequelize CLI Configuration
+ * Points the CLI to the correct paths for config, models, migrations, and seeders.
+ *
+ * Usage:
+ *   npx sequelize-cli db:migrate
+ *   npx sequelize-cli db:seed:all
+ *   npx sequelize-cli migration:generate --name create-users
+ */
+
+const path = require('path');
+
+module.exports = {
+  config: path.resolve('src', 'config', 'database.js'),
+  'models-path': path.resolve('src', 'shared', 'models'),
+  'migrations-path': path.resolve('migrations'),
+  'seeders-path': path.resolve('seeders'),
+};

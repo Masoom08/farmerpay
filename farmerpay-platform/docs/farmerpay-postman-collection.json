@@ -1,0 +1,147 @@
+{
+  "info": {
+    "name": "FarmerPay Platform API",
+    "description": "Complete API collection for FarmerPay agrarian fintech platform.\n\nSetup:\n1. Import this collection into Postman\n2. Import the environment file\n3. Run 'Auth > Register' then 'Auth > Login' to get tokens\n4. Tokens auto-set via pre-request scripts",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api/v1" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/register",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"mobile\": \"9876543210\", \"password\": \"Secure@12345\"}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 201', () => pm.response.to.have.status(201));", "const body = pm.response.json();", "if (body.data) pm.environment.set('userId', body.data.userId);"] } }]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/login",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"mobile\": \"9876543210\", \"password\": \"Secure@12345\"}" }
+          },
+          "event": [{ "listen": "test", "script": { "exec": ["pm.test('Status 200', () => pm.response.to.have.status(200));", "const body = pm.response.json();", "if (body.data) {", "  pm.environment.set('accessToken', body.data.accessToken);", "  pm.environment.set('refreshToken', body.data.refreshToken);", "}"] } }]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/auth/token/refresh",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"refreshToken\": \"{{refreshToken}}\"}" }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": { "method": "POST", "url": "{{baseUrl}}/auth/logout" }
+        }
+      ]
+    },
+    {
+      "name": "Farmer",
+      "item": [
+        { "name": "Get Profile", "request": { "method": "GET", "url": "{{baseUrl}}/farmer/profile" } },
+        { "name": "Onboarding Step 1", "request": { "method": "POST", "url": "{{baseUrl}}/farmer/onboarding/step1", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"firstName\": \"Ramesh\", \"lastName\": \"Kumar\", \"dateOfBirth\": \"1985-06-15\", \"gender\": \"male\"}" } } },
+        { "name": "Add Address", "request": { "method": "POST", "url": "{{baseUrl}}/farmer/addresses", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"addressType\": \"permanent\", \"streetAddress\": \"Village Road\", \"postalCode\": \"110001\"}" } } }
+      ]
+    },
+    {
+      "name": "Trust",
+      "item": [
+        { "name": "Get Sections", "request": { "method": "GET", "url": "{{baseUrl}}/trust/sections" } },
+        { "name": "Submit Response", "request": { "method": "POST", "url": "{{baseUrl}}/trust/responses", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"sectionId\": 1, \"responses\": [{\"questionId\": 1, \"choiceId\": 1}]}" } } },
+        { "name": "Calculate Score", "request": { "method": "POST", "url": "{{baseUrl}}/trust/calculate" } },
+        { "name": "Score History", "request": { "method": "GET", "url": "{{baseUrl}}/trust/score/history" } }
+      ]
+    },
+    {
+      "name": "DICE (Loans)",
+      "item": [
+        { "name": "List Products", "request": { "method": "GET", "url": "{{baseUrl}}/dice/products" } },
+        { "name": "Apply for Loan", "request": { "method": "POST", "url": "{{baseUrl}}/dice/applications", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"loanProductId\": 1, \"requestedAmount\": 100000, \"purpose\": \"Kharif crop\"}" } } },
+        { "name": "My Applications", "request": { "method": "GET", "url": "{{baseUrl}}/dice/applications" } }
+      ]
+    },
+    {
+      "name": "ROOTS Crop",
+      "item": [
+        { "name": "List Farms", "request": { "method": "GET", "url": "{{baseUrl}}/roots/farms" } },
+        { "name": "Create Farm", "request": { "method": "POST", "url": "{{baseUrl}}/roots/farms", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"farmName\": \"My Farm\", \"totalArea\": 5.5}" } } }
+      ]
+    },
+    {
+      "name": "ROOTS Dairy",
+      "item": [
+        { "name": "Create Herd", "request": { "method": "POST", "url": "{{baseUrl}}/roots/dairy/herd", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"herdName\": \"My Dairy\"}" } } },
+        { "name": "Add Animal", "request": { "method": "POST", "url": "{{baseUrl}}/roots/dairy/herd/1/animals", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"animalType\": \"cow\", \"breed\": \"Holstein\", \"ageYears\": 3}" } } },
+        { "name": "Herd Production", "request": { "method": "GET", "url": "{{baseUrl}}/roots/dairy/herd/1/production?month=6&year=2025" } }
+      ]
+    },
+    {
+      "name": "ROOTS Fishery",
+      "item": [
+        { "name": "Create Pond Register", "request": { "method": "POST", "url": "{{baseUrl}}/roots/fishery/pond-register", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"registerName\": \"My Ponds\", \"totalPondArea\": 2.5}" } } },
+        { "name": "Add Pond", "request": { "method": "POST", "url": "{{baseUrl}}/roots/fishery/pond/1/ponds", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"pondName\": \"Pond A\", \"pondArea\": 0.5, \"waterSource\": \"well\"}" } } },
+        { "name": "Water Quality", "request": { "method": "GET", "url": "{{baseUrl}}/roots/fishery/pond/1/water-quality?month=6&year=2025" } }
+      ]
+    },
+    {
+      "name": "SATHI",
+      "item": [
+        { "name": "Agent Tasks", "request": { "method": "GET", "url": "{{baseUrl}}/sathi/agent/1/tasks" } },
+        { "name": "Start Task", "request": { "method": "POST", "url": "{{baseUrl}}/sathi/tasks/1/start", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"latitude\": 28.6139, \"longitude\": 77.2090, \"accuracy\": 10}" } } },
+        { "name": "Sync Queue", "request": { "method": "POST", "url": "{{baseUrl}}/sathi/sync", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"syncQueue\": [{\"entityType\": \"task\", \"entityId\": 1, \"action\": \"update\", \"data\": {}}]}" } } }
+      ]
+    },
+    {
+      "name": "Sentinel",
+      "item": [
+        { "name": "Loan Health", "request": { "method": "GET", "url": "{{baseUrl}}/sentinel/loan/1/health" } },
+        { "name": "Loan Risk", "request": { "method": "GET", "url": "{{baseUrl}}/sentinel/loan/1/risk" } },
+        { "name": "Portfolio", "request": { "method": "GET", "url": "{{baseUrl}}/sentinel/portfolio" } },
+        { "name": "Alerts", "request": { "method": "GET", "url": "{{baseUrl}}/sentinel/alerts" } },
+        { "name": "Recovery Cases", "request": { "method": "GET", "url": "{{baseUrl}}/sentinel/recovery/cases" } }
+      ]
+    },
+    {
+      "name": "SAGE",
+      "item": [
+        { "name": "Farmer Advisories", "request": { "method": "GET", "url": "{{baseUrl}}/sage/advisories/1" } },
+        { "name": "Farmer Alerts", "request": { "method": "GET", "url": "{{baseUrl}}/sage/alerts/1" } },
+        { "name": "Crop Observation", "request": { "method": "POST", "url": "{{baseUrl}}/sage/crop-observation/1", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"healthStatus\": \"good\", \"pestObserved\": false, \"diseaseObserved\": false}" } } }
+      ]
+    },
+    {
+      "name": "PULSE",
+      "item": [
+        { "name": "Commodities", "request": { "method": "GET", "url": "{{baseUrl}}/pulse/commodities", "auth": { "type": "noauth" } } },
+        { "name": "Mandis", "request": { "method": "GET", "url": "{{baseUrl}}/pulse/mandis", "auth": { "type": "noauth" } } },
+        { "name": "Latest Prices", "request": { "method": "GET", "url": "{{baseUrl}}/pulse/prices/latest?commodityId=abc-123&days=7", "auth": { "type": "noauth" } } },
+        { "name": "Price Forecast", "request": { "method": "GET", "url": "{{baseUrl}}/pulse/price-forecast/abc-123", "auth": { "type": "noauth" } } },
+        { "name": "MSP", "request": { "method": "GET", "url": "{{baseUrl}}/pulse/msp/abc-123?season=kharif&year=2025", "auth": { "type": "noauth" } } },
+        { "name": "Create Price Alert", "request": { "method": "POST", "url": "{{baseUrl}}/pulse/farmer-price-alert", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\"commodityId\": \"abc-123\", \"targetPrice\": 2500, \"alertType\": \"price_reached\"}" } } },
+        { "name": "Sell Recommendations", "request": { "method": "GET", "url": "{{baseUrl}}/pulse/sell-recommendations/1" } }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        { "name": "Health Check", "request": { "method": "GET", "url": "http://localhost:3000/health", "auth": { "type": "noauth" } } }
+      ]
+    }
+  ]
+}

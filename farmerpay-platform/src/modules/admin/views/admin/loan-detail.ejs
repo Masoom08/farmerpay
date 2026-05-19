@@ -1,0 +1,230 @@
+<%- include('../partials/header') %>
+
+<a href="/admin/loans" style="font-size: 12px;">← Back to inbox</a>
+
+<h1 style="margin-top: 12px;">
+  Application <code style="font-size: 18px; background: #f5f5f5; padding: 2px 8px; border-radius: 4px;"><%= (app.applicationUuid || '').slice(0, 8).toUpperCase() %></code>
+</h1>
+<p class="muted">
+  <%= app.farmerName %> · <%= app.farmerMobile || '—' %>
+  · Applied <%= (app.appliedAt || '').toString().slice(0, 10) %>
+</p>
+
+<% if (flash === 'claimed') { %>
+  <div class="alert alert-info">✓ Application claimed for review. You can now approve or reject it below.</div>
+<% } else if (flash === 'approved') { %>
+  <div class="alert" style="background: var(--green-bg); color: var(--green); border: 1px solid #a5d6a7;">
+    ✓ Application approved. The farmer's wizard timeline will update within 5 seconds.
+  </div>
+<% } else if (flash === 'rejected') { %>
+  <div class="alert alert-error">Application rejected.</div>
+<% } else if (error) { %>
+  <div class="alert alert-error">✗ <%= error %></div>
+<% } %>
+
+<!-- Status pill at top -->
+<div style="margin-bottom: 16px;">
+  <% if (app.status === 'submitted') { %>
+    <span class="pill pill-blue" style="font-size: 14px; padding: 6px 14px;">SUBMITTED</span>
+  <% } else if (app.status === 'under_review') { %>
+    <span class="pill pill-amber" style="font-size: 14px; padding: 6px 14px;">UNDER REVIEW</span>
+  <% } else if (app.status === 'approved') { %>
+    <span class="pill pill-green" style="font-size: 14px; padding: 6px 14px;">APPROVED</span>
+  <% } else if (app.status === 'rejected') { %>
+    <span class="pill pill-red" style="font-size: 14px; padding: 6px 14px;">REJECTED</span>
+  <% } else { %>
+    <span class="pill pill-grey" style="font-size: 14px; padding: 6px 14px;"><%= (app.status || '').toUpperCase() %></span>
+  <% } %>
+</div>
+
+<!-- Cost justification grid -->
+<% const ha = (app.landContext && app.landContext.areaHectares) || 0; %>
+<% const sofPerHa = app.sofCostPerHectare || 0; %>
+<% const nabardPerHa = app.nabardBenchmarkPerHectare || 0; %>
+<% const sofTotal = Math.round(sofPerHa * ha); %>
+<% const nabardTotal = Math.round(nabardPerHa * ha); %>
+<% const recommended = app.calculatedRecommendedAmount || 0; %>
+<% const overSof = Math.max(0, (app.appliedAmount || 0) - sofTotal); %>
+
+<div class="grid grid-4">
+  <div class="kpi">
+    <div class="label">DLTC Scale of Finance</div>
+    <div class="value" style="color: var(--green);">₹<%= sofTotal.toLocaleString('en-IN') %></div>
+    <div class="sub">₹<%= Math.round(sofPerHa).toLocaleString('en-IN') %>/ha × <%= ha %> ha</div>
+  </div>
+  <div class="kpi">
+    <div class="label">NABARD Benchmark</div>
+    <div class="value" style="color: var(--blue);">₹<%= nabardTotal.toLocaleString('en-IN') %></div>
+    <div class="sub">₹<%= Math.round(nabardPerHa).toLocaleString('en-IN') %>/ha</div>
+  </div>
+  <div class="kpi">
+    <div class="label">Farmer requested</div>
+    <div class="value" style="color: var(--amber);">₹<%= Math.round(app.appliedAmount || 0).toLocaleString('en-IN') %></div>
+    <div class="sub"><%= app.appliedTenureMonths %> months · <%= app.sizingMethod || 'manual' %></div>
+  </div>
+  <div class="kpi">
+    <div class="label">System recommended</div>
+    <div class="value">₹<%= Math.round(recommended).toLocaleString('en-IN') %></div>
+    <div class="sub">auto-calc from SoF</div>
+  </div>
+</div>
+
+<% if (overSof > 0) { %>
+  <div class="alert alert-error" style="margin-top: 16px;">
+    ⚠ <strong>Above DLTC norms:</strong> Farmer requested ₹<%= overSof.toLocaleString('en-IN') %> more than the Scale of Finance for this district+crop+season. Requires bank review before approval.
+  </div>
+<% } %>
+
+<div class="grid grid-2" style="margin-top: 16px;">
+  <div class="card">
+    <h2>🌾 Crop & land</h2>
+    <p style="margin: 0;"><strong><%= app.intendedUse || '—' %></strong></p>
+    <% if (app.landContext) { %>
+      <p class="muted" style="margin: 4px 0 0 0;">
+        Survey <%= app.landContext.surveyNumber || '—' %>
+        · <%= app.landContext.areaHectares || '—' %> ha
+      </p>
+      <p class="muted" style="margin: 2px 0 0 0;">
+        <%= app.landContext.village || '—' %>,
+        <%= app.landContext.district || '—' %>,
+        <%= app.landContext.state || '—' %>
+      </p>
+    <% } %>
+  </div>
+  <div class="card">
+    <h2>📋 Product</h2>
+    <p style="margin: 0;"><strong><%= app.productName || '—' %></strong></p>
+    <p class="muted" style="margin: 4px 0 0 0;"><%= app.providerName || '—' %></p>
+    <p class="muted" style="margin: 2px 0 0 0;">
+      Rate: <%= app.minInterestRate || '—' %>% – <%= app.maxInterestRate || '—' %>% p.a.
+    </p>
+  </div>
+</div>
+
+<!-- Status timeline -->
+<div class="card">
+  <h2>⏳ Status timeline</h2>
+  <% if (statusHistory && statusHistory.length > 0) { %>
+    <% statusHistory.forEach(h => { %>
+      <div style="padding: 10px 0; border-bottom: 1px solid var(--line);">
+        <strong><%= h.fromStatus || '(new)' %> → <%= h.toStatus %></strong>
+        <span class="muted" style="font-size: 11px; margin-left: 8px;">
+          <%= (h.at || '').toString().slice(0, 16).replace('T', ' ') %>
+        </span>
+        <% if (h.transitionReason) { %>
+          <div style="font-size: 12px; color: var(--muted); margin-top: 4px;"><%= h.transitionReason %></div>
+        <% } %>
+      </div>
+    <% }); %>
+  <% } else { %>
+    <p class="muted">No transitions recorded yet.</p>
+  <% } %>
+</div>
+
+<!-- Documents -->
+<div class="card">
+  <h2>📤 Documents (<%= documents.length %>)</h2>
+  <% if (documents.length === 0) { %>
+    <p class="muted">No documents captured yet. Farmer can upload from the status screen.</p>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr><th>Type</th><th>Mandatory</th><th>Verified</th><th>Uploaded</th></tr>
+      </thead>
+      <tbody>
+        <% documents.forEach(d => { %>
+          <tr>
+            <td><%= d.documentType %></td>
+            <td><%= d.isMandatory ? 'Yes' : 'No' %></td>
+            <td><%= d.verified ? '✓' : '⏳' %></td>
+            <td class="muted" style="font-size: 11px;"><%= (d.uploadedAt || '').toString().slice(0, 16).replace('T', ' ') %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<!-- Finacle events -->
+<div class="card">
+  <h2>🏦 Finacle outbound events</h2>
+  <% if (finacleEvents.length === 0) { %>
+    <p class="muted">No Finacle events for this application.</p>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr><th>Type</th><th>Direction</th><th>Status</th><th>At</th></tr>
+      </thead>
+      <tbody>
+        <% finacleEvents.forEach(e => { %>
+          <tr>
+            <td><%= e.eventType %></td>
+            <td><%= e.direction %></td>
+            <td><%= e.processingStatus %></td>
+            <td class="muted" style="font-size: 11px;"><%= (e.createdAt || '').toString().slice(0, 16).replace('T', ' ') %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<!-- Action forms -->
+<% if (app.status === 'submitted') { %>
+  <div class="card" style="border-left: 4px solid var(--blue);">
+    <h2>Action</h2>
+    <form method="post" action="/admin/loans/<%= app.applicationId %>/claim">
+      <button type="submit" class="btn">Claim for review</button>
+      <span class="muted" style="margin-left: 12px;">Flips status to <strong>under_review</strong>.</span>
+    </form>
+  </div>
+<% } else if (app.status === 'under_review') { %>
+  <div class="grid grid-2">
+    <!-- Approve form -->
+    <form method="post" action="/admin/loans/<%= app.applicationId %>/approve" class="card" style="border-left: 4px solid var(--green);">
+      <h2>✓ Approve</h2>
+      <div class="form-row">
+        <label>Approval amount (₹)</label>
+        <input type="number" name="approvalAmount" value="<%= recommended || app.appliedAmount %>" required>
+      </div>
+      <div class="form-row">
+        <label>Interest rate (% p.a.)</label>
+        <input type="number" step="0.01" name="approvalInterestRate" value="<%= app.minInterestRate || 4 %>" required>
+      </div>
+      <div class="form-row">
+        <label>Tenure (months)</label>
+        <input type="number" name="approvalTenureMonths" value="<%= app.appliedTenureMonths || 12 %>" required>
+      </div>
+      <div class="form-row">
+        <label>Notes (optional)</label>
+        <input type="text" name="notes" placeholder="Internal note on the approval">
+      </div>
+      <button type="submit" class="btn">Confirm approval</button>
+    </form>
+
+    <!-- Reject form -->
+    <form method="post" action="/admin/loans/<%= app.applicationId %>/reject" class="card" style="border-left: 4px solid var(--red);">
+      <h2>✗ Reject</h2>
+      <div class="form-row">
+        <label>Rejection reason (the farmer will see this)</label>
+        <textarea name="rejectionReason" rows="4" required placeholder="e.g. Land documents incomplete — please re-upload Patta" style="width: 100%; padding: 10px 12px; font: inherit; border: 1px solid var(--line); border-radius: 6px;"></textarea>
+      </div>
+      <button type="submit" class="btn btn-danger">Confirm rejection</button>
+    </form>
+  </div>
+<% } else if (app.status === 'approved') { %>
+  <div class="alert" style="background: var(--green-bg); color: var(--green); border: 1px solid #a5d6a7;">
+    ✓ Approved ₹<%= Math.round(app.approvalAmount || 0).toLocaleString('en-IN') %>
+    @ <%= app.approvalInterestRate || 0 %>% p.a. for <%= app.approvalTenureMonths || 0 %> months
+    <% if (app.approvedAt) { %>
+      · on <%= (app.approvedAt || '').toString().slice(0, 16).replace('T', ' ') %>
+    <% } %>
+  </div>
+<% } else if (app.status === 'rejected') { %>
+  <div class="alert alert-error">
+    ✗ Rejected
+    <% if (app.rejectedReason) { %> · <strong>Reason:</strong> <%= app.rejectedReason %><% } %>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>

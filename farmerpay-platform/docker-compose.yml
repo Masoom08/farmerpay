@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  # MySQL 8.0 — Primary database
+  mysql:
+    image: mysql:8.0
+    container_name: farmerpay-mysql
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:3306:3306'  # Bind to localhost only — never expose to network
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-change_me_root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-farmerpay_dev}
+      MYSQL_USER: ${MYSQL_USER:-farmerpay}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-change_me_password}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 7.x — Caching, rate limiting, sessions
+  redis:
+    image: redis:7-alpine
+    container_name: farmerpay-redis
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:6379:6379'  # Bind to localhost only
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_dev_pass}
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', '${REDIS_PASSWORD:-redis_dev_pass}', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ 3.x — Message queue for async tasks
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: farmerpay-rabbitmq
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:5672:5672'    # Bind to localhost only
+      - '127.0.0.1:15672:15672'  # Management UI — localhost only
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-farmerpay}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-change_me_password}
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ['CMD', 'rabbitmq-diagnostics', '-q', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql_data:
+  redis_data:
+  rabbitmq_data:

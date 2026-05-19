@@ -1,0 +1,54 @@
+<%- include('../../partials/header') %>
+
+<h1>📤 New portfolio upload</h1>
+
+<% if (error) { %>
+  <div class="alert alert-error"><%= error %></div>
+<% } %>
+
+<div class="card" style="max-width: 720px;">
+  <form method="POST" action="/admin/imports" enctype="multipart/form-data">
+    <div class="form-row">
+      <label for="bankName">Bank name</label>
+      <% if (admin.role === 'bank_admin' && admin.bankNameScope) { %>
+        <input type="text" id="bankName" name="bankName" value="<%= admin.bankNameScope %>" readonly>
+        <p class="muted" style="font-size: 11px; margin-top: 6px;">Locked to your bank scope.</p>
+      <% } else { %>
+        <input type="text" id="bankName" name="bankName" placeholder="e.g. Pilot Bank 1" required>
+      <% } %>
+    </div>
+
+    <div class="grid grid-2">
+      <div class="form-row">
+        <label for="branchCode">Branch code</label>
+        <input type="text" id="branchCode" name="branchCode" placeholder="e.g. VB1-BARA">
+      </div>
+      <div class="form-row">
+        <label for="district">District (default for rows missing it)</label>
+        <input type="text" id="district" name="district" placeholder="e.g. Barabanki">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label for="dataAsOfDate">Data as of date</label>
+      <input type="date" id="dataAsOfDate" name="dataAsOfDate">
+      <p class="muted" style="font-size: 11px; margin-top: 6px;">The cutoff date for the snapshot in this upload.</p>
+    </div>
+
+    <div class="form-row">
+      <label for="file">3-tab .xlsx workbook</label>
+      <input type="file" id="file" name="file" accept=".xlsx" required>
+      <p class="muted" style="font-size: 11px; margin-top: 6px;">
+        Loans + Schedules + Payments. See <a href="https://github.com/your-repo/blob/main/docs/BANK_IMPORT_TEMPLATE.md" target="_blank">BANK_IMPORT_TEMPLATE.md</a>
+        for the schema. Need a starter? Generate one with <code>node scripts/generate-bank-import-sample.js</code>.
+      </p>
+    </div>
+
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <button type="submit" class="btn">Upload &amp; process</button>
+      <a href="/admin/imports" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<%- include('../../partials/footer') %>

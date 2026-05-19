@@ -1,0 +1,66 @@
+<% const useChartJs = true; %>
+<%- include('../../partials/header') %>
+
+<h1>📍 <%= districtName %> — cohort report</h1>
+
+<form class="filter-bar" method="GET" action="/admin/reports/district/<%= encodeURIComponent(districtName) %>">
+  <div class="form-row">
+    <label for="fromDate">From</label>
+    <input type="date" id="fromDate" name="fromDate" value="<%= fromDate %>">
+  </div>
+  <div class="form-row">
+    <label for="toDate">To</label>
+    <input type="date" id="toDate" name="toDate" value="<%= toDate %>">
+  </div>
+  <button type="submit" class="btn">Refresh</button>
+</form>
+
+<%- include('../../partials/cohort-cards', { cohorts: report.cohorts }) %>
+
+<%- include('../../partials/trend-chart', { trend: report.trend, chartId: 'district-trend' }) %>
+
+<% if (perBank.length > 0) { %>
+  <div class="card">
+    <h2 style="margin-top:0;">Per-bank breakdown within <%= districtName %></h2>
+    <p class="muted" style="font-size: 12px; margin-top: -8px;">
+      Multiple banks operating in the same district let you isolate "is the NPA reduction
+      real, or just a geography effect?" If the test cohort is lower across every bank in
+      this district, geography is unlikely to explain it.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Bank</th>
+          <th class="right">Test n</th>
+          <th class="right">Test NPA %</th>
+          <th class="right">Control n</th>
+          <th class="right">Control NPA %</th>
+          <th class="right">Δ (pp)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (const b of perBank) {
+             const t = b.cohorts.test, c = b.cohorts.control;
+             const delta = (t.npaPct - c.npaPct) * 100;
+        %>
+          <tr>
+            <td><strong><%= b.bankName %></strong></td>
+            <td class="right"><%= t.headcount %></td>
+            <td class="right"><%= (t.npaPct*100).toFixed(1) %>%</td>
+            <td class="right"><%= c.headcount %></td>
+            <td class="right"><%= (c.npaPct*100).toFixed(1) %>%</td>
+            <td class="right" style="color: <%= delta < 0 ? 'var(--green)' : 'var(--red)' %>; font-weight: 800;">
+              <%= delta >= 0 ? '+' : '' %><%= delta.toFixed(1) %>
+            </td>
+            <td><a href="/admin/reports/bank/<%= encodeURIComponent(b.bankName) %>">view →</a></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<p><a href="/admin/reports/aggregate" class="btn btn-secondary">← Back to aggregate</a></p>
+
+<%- include('../../partials/footer') %>

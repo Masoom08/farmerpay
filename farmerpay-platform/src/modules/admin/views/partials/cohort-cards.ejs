@@ -1,0 +1,90 @@
+<%
+// Reusable: render a "test vs control" cohort comparison.
+// Expects locals: cohorts (the .cohorts result from buildCohortReport)
+const t = cohorts.test;
+const c = cohorts.control;
+const fmtPct = (x) => (x * 100).toFixed(1) + '%';
+const delta = (t.npaPct - c.npaPct) * 100;
+const cmp = cohorts.comparison;
+const significant = cmp.computable && cmp.pValueOneSided < 0.05 && cmp.diff < 0;
+%>
+
+<div class="grid grid-2">
+  <div class="card" style="border-left: 4px solid var(--green);">
+    <h2 style="margin-top:0;">🟢 Test cohort <span class="pill pill-grey"><%= t.headcount %> farmers</span></h2>
+    <div class="grid grid-2">
+      <div>
+        <div class="label muted" style="font-size:11px; text-transform:uppercase;">NPA %</div>
+        <div style="font-size:28px; font-weight:800;"><%= fmtPct(t.npaPct) %></div>
+        <div class="muted" style="font-size:11px;">95% CI [<%= fmtPct(t.npaCi.lower) %>, <%= fmtPct(t.npaCi.upper) %>]</div>
+      </div>
+      <div>
+        <div class="label muted" style="font-size:11px; text-transform:uppercase;">Avg DPD</div>
+        <div style="font-size:28px; font-weight:800;"><%= t.avgDaysPastDue.toFixed(1) %></div>
+        <div class="muted" style="font-size:11px;">days past due</div>
+      </div>
+    </div>
+    <table style="margin-top: 12px; font-size: 12px;">
+      <tr><td>Standard</td><td class="right"><%= t.smaCounts.standard %></td><td class="right"><%= fmtPct(t.smaPct.standard) %></td></tr>
+      <tr><td>SMA-0 (1-30d)</td><td class="right"><%= t.smaCounts.sma_0 %></td><td class="right"><%= fmtPct(t.smaPct.sma_0) %></td></tr>
+      <tr><td>SMA-1 (31-60d)</td><td class="right"><%= t.smaCounts.sma_1 %></td><td class="right"><%= fmtPct(t.smaPct.sma_1) %></td></tr>
+      <tr><td>SMA-2 (61-90d)</td><td class="right"><%= t.smaCounts.sma_2 %></td><td class="right"><%= fmtPct(t.smaPct.sma_2) %></td></tr>
+      <tr><td><strong>NPA (91+d)</strong></td><td class="right"><strong><%= t.smaCounts.npa %></strong></td><td class="right"><strong><%= fmtPct(t.smaPct.npa) %></strong></td></tr>
+    </table>
+  </div>
+
+  <div class="card" style="border-left: 4px solid var(--red);">
+    <h2 style="margin-top:0;">🔴 Control cohort <span class="pill pill-grey"><%= c.headcount %> farmers</span></h2>
+    <div class="grid grid-2">
+      <div>
+        <div class="label muted" style="font-size:11px; text-transform:uppercase;">NPA %</div>
+        <div style="font-size:28px; font-weight:800;"><%= fmtPct(c.npaPct) %></div>
+        <div class="muted" style="font-size:11px;">95% CI [<%= fmtPct(c.npaCi.lower) %>, <%= fmtPct(c.npaCi.upper) %>]</div>
+      </div>
+      <div>
+        <div class="label muted" style="font-size:11px; text-transform:uppercase;">Avg DPD</div>
+        <div style="font-size:28px; font-weight:800;"><%= c.avgDaysPastDue.toFixed(1) %></div>
+        <div class="muted" style="font-size:11px;">days past due</div>
+      </div>
+    </div>
+    <table style="margin-top: 12px; font-size: 12px;">
+      <tr><td>Standard</td><td class="right"><%= c.smaCounts.standard %></td><td class="right"><%= fmtPct(c.smaPct.standard) %></td></tr>
+      <tr><td>SMA-0 (1-30d)</td><td class="right"><%= c.smaCounts.sma_0 %></td><td class="right"><%= fmtPct(c.smaPct.sma_0) %></td></tr>
+      <tr><td>SMA-1 (31-60d)</td><td class="right"><%= c.smaCounts.sma_1 %></td><td class="right"><%= fmtPct(c.smaPct.sma_1) %></td></tr>
+      <tr><td>SMA-2 (61-90d)</td><td class="right"><%= c.smaCounts.sma_2 %></td><td class="right"><%= fmtPct(c.smaPct.sma_2) %></td></tr>
+      <tr><td><strong>NPA (91+d)</strong></td><td class="right"><strong><%= c.smaCounts.npa %></strong></td><td class="right"><strong><%= fmtPct(c.smaPct.npa) %></strong></td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="card" style="background: <%= significant ? 'var(--green-bg)' : '#fbfcfd' %>; border-left: 4px solid <%= significant ? 'var(--green)' : 'var(--muted)' %>;">
+  <div class="grid grid-3">
+    <div>
+      <div class="label">Difference (test − control)</div>
+      <div style="font-size: 22px; font-weight: 800; color: <%= delta < 0 ? 'var(--green)' : 'var(--red)' %>;">
+        <%= delta >= 0 ? '+' : '' %><%= delta.toFixed(1) %> pp
+      </div>
+    </div>
+    <div>
+      <div class="label">One-sided p-value</div>
+      <div style="font-size: 22px; font-weight: 800;">
+        <%= cmp.computable ? cmp.pValueOneSided.toFixed(4) : '—' %>
+      </div>
+      <div class="muted" style="font-size: 11px;">H₁: test NPA % &lt; control NPA %</div>
+    </div>
+    <div>
+      <div class="label">Significance</div>
+      <div style="font-size: 16px; font-weight: 800;">
+        <% if (significant) { %>
+          <span style="color: var(--green);">✓ Significant at α = 0.05</span>
+        <% } else if (cmp.computable && cmp.diff < 0) { %>
+          <span class="muted">Reduction observed but not significant — needs more time / larger n</span>
+        <% } else if (cmp.computable && cmp.diff > 0) { %>
+          <span style="color: var(--red);">⚠ Test cohort is HIGHER than control</span>
+        <% } else { %>
+          <span class="muted">Insufficient data</span>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

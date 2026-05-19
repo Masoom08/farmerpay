@@ -1,0 +1,215 @@
+{
+  "banker": {
+    "sanctionReview": {
+      "title": "[TODO-kn] Sanction Review",
+      "trustScore": "[TODO-kn] TRUST Score",
+      "fhsScore": "[TODO-kn] FHS Score",
+      "loanAmount": "[TODO-kn] Loan Amount",
+      "requestedAmount": "[TODO-kn] Requested Amount",
+      "recommendedAmount": "[TODO-kn] Recommended Amount",
+      "farmerName": "[TODO-kn] Farmer Name",
+      "farmerId": "[TODO-kn] Farmer ID",
+      "applicationDate": "[TODO-kn] Application Date",
+      "decisionLabel": "[TODO-kn] Decision",
+      "sanction": "[TODO-kn] Sanction",
+      "reconsider": "[TODO-kn] Reconsider",
+      "reject": "[TODO-kn] Reject",
+      "sanctionConfirm": "[TODO-kn] Confirm Sanction",
+      "reconsiderConfirm": "[TODO-kn] Confirm Reconsider",
+      "rejectConfirm": "[TODO-kn] Confirm Reject",
+      "remarks": "[TODO-kn] Remarks",
+      "remarksPlaceholder": "[TODO-kn] Add remarks for this decision…",
+      "pillarBreakdown": "[TODO-kn] Pillar Breakdown",
+      "pillar1": "[TODO-kn] Land & Assets",
+      "pillar2": "[TODO-kn] Crop & Yield",
+      "pillar3": "[TODO-kn] Financial Health",
+      "pillar4": "[TODO-kn] Repayment History",
+      "pillar5": "[TODO-kn] Insurance & Safety Net",
+      "pillar6": "[TODO-kn] Market & Linkage",
+      "constellationView": "[TODO-kn] Constellation View",
+      "decisionHistory": "[TODO-kn] Decision History",
+      "noHistory": "[TODO-kn] No previous decisions",
+      "submittedBy": "[TODO-kn] Submitted by",
+      "submittedOn": "[TODO-kn] Submitted on",
+      "overallBand": "[TODO-kn] Overall Band",
+      "scoreTrend": "[TODO-kn] Score Trend",
+      "riskFlags": "[TODO-kn] Risk Flags",
+      "noFlags": "[TODO-kn] No risk flags detected",
+      "viewFarmerProfile": "[TODO-kn] View Farmer Profile",
+      "compareToPeers": "[TODO-kn] Compare to Peers",
+      "districtAvg": "[TODO-kn] District Average"
+    },
+    "portfolio": {
+      "title": "[TODO-kn] Portfolio Overview",
+      "totalFarmers": "[TODO-kn] Total Farmers",
+      "activeLoanees": "[TODO-kn] Active Loanees",
+      "avgTrustScore": "[TODO-kn] Avg TRUST Score",
+      "avgFhsScore": "[TODO-kn] Avg FHS Score",
+      "riskDistribution": "[TODO-kn] Risk Distribution",
+      "bandDistribution": "[TODO-kn] Band Distribution",
+      "sanctionRate": "[TODO-kn] Sanction Rate",
+      "npaRisk": "[TODO-kn] NPA Risk",
+      "stressTest": "[TODO-kn] Stress Test",
+      "scenarioLabel": "[TODO-kn] Scenario",
+      "filterByBranch": "[TODO-kn] Filter by Branch",
+      "filterByBand": "[TODO-kn] Filter by Band",
+      "filterByDistrict": "[TODO-kn] Filter by District",
+      "exportReport": "[TODO-kn] Export Report",
+      "lastUpdated": "[TODO-kn] Last Updated",
+      "topPerformers": "[TODO-kn] Top Performers",
+      "needsAttention": "[TODO-kn] Needs Attention",
+      "portfolioHealth": "[TODO-kn] Portfolio Health",
+      "trendChart": "[TODO-kn] Trend Chart",
+      "sanctioned": "[TODO-kn] Sanctioned",
+      "reconsidered": "[TODO-kn] Reconsidered",
+      "rejected": "[TODO-kn] Rejected",
+      "pending": "[TODO-kn] Pending Review"
+    }
+  },
+  "farmer": {
+    "myScore": {
+      "title": "[TODO-kn] My Score",
+      "trustScore": "[TODO-kn] TRUST Score",
+      "scoreOutOf": "[TODO-kn] out of 100",
+      "lastUpdated": "[TODO-kn] Last updated",
+      "viewDetails": "[TODO-kn] View Details",
+      "howToImprove": "[TODO-kn] How to Improve",
+      "pillarBreakdown": "[TODO-kn] Your Strengths",
+      "missionProgress": "[TODO-kn] Mission Progress",
+      "completedMissions": "[TODO-kn] Completed",
+      "pendingMissions": "[TODO-kn] Pending",
+      "loanReadiness": "[TODO-kn] Loan Readiness",
+      "ready": "[TODO-kn] Ready",
+      "almostReady": "[TODO-kn] Almost Ready",
+      "notReady": "[TODO-kn] Not Ready Yet",
+      "needsData": "[TODO-kn] Needs More Data",
+      "shareScore": "[TODO-kn] Share Score",
+      "refreshScore": "[TODO-kn] Refresh Score",
+      "scoreHistory": "[TODO-kn] Score History",
+      "improvementTip": "[TODO-kn] Improvement Tip"
+    },
+    "bands": {
+      "excellent": {
+        "en": "[TODO-kn] Excellent",
+        "hi": "[TODO-kn] उत्कृष्ट"
+      },
+      "good": {
+        "en": "[TODO-kn] Good",
+        "hi": "[TODO-kn] अच्छा"
+      },
+      "building": {
+        "en": "[TODO-kn] Building",
+        "hi": "[TODO-kn] निर्माण हो रहा है"
+      },
+      "starting": {
+        "en": "[TODO-kn] Starting",
+        "hi": "[TODO-kn] शुरुआत"
+      }
+    },
+    "missions": {
+      "aa": {
+        "title": "[TODO-kn] Link Bank Account",
+        "description": "[TODO-kn] Connect your bank account to verify financial health",
+        "cta": "[TODO-kn] Link Now",
+        "completed": "[TODO-kn] Bank Account Linked",
+        "pending": "[TODO-kn] Pending Verification",
+        "benefit": "[TODO-kn] Improves your Financial Health pillar"
+      },
+      "pmfby": {
+        "title": "[TODO-kn] Crop Insurance",
+        "description": "[TODO-kn] Enrol in PMFBY to protect your crops",
+        "cta": "[TODO-kn] Enrol Now",
+        "completed": "[TODO-kn] Insurance Active",
+        "pending": "[TODO-kn] Not Enrolled",
+        "benefit": "[TODO-kn] Improves your Insurance & Safety Net pillar"
+      },
+      "vyapar": {
+        "title": "[TODO-kn] Market Linkage",
+        "description": "[TODO-kn] Connect to mandis for better prices",
+        "cta": "[TODO-kn] Explore Markets",
+        "completed": "[TODO-kn] Market Connected",
+        "pending": "[TODO-kn] Not Connected",
+        "benefit": "[TODO-kn] Improves your Market & Linkage pillar"
+      },
+      "sathi": {
+        "title": "[TODO-kn] Meet Your Sathi",
+        "description": "[TODO-kn] Schedule a visit with your field agent",
+        "cta": "[TODO-kn] Schedule Visit",
+        "completed": "[TODO-kn] Visit Completed",
+        "pending": "[TODO-kn] Visit Pending",
+        "benefit": "[TODO-kn] Helps verify your on-ground data"
+      }
+    }
+  },
+  "sathi": {
+    "queue": {
+      "title": "[TODO-kn] Farmer Queue",
+      "pendingVisits": "[TODO-kn] Pending Visits",
+      "completedToday": "[TODO-kn] Completed Today",
+      "totalAssigned": "[TODO-kn] Total Assigned",
+      "farmerName": "[TODO-kn] Farmer Name",
+      "village": "[TODO-kn] Village",
+      "trustScore": "[TODO-kn] TRUST Score",
+      "visitStatus": "[TODO-kn] Visit Status",
+      "scheduled": "[TODO-kn] Scheduled",
+      "inProgress": "[TODO-kn] In Progress",
+      "completed": "[TODO-kn] Completed",
+      "missed": "[TODO-kn] Missed",
+      "startVisit": "[TODO-kn] Start Visit",
+      "markComplete": "[TODO-kn] Mark Complete",
+      "reschedule": "[TODO-kn] Reschedule",
+      "addNotes": "[TODO-kn] Add Notes",
+      "filterByStatus": "[TODO-kn] Filter by Status",
+      "filterByVillage": "[TODO-kn] Filter by Village",
+      "sortByScore": "[TODO-kn] Sort by Score",
+      "sortByDate": "[TODO-kn] Sort by Date",
+      "noFarmers": "[TODO-kn] No farmers in queue",
+      "nextVisit": "[TODO-kn] Next Visit",
+      "visitSummary": "[TODO-kn] Visit Summary",
+      "dataCollected": "[TODO-kn] Data Collected",
+      "photoVerification": "[TODO-kn] Photo Verification"
+    }
+  },
+  "crosscutting": {
+    "loading": {
+      "default": "[TODO-kn] Loading…",
+      "score": "[TODO-kn] Calculating your score…",
+      "data": "[TODO-kn] Fetching data…",
+      "analysis": "[TODO-kn] Running analysis…",
+      "syncing": "[TODO-kn] Syncing…"
+    },
+    "error": {
+      "default": "[TODO-kn] Something went wrong",
+      "network": "[TODO-kn] Network error. Please check your connection.",
+      "timeout": "[TODO-kn] Request timed out. Please try again.",
+      "notFound": "[TODO-kn] Resource not found",
+      "unauthorized": "[TODO-kn] Session expired. Please log in again.",
+      "serverError": "[TODO-kn] Server error. Please try again later.",
+      "retry": "[TODO-kn] Retry",
+      "goBack": "[TODO-kn] Go Back",
+      "contactSupport": "[TODO-kn] Contact Support"
+    },
+    "empty": {
+      "default": "[TODO-kn] No data available",
+      "noFarmers": "[TODO-kn] No farmers found",
+      "noScores": "[TODO-kn] No scores available yet",
+      "noMissions": "[TODO-kn] No missions available",
+      "noHistory": "[TODO-kn] No history found",
+      "noResults": "[TODO-kn] No results match your filters"
+    },
+    "offline": {
+      "banner": "[TODO-kn] You are offline",
+      "message": "[TODO-kn] Some features may be unavailable. Data will sync when connected.",
+      "lastSynced": "[TODO-kn] Last synced",
+      "syncNow": "[TODO-kn] Sync Now"
+    },
+    "notifications": {
+      "scoreUpdated": "[TODO-kn] Your TRUST score has been updated",
+      "missionComplete": "[TODO-kn] Mission completed!",
+      "visitScheduled": "[TODO-kn] Visit scheduled successfully",
+      "decisionRecorded": "[TODO-kn] Decision recorded",
+      "syncComplete": "[TODO-kn] Data synced successfully",
+      "reminderVisit": "[TODO-kn] You have a visit scheduled today"
+    }
+  }
+}

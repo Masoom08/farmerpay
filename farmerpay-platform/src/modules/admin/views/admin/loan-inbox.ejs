@@ -1,0 +1,129 @@
+<%- include('../partials/header') %>
+
+<h1>📥 Loan Inbox</h1>
+<p class="muted">Farmer-originated loan applications pending banker review. Claim, review, then approve or reject.</p>
+
+<% if (flash === 'approved') { %>
+  <div class="alert" style="background: var(--green-bg); color: var(--green); border: 1px solid #a5d6a7;">
+    ✓ Application approved. The farmer's wizard timeline will update within 5 seconds.
+  </div>
+<% } else if (flash === 'rejected') { %>
+  <div class="alert alert-error">
+    Application rejected. The farmer will see the reason on their status screen.
+  </div>
+<% } %>
+
+<!-- Filter bar -->
+<form method="get" class="filter-bar">
+  <div class="form-row">
+    <label>Status</label>
+    <select name="status">
+      <option value="submitted,under_review" <%= statusFilter === 'submitted,under_review' ? 'selected' : '' %>>Pending (submitted + under review)</option>
+      <option value="submitted" <%= statusFilter === 'submitted' ? 'selected' : '' %>>Newly submitted only</option>
+      <option value="under_review" <%= statusFilter === 'under_review' ? 'selected' : '' %>>Under review only</option>
+      <option value="approved" <%= statusFilter === 'approved' ? 'selected' : '' %>>Approved</option>
+      <option value="rejected" <%= statusFilter === 'rejected' ? 'selected' : '' %>>Rejected</option>
+    </select>
+  </div>
+  <div class="form-row">
+    <label>Search (name / mobile)</label>
+    <input type="text" name="search" value="<%= search %>" placeholder="Ramesh / 9876...">
+  </div>
+  <button type="submit" class="btn">Apply filter</button>
+</form>
+
+<!-- Summary KPIs -->
+<% if (rows.length > 0) { %>
+  <% const subCount = rows.filter(r => r.status === 'submitted').length; %>
+  <% const revCount = rows.filter(r => r.status === 'under_review').length; %>
+  <% const overCount = rows.filter(r => r.hasOverSofFlag).length; %>
+  <% const total = rows.reduce((s, r) => s + (r.appliedAmount || 0), 0); %>
+  <div class="grid grid-4">
+    <div class="kpi"><div class="label">Newly submitted</div><div class="value"><%= subCount %></div></div>
+    <div class="kpi"><div class="label">Under review</div><div class="value" style="color: var(--amber);"><%= revCount %></div></div>
+    <div class="kpi"><div class="label">Above SoF</div><div class="value" style="color: var(--red);"><%= overCount %></div></div>
+    <div class="kpi"><div class="label">Total applied</div><div class="value">₹<%= Math.round(total).toLocaleString('en-IN') %></div></div>
+  </div>
+<% } %>
+
+<div class="card" style="margin-top: 16px; padding: 0;">
+  <% if (rows.length === 0) { %>
+    <p class="muted" style="text-align: center; padding: 40px;">No applications match this filter.</p>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Ref</th>
+          <th>Farmer</th>
+          <th>Crop & land</th>
+          <th class="right">Amount</th>
+          <th>Days</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% rows.forEach(r => { %>
+          <% const land = r.landContext || {}; %>
+          <% const ref = (r.applicationUuid || '').slice(0, 8).toUpperCase(); %>
+          <tr>
+            <td><code style="font-size: 11px;"><%= ref %></code></td>
+            <td>
+              <strong><%= r.farmerName %></strong><br>
+              <span class="muted" style="font-size: 11px;"><%= r.farmerMobile || '—' %></span>
+            </td>
+            <td>
+              <strong><%= r.intendedUse || '—' %></strong><br>
+              <span class="muted" style="font-size: 11px;">
+                Survey <%= land.surveyNumber || '—' %>
+                · <%= land.areaHectares || '—' %> ha
+                · <%= land.village || '—' %>, <%= land.district || '—' %>
+              </span>
+            </td>
+            <td class="right">
+              <strong>₹<%= Math.round(r.appliedAmount || 0).toLocaleString('en-IN') %></strong>
+              <% if (r.hasOverSofFlag) { %>
+                <span class="pill pill-red" style="font-size: 9px;">ABOVE SoF</span>
+              <% } %>
+              <br>
+              <span class="muted" style="font-size: 11px;">
+                rec ₹<%= Math.round(r.calculatedRecommendedAmount || 0).toLocaleString('en-IN') %>
+              </span>
+            </td>
+            <td style="<%= r.daysWaiting > 3 ? 'color: var(--red); font-weight: 800;' : '' %>">
+              <%= r.daysWaiting %>d
+            </td>
+            <td>
+              <% if (r.status === 'submitted') { %>
+                <span class="pill pill-blue">SUBMITTED</span>
+              <% } else if (r.status === 'under_review') { %>
+                <span class="pill pill-amber">UNDER REVIEW</span>
+              <% } else if (r.status === 'approved') { %>
+                <span class="pill pill-green">APPROVED</span>
+              <% } else if (r.status === 'rejected') { %>
+                <span class="pill pill-red">REJECTED</span>
+              <% } else { %>
+                <span class="pill pill-grey"><%= (r.status || '').toUpperCase() %></span>
+              <% } %>
+            </td>
+            <td>
+              <a href="/admin/loans/<%= r.applicationId %>" class="btn">View →</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<% if (meta && meta.totalPages > 1) { %>
+  <div style="margin-top: 16px; text-align: center;">
+    <% for (let p = 1; p <= meta.totalPages; p++) { %>
+      <a href="?page=<%= p %>&status=<%= statusFilter %>" class="btn <%= p === meta.page ? '' : 'btn-secondary' %>">
+        <%= p %>
+      </a>
+    <% } %>
+  </div>
+<% } %>
+
+<%- include('../partials/footer') %>

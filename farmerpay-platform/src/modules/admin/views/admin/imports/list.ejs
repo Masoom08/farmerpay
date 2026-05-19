@@ -1,0 +1,56 @@
+<%- include('../../partials/header') %>
+
+<h1>Import history</h1>
+
+<p><a href="/admin/imports/new" class="btn">+ New upload</a></p>
+
+<div class="card" style="padding: 0;">
+  <% if (imports.length === 0) { %>
+    <p class="muted" style="padding: 20px;">No imports yet. Upload your first xlsx workbook to get started.</p>
+  <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>UUID</th>
+          <th>Date</th>
+          <th>Bank</th>
+          <th>Branch</th>
+          <th>File</th>
+          <th class="right">Total</th>
+          <th class="right">Imported</th>
+          <th class="right">Failed</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (const imp of imports) { %>
+          <tr>
+            <td class="nowrap"><code><%= imp.import_uuid.slice(0, 8) %></code></td>
+            <td class="nowrap muted"><%= imp.created_at ? imp.created_at.toISOString().slice(0, 16).replace('T', ' ') : '' %></td>
+            <td><%= imp.bank_name || '—' %></td>
+            <td><%= imp.branch_code || '—' %></td>
+            <td><%= imp.file_name %></td>
+            <td class="right"><%= imp.total_rows %></td>
+            <td class="right"><%= imp.imported_rows %></td>
+            <td class="right"><%= imp.failed_rows %></td>
+            <td>
+              <% if (imp.import_status === 'completed') { %>
+                <span class="pill pill-green">completed</span>
+              <% } else if (imp.import_status === 'partial') { %>
+                <span class="pill pill-amber">partial</span>
+              <% } else if (imp.import_status === 'failed') { %>
+                <span class="pill pill-red">failed</span>
+              <% } else { %>
+                <span class="pill pill-blue">processing</span>
+              <% } %>
+            </td>
+            <td><a href="/admin/imports/<%= imp.import_uuid %>">view</a></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include('../../partials/footer') %>

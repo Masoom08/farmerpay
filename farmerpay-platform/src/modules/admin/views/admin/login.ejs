@@ -1,0 +1,37 @@
+<%- include('../partials/header') %>
+
+<div style="max-width: 380px; margin: 60px auto;">
+  <div class="card" style="padding: 32px;">
+    <h1 style="text-align:center; margin-bottom: 24px;">🌾 FarmerPay Bank Ops</h1>
+    <p class="muted" style="text-align:center; margin-top: -8px; margin-bottom: 24px;">Sign in to manage uploads and view the pilot cohort report.</p>
+
+    <% if (error === 'invalid_credentials') { %>
+      <div class="alert alert-error">Invalid email or password.</div>
+    <% } else if (error === 'session_invalid') { %>
+      <div class="alert alert-error">Your session has expired. Please sign in again.</div>
+    <% } else if (error === 'missing_fields') { %>
+      <div class="alert alert-error">Email and password are both required.</div>
+    <% } %>
+
+    <form method="POST" action="/admin/login">
+      <input type="hidden" name="next" value="<%= next %>">
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required autofocus>
+      </div>
+      <div class="form-row">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit" class="btn" style="width:100%;">Sign in</button>
+    </form>
+
+    <p class="muted" style="margin-top: 24px; font-size: 11px; text-align: center;">
+      Pilot demo accounts:<br>
+      vb1-admin@verificationbank1.in / bank123<br>
+      pilot-ops@farmerpay.local / ops123
+    </p>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

@@ -1,0 +1,673 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Visual regression: Farmer readiness LoanReadinessBadge — all states snapshot: state="almost" 1`] = `
+<View
+  accessibilityHint="You are almost loan-ready. Tap for details."
+  accessibilityLabel="Almost Ready"
+  accessibilityRole="button"
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  hitSlop={
+    {
+      "bottom": 4,
+      "left": 4,
+      "right": 4,
+      "top": 4,
+    }
+  }
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    accessibilityHint="You are almost loan-ready. Tap for details."
+    accessibilityLabel="Almost Ready"
+    accessibilityRole="button"
+    style={
+      [
+        {
+          "borderRadius": 14,
+          "elevation": 2,
+          "minHeight": 56,
+          "padding": 16,
+          "shadowColor": "#000",
+          "shadowOffset": {
+            "height": 2,
+            "width": 0,
+          },
+          "shadowOpacity": 0.06,
+          "shadowRadius": 8,
+        },
+        {
+          "backgroundColor": "#fff8e1",
+        },
+        undefined,
+      ]
+    }
+  >
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "flexDirection": "row",
+          "gap": 12,
+        }
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "alignItems": "center",
+              "borderRadius": 22,
+              "height": 44,
+              "justifyContent": "center",
+              "width": 44,
+            },
+            {
+              "backgroundColor": "#B453091A",
+            },
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#B45309",
+                "fontSize": 24,
+              },
+              undefined,
+            ]
+          }
+        >
+          [Ionicons:time]
+        </Text>
+      </View>
+      <View
+        style={
+          {
+            "flex": 1,
+          }
+        }
+      >
+        <Text
+          style={
+            {
+              "color": "#888",
+              "fontSize": 11,
+              "fontWeight": "600",
+              "letterSpacing": 0.5,
+              "marginBottom": 2,
+              "textTransform": "uppercase",
+            }
+          }
+        >
+          Loan Readiness
+        </Text>
+        <Text
+          style={
+            [
+              {
+                "fontSize": 16,
+                "fontWeight": "700",
+              },
+              {
+                "color": "#B45309",
+              },
+            ]
+          }
+        >
+          Almost Ready
+        </Text>
+      </View>
+      <Text
+        style={
+          [
+            {
+              "color": "#B45309",
+              "fontSize": 20,
+            },
+            {
+              "marginLeft": 4,
+            },
+          ]
+        }
+      >
+        [Ionicons:chevron-forward]
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`Visual regression: Farmer readiness LoanReadinessBadge — all states snapshot: state="needsData" 1`] = `
+<View
+  accessibilityHint="More information needed. Tap to add info."
+  accessibilityLabel="Add Info"
+  accessibilityRole="button"
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  hitSlop={
+    {
+      "bottom": 4,
+      "left": 4,
+      "right": 4,
+      "top": 4,
+    }
+  }
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    accessibilityHint="More information needed. Tap to add info."
+    accessibilityLabel="Add Info"
+    accessibilityRole="button"
+    style={
+      [
+        {
+          "borderRadius": 14,
+          "elevation": 2,
+          "minHeight": 56,
+          "padding": 16,
+          "shadowColor": "#000",
+          "shadowOffset": {
+            "height": 2,
+            "width": 0,
+          },
+          "shadowOpacity": 0.06,
+          "shadowRadius": 8,
+        },
+        {
+          "backgroundColor": "#e3f2fd",
+        },
+        undefined,
+      ]
+    }
+  >
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "flexDirection": "row",
+          "gap": 12,
+        }
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "alignItems": "center",
+              "borderRadius": 22,
+              "height": 44,
+              "justifyContent": "center",
+              "width": 44,
+            },
+            {
+              "backgroundColor": "#1D4ED81A",
+            },
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#1D4ED8",
+                "fontSize": 24,
+              },
+              undefined,
+            ]
+          }
+        >
+          [Ionicons:cloud-upload]
+        </Text>
+      </View>
+      <View
+        style={
+          {
+            "flex": 1,
+          }
+        }
+      >
+        <Text
+          style={
+            {
+              "color": "#888",
+              "fontSize": 11,
+              "fontWeight": "600",
+              "letterSpacing": 0.5,
+              "marginBottom": 2,
+              "textTransform": "uppercase",
+            }
+          }
+        >
+          Loan Readiness
+        </Text>
+        <Text
+          style={
+            [
+              {
+                "fontSize": 16,
+                "fontWeight": "700",
+              },
+              {
+                "color": "#1D4ED8",
+              },
+            ]
+          }
+        >
+          Add Info
+        </Text>
+      </View>
+      <Text
+        style={
+          [
+            {
+              "color": "#1D4ED8",
+              "fontSize": 20,
+            },
+            {
+              "marginLeft": 4,
+            },
+          ]
+        }
+      >
+        [Ionicons:chevron-forward]
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`Visual regression: Farmer readiness LoanReadinessBadge — all states snapshot: state="notReady" 1`] = `
+<View
+  accessibilityHint="You are not loan-ready yet. Tap for details."
+  accessibilityLabel="Not Ready Yet"
+  accessibilityRole="button"
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  hitSlop={
+    {
+      "bottom": 4,
+      "left": 4,
+      "right": 4,
+      "top": 4,
+    }
+  }
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    accessibilityHint="You are not loan-ready yet. Tap for details."
+    accessibilityLabel="Not Ready Yet"
+    accessibilityRole="button"
+    style={
+      [
+        {
+          "borderRadius": 14,
+          "elevation": 2,
+          "minHeight": 56,
+          "padding": 16,
+          "shadowColor": "#000",
+          "shadowOffset": {
+            "height": 2,
+            "width": 0,
+          },
+          "shadowOpacity": 0.06,
+          "shadowRadius": 8,
+        },
+        {
+          "backgroundColor": "#f5f5f5",
+        },
+        undefined,
+      ]
+    }
+  >
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "flexDirection": "row",
+          "gap": 12,
+        }
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "alignItems": "center",
+              "borderRadius": 22,
+              "height": 44,
+              "justifyContent": "center",
+              "width": 44,
+            },
+            {
+              "backgroundColor": "#6B72801A",
+            },
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#6B7280",
+                "fontSize": 24,
+              },
+              undefined,
+            ]
+          }
+        >
+          [Ionicons:information-circle]
+        </Text>
+      </View>
+      <View
+        style={
+          {
+            "flex": 1,
+          }
+        }
+      >
+        <Text
+          style={
+            {
+              "color": "#888",
+              "fontSize": 11,
+              "fontWeight": "600",
+              "letterSpacing": 0.5,
+              "marginBottom": 2,
+              "textTransform": "uppercase",
+            }
+          }
+        >
+          Loan Readiness
+        </Text>
+        <Text
+          style={
+            [
+              {
+                "fontSize": 16,
+                "fontWeight": "700",
+              },
+              {
+                "color": "#6B7280",
+              },
+            ]
+          }
+        >
+          Not Ready Yet
+        </Text>
+      </View>
+      <Text
+        style={
+          [
+            {
+              "color": "#6B7280",
+              "fontSize": 20,
+            },
+            {
+              "marginLeft": 4,
+            },
+          ]
+        }
+      >
+        [Ionicons:chevron-forward]
+      </Text>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`Visual regression: Farmer readiness LoanReadinessBadge — all states snapshot: state="ready" 1`] = `
+<View
+  accessibilityHint="You are loan-ready. Tap for details."
+  accessibilityLabel="Loan-Ready"
+  accessibilityRole="button"
+  accessibilityState={
+    {
+      "busy": undefined,
+      "checked": undefined,
+      "disabled": undefined,
+      "expanded": undefined,
+      "selected": undefined,
+    }
+  }
+  accessibilityValue={
+    {
+      "max": undefined,
+      "min": undefined,
+      "now": undefined,
+      "text": undefined,
+    }
+  }
+  accessible={true}
+  collapsable={false}
+  focusable={true}
+  hitSlop={
+    {
+      "bottom": 4,
+      "left": 4,
+      "right": 4,
+      "top": 4,
+    }
+  }
+  onClick={[Function]}
+  onResponderGrant={[Function]}
+  onResponderMove={[Function]}
+  onResponderRelease={[Function]}
+  onResponderTerminate={[Function]}
+  onResponderTerminationRequest={[Function]}
+  onStartShouldSetResponder={[Function]}
+  style={
+    {
+      "opacity": 1,
+    }
+  }
+>
+  <View
+    accessibilityHint="You are loan-ready. Tap for details."
+    accessibilityLabel="Loan-Ready"
+    accessibilityRole="button"
+    style={
+      [
+        {
+          "borderRadius": 14,
+          "elevation": 2,
+          "minHeight": 56,
+          "padding": 16,
+          "shadowColor": "#000",
+          "shadowOffset": {
+            "height": 2,
+            "width": 0,
+          },
+          "shadowOpacity": 0.06,
+          "shadowRadius": 8,
+        },
+        {
+          "backgroundColor": "#e8f5e9",
+        },
+        undefined,
+      ]
+    }
+  >
+    <View
+      style={
+        {
+          "alignItems": "center",
+          "flexDirection": "row",
+          "gap": 12,
+        }
+      }
+    >
+      <View
+        style={
+          [
+            {
+              "alignItems": "center",
+              "borderRadius": 22,
+              "height": 44,
+              "justifyContent": "center",
+              "width": 44,
+            },
+            {
+              "backgroundColor": "#15803D1A",
+            },
+          ]
+        }
+      >
+        <Text
+          style={
+            [
+              {
+                "color": "#15803D",
+                "fontSize": 24,
+              },
+              undefined,
+            ]
+          }
+        >
+          [Ionicons:checkmark-circle]
+        </Text>
+      </View>
+      <View
+        style={
+          {
+            "flex": 1,
+          }
+        }
+      >
+        <Text
+          style={
+            {
+              "color": "#888",
+              "fontSize": 11,
+              "fontWeight": "600",
+              "letterSpacing": 0.5,
+              "marginBottom": 2,
+              "textTransform": "uppercase",
+            }
+          }
+        >
+          Loan Readiness
+        </Text>
+        <Text
+          style={
+            [
+              {
+                "fontSize": 16,
+                "fontWeight": "700",
+              },
+              {
+                "color": "#15803D",
+              },
+            ]
+          }
+        >
+          Loan-Ready
+        </Text>
+      </View>
+      <Text
+        style={
+          [
+            {
+              "color": "#15803D",
+              "fontSize": 20,
+            },
+            {
+              "marginLeft": 4,
+            },
+          ]
+        }
+      >
+        [Ionicons:chevron-forward]
+      </Text>
+    </View>
+  </View>
+</View>
+`;

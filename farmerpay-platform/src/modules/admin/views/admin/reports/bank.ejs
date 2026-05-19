@@ -1,0 +1,61 @@
+<% const useChartJs = true; %>
+<%- include('../../partials/header') %>
+
+<h1>📊 <%= bankName %> — cohort report</h1>
+
+<form class="filter-bar" method="GET" action="/admin/reports/bank/<%= encodeURIComponent(bankName) %>">
+  <div class="form-row">
+    <label for="fromDate">From</label>
+    <input type="date" id="fromDate" name="fromDate" value="<%= fromDate %>">
+  </div>
+  <div class="form-row">
+    <label for="toDate">To</label>
+    <input type="date" id="toDate" name="toDate" value="<%= toDate %>">
+  </div>
+  <button type="submit" class="btn">Refresh</button>
+</form>
+
+<%- include('../../partials/cohort-cards', { cohorts: report.cohorts }) %>
+
+<%- include('../../partials/trend-chart', { trend: report.trend, chartId: 'bank-trend' }) %>
+
+<% if (perDistrict.length > 0) { %>
+  <div class="card">
+    <h2 style="margin-top:0;">Per-district breakdown</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>District</th>
+          <th class="right">Test n</th>
+          <th class="right">Test NPA %</th>
+          <th class="right">Control n</th>
+          <th class="right">Control NPA %</th>
+          <th class="right">Δ (pp)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% for (const d of perDistrict) {
+             const t = d.cohorts.test, c = d.cohorts.control;
+             const delta = (t.npaPct - c.npaPct) * 100;
+        %>
+          <tr>
+            <td><strong><%= d.districtName %></strong></td>
+            <td class="right"><%= t.headcount %></td>
+            <td class="right"><%= (t.npaPct*100).toFixed(1) %>%</td>
+            <td class="right"><%= c.headcount %></td>
+            <td class="right"><%= (c.npaPct*100).toFixed(1) %>%</td>
+            <td class="right" style="color: <%= delta < 0 ? 'var(--green)' : 'var(--red)' %>; font-weight: 800;">
+              <%= delta >= 0 ? '+' : '' %><%= delta.toFixed(1) %>
+            </td>
+            <td><a href="/admin/reports/district/<%= encodeURIComponent(d.districtName) %>">view →</a></td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<p><a href="/admin/reports/aggregate" class="btn btn-secondary">← Back to aggregate</a></p>
+
+<%- include('../../partials/footer') %>

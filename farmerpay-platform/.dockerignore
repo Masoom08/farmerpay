@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+npm-debug.log*
+
+# Environment & secrets
+.env
+.env*.local
+.aws/
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# IDE & editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs & temp files
+logs/
+*.log
+tmp/
+
+# Testing & coverage
+coverage/
+.nyc_output/
+tests/
+
+# Build artifacts
+dist/
+build/
+
+# Documentation
+*.md
+LICENSE

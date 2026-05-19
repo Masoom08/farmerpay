@@ -1,0 +1,41 @@
+<% const useChartJs = true; %>
+<%- include('../../partials/header') %>
+
+<h1>📊 Aggregate cohort report</h1>
+
+<form class="filter-bar" method="GET" action="/admin/reports/aggregate">
+  <div class="form-row">
+    <label for="fromDate">From</label>
+    <input type="date" id="fromDate" name="fromDate" value="<%= fromDate %>">
+  </div>
+  <div class="form-row">
+    <label for="toDate">To</label>
+    <input type="date" id="toDate" name="toDate" value="<%= toDate %>">
+  </div>
+  <button type="submit" class="btn">Refresh</button>
+</form>
+
+<% if (perBank.length > 0) { %>
+  <h2>Per-bank delta strip</h2>
+  <div class="grid grid-<%= Math.min(5, perBank.length) %>">
+    <% for (const b of perBank) {
+         const t = b.cohorts.test, c = b.cohorts.control;
+         const delta = (t.npaPct - c.npaPct) * 100;
+         const klass = delta < 0 ? 'delta-down' : (delta > 0 ? 'delta-up' : '');
+    %>
+      <div class="kpi <%= klass %>">
+        <div class="label"><%= b.bankName %></div>
+        <div class="value"><%= delta >= 0 ? '+' : '' %><%= delta.toFixed(1) %> pp</div>
+        <div class="sub">test <%= (t.npaPct*100).toFixed(1) %>% vs ctrl <%= (c.npaPct*100).toFixed(1) %>%</div>
+        <div class="sub"><a href="/admin/reports/bank/<%= encodeURIComponent(b.bankName) %>">view bank →</a></div>
+      </div>
+    <% } %>
+  </div>
+<% } %>
+
+<h2>Pilot-wide cohort comparison</h2>
+<%- include('../../partials/cohort-cards', { cohorts: report.cohorts }) %>
+
+<%- include('../../partials/trend-chart', { trend: report.trend, chartId: 'aggregate-trend' }) %>
+
+<%- include('../../partials/footer') %>

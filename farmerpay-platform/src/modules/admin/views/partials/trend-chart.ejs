@@ -1,0 +1,36 @@
+<%
+// Reusable: render the weekly NPA trend Chart.js chart.
+// Expects locals: trend (array of { weekStart, testNpaPct, controlNpaPct }), chartId
+%>
+<div class="card">
+  <h2 style="margin-top:0;">Weekly NPA % trend</h2>
+  <% if (trend.length === 0) { %>
+    <p class="muted">No snapshot history in this date range yet. The NPA recalculation cron writes one row per loan per day — once it runs daily, this chart fills in.</p>
+  <% } else { %>
+    <canvas id="<%= chartId %>" height="80"></canvas>
+    <script>
+      (function() {
+        const labels   = <%- JSON.stringify(trend.map(t => t.weekStart)) %>;
+        const testData = <%- JSON.stringify(trend.map(t => +(t.testNpaPct * 100).toFixed(1))) %>;
+        const ctlData  = <%- JSON.stringify(trend.map(t => +(t.controlNpaPct * 100).toFixed(1))) %>;
+        const ctx = document.getElementById(<%- JSON.stringify(chartId) %>).getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels,
+            datasets: [
+              { label: 'Test cohort NPA %',    data: testData, borderColor: '#2e7d32', backgroundColor: 'rgba(46,125,50,.1)', tension: 0.3, fill: true },
+              { label: 'Control cohort NPA %', data: ctlData,  borderColor: '#c62828', backgroundColor: 'rgba(198,40,40,.1)', tension: 0.3, fill: true },
+            ]
+          },
+          options: {
+            responsive: true,
+            interaction: { mode: 'index', intersect: false },
+            scales: { y: { beginAtZero: true, ticks: { callback: (v) => v + '%' } } },
+            plugins: { legend: { position: 'top' } }
+          }
+        });
+      })();
+    </script>
+  <% } %>
+</div>

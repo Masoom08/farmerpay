@@ -1,0 +1,24 @@
+'use strict';
+
+module.exports = {
+  async up(queryInterface) {
+    const now = new Date();
+    await queryInterface.bulkInsert('notification_templates', [
+      { template_code: 'OTP_SENT', template_name: 'OTP Sent', category: 'auth', subject_line: 'Your FarmerPay OTP', body_template: 'Your OTP is {otpCode}. Valid for {expiryMinutes} minutes. Do not share with anyone.', supported_channels: 'sms,in_app', priority: 'high', retry_count: 3, is_active: true, created_at: now, updated_at: now },
+      { template_code: 'WELCOME', template_name: 'Welcome Message', category: 'auth', subject_line: 'Welcome to FarmerPay!', body_template: 'Namaste {firstName}! Welcome to FarmerPay. Complete your profile to access all services.', supported_channels: 'sms,email,in_app', priority: 'normal', retry_count: 3, is_active: true, created_at: now, updated_at: now },
+      { template_code: 'ONBOARDING_COMPLETE', template_name: 'Onboarding Complete', category: 'farmer', subject_line: 'Profile Complete!', body_template: 'Congratulations {firstName}! Your FarmerPay profile is now complete. You can now access loans, market prices, and advisory services.', supported_channels: 'sms,email,push,in_app', priority: 'normal', retry_count: 3, is_active: true, created_at: now, updated_at: now },
+      { template_code: 'KYC_VERIFIED', template_name: 'KYC Verified', category: 'kyc', subject_line: 'KYC Verification Successful', body_template: 'Your {documentType} has been verified successfully. Your account is now fully activated.', supported_channels: 'sms,in_app', priority: 'high', retry_count: 3, is_active: true, created_at: now, updated_at: now },
+      { template_code: 'KYC_REJECTED', template_name: 'KYC Rejected', category: 'kyc', subject_line: 'KYC Verification Failed', body_template: 'Your {documentType} verification was unsuccessful. Reason: {rejectionReason}. Please re-upload.', supported_channels: 'sms,in_app', priority: 'high', retry_count: 3, is_active: true, created_at: now, updated_at: now },
+      { template_code: 'WEATHER_ALERT', template_name: 'Weather Alert', category: 'weather', subject_line: 'Weather Alert for {location}', body_template: 'Weather alert for {location}: {alertMessage}. Take necessary precautions for your {cropName} crop.', supported_channels: 'sms,push,in_app', priority: 'urgent', retry_count: 5, is_active: true, created_at: now, updated_at: now },
+      { template_code: 'MANDI_PRICE_UPDATE', template_name: 'Mandi Price Update', category: 'market', subject_line: 'Price Update: {cropName}', body_template: '{cropName} price at {mandiName}: Rs. {price}/quintal ({changeDirection} {changePercent}%). Best time to {action}.', supported_channels: 'sms,in_app', priority: 'normal', retry_count: 3, is_active: true, created_at: now, updated_at: now },
+      { template_code: 'LOAN_APPROVED', template_name: 'Loan Approved', category: 'loan', subject_line: 'Loan Application Approved', body_template: 'Great news {firstName}! Your loan of Rs. {loanAmount} has been approved. Disbursement will happen within {disburseDays} working days.', supported_channels: 'sms,email,push,in_app', priority: 'high', retry_count: 5, is_active: true, created_at: now, updated_at: now },
+      { template_code: 'LOAN_REJECTED', template_name: 'Loan Rejected', category: 'loan', subject_line: 'Loan Application Update', body_template: 'Dear {firstName}, your loan application for Rs. {loanAmount} could not be approved. Reason: {rejectionReason}. You can reapply after {reapplyDays} days.', supported_channels: 'sms,email,in_app', priority: 'high', retry_count: 3, is_active: true, created_at: now, updated_at: now },
+      { template_code: 'PAYMENT_RECEIVED', template_name: 'Payment Received', category: 'payment', subject_line: 'Payment Received', body_template: 'Rs. {amount} has been credited to your account ending {accountLast4}. Transaction ID: {transactionId}.', supported_channels: 'sms,in_app', priority: 'high', retry_count: 3, is_active: true, created_at: now, updated_at: now },
+      { template_code: 'AGENT_ASSIGNED', template_name: 'Agent Assigned', category: 'farmer', subject_line: 'Field Agent Assigned', body_template: '{agentName} has been assigned as your field agent. Contact: {agentMobile}. They will help you with onboarding and services.', supported_channels: 'sms,in_app', priority: 'normal', retry_count: 3, is_active: true, created_at: now, updated_at: now },
+      { template_code: 'PASSWORD_RESET', template_name: 'Password Reset', category: 'auth', subject_line: 'Password Reset Request', body_template: 'Your password reset code is {resetCode}. Valid for {expiryMinutes} minutes. If you did not request this, ignore this message.', supported_channels: 'sms,email', priority: 'high', retry_count: 3, is_active: true, created_at: now, updated_at: now },
+    ]);
+  },
+  async down(queryInterface) {
+    await queryInterface.bulkDelete('notification_templates', null, {});
+  },
+};

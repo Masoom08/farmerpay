@@ -1,0 +1,203 @@
+{
+  "banker": {
+    "sanctionReview": {
+      "title": "Sanction Review",
+      "trustScore": "TRUST Score",
+      "fhsScore": "FHS Score",
+      "loanAmount": "Loan Amount",
+      "requestedAmount": "Requested Amount",
+      "recommendedAmount": "Recommended Amount",
+      "farmerName": "Farmer Name",
+      "farmerId": "Farmer ID",
+      "applicationDate": "Application Date",
+      "decisionLabel": "Decision",
+      "sanction": "Sanction",
+      "reconsider": "Reconsider",
+      "reject": "Reject",
+      "sanctionConfirm": "Confirm Sanction",
+      "reconsiderConfirm": "Confirm Reconsider",
+      "rejectConfirm": "Confirm Reject",
+      "remarks": "Remarks",
+      "remarksPlaceholder": "Add remarks for this decision…",
+      "pillarBreakdown": "Pillar Breakdown",
+      "pillar1": "Land & Assets",
+      "pillar2": "Crop & Yield",
+      "pillar3": "Financial Health",
+      "pillar4": "Repayment History",
+      "pillar5": "Insurance & Safety Net",
+      "pillar6": "Market & Linkage",
+      "constellationView": "Constellation View",
+      "decisionHistory": "Decision History",
+      "noHistory": "No previous decisions",
+      "submittedBy": "Submitted by",
+      "submittedOn": "Submitted on",
+      "overallBand": "Overall Band",
+      "scoreTrend": "Score Trend",
+      "riskFlags": "Risk Flags",
+      "noFlags": "No risk flags detected",
+      "viewFarmerProfile": "View Farmer Profile",
+      "compareToPeers": "Compare to Peers",
+      "districtAvg": "District Average"
+    },
+    "portfolio": {
+      "title": "Portfolio Overview",
+      "totalFarmers": "Total Farmers",
+      "activeLoanees": "Active Loanees",
+      "avgTrustScore": "Avg TRUST Score",
+      "avgFhsScore": "Avg FHS Score",
+      "riskDistribution": "Risk Distribution",
+      "bandDistribution": "Band Distribution",
+      "sanctionRate": "Sanction Rate",
+      "npaRisk": "NPA Risk",
+      "stressTest": "Stress Test",
+      "scenarioLabel": "Scenario",
+      "filterByBranch": "Filter by Branch",
+      "filterByBand": "Filter by Band",
+      "filterByDistrict": "Filter by District",
+      "exportReport": "Export Report",
+      "lastUpdated": "Last Updated",
+      "topPerformers": "Top Performers",
+      "needsAttention": "Needs Attention",
+      "portfolioHealth": "Portfolio Health",
+      "trendChart": "Trend Chart",
+      "sanctioned": "Sanctioned",
+      "reconsidered": "Reconsidered",
+      "rejected": "Rejected",
+      "pending": "Pending Review"
+    }
+  },
+  "farmer": {
+    "myScore": {
+      "title": "My Score",
+      "trustScore": "TRUST Score",
+      "scoreOutOf": "out of 100",
+      "lastUpdated": "Last updated",
+      "viewDetails": "View Details",
+      "howToImprove": "How to Improve",
+      "pillarBreakdown": "Your Strengths",
+      "missionProgress": "Mission Progress",
+      "completedMissions": "Completed",
+      "pendingMissions": "Pending",
+      "loanReadiness": "Loan Readiness",
+      "ready": "Ready",
+      "almostReady": "Almost Ready",
+      "notReady": "Not Ready Yet",
+      "needsData": "Needs More Data",
+      "shareScore": "Share Score",
+      "refreshScore": "Refresh Score",
+      "scoreHistory": "Score History",
+      "improvementTip": "Improvement Tip"
+    },
+    "bands": {
+      "excellent": { "en": "Excellent", "hi": "उत्कृष्ट" },
+      "good": { "en": "Good", "hi": "अच्छा" },
+      "building": { "en": "Building", "hi": "निर्माण हो रहा है" },
+      "starting": { "en": "Starting", "hi": "शुरुआत" }
+    },
+    "missions": {
+      "aa": {
+        "title": "Link Bank Account",
+        "description": "Connect your bank account to verify financial health",
+        "cta": "Link Now",
+        "completed": "Bank Account Linked",
+        "pending": "Pending Verification",
+        "benefit": "Improves your Financial Health pillar"
+      },
+      "pmfby": {
+        "title": "Crop Insurance",
+        "description": "Enrol in PMFBY to protect your crops",
+        "cta": "Enrol Now",
+        "completed": "Insurance Active",
+        "pending": "Not Enrolled",
+        "benefit": "Improves your Insurance & Safety Net pillar"
+      },
+      "vyapar": {
+        "title": "Market Linkage",
+        "description": "Connect to mandis for better prices",
+        "cta": "Explore Markets",
+        "completed": "Market Connected",
+        "pending": "Not Connected",
+        "benefit": "Improves your Market & Linkage pillar"
+      },
+      "sathi": {
+        "title": "Meet Your Sathi",
+        "description": "Schedule a visit with your field agent",
+        "cta": "Schedule Visit",
+        "completed": "Visit Completed",
+        "pending": "Visit Pending",
+        "benefit": "Helps verify your on-ground data"
+      }
+    }
+  },
+  "sathi": {
+    "queue": {
+      "title": "Farmer Queue",
+      "pendingVisits": "Pending Visits",
+      "completedToday": "Completed Today",
+      "totalAssigned": "Total Assigned",
+      "farmerName": "Farmer Name",
+      "village": "Village",
+      "trustScore": "TRUST Score",
+      "visitStatus": "Visit Status",
+      "scheduled": "Scheduled",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "missed": "Missed",
+      "startVisit": "Start Visit",
+      "markComplete": "Mark Complete",
+      "reschedule": "Reschedule",
+      "addNotes": "Add Notes",
+      "filterByStatus": "Filter by Status",
+      "filterByVillage": "Filter by Village",
+      "sortByScore": "Sort by Score",
+      "sortByDate": "Sort by Date",
+      "noFarmers": "No farmers in queue",
+      "nextVisit": "Next Visit",
+      "visitSummary": "Visit Summary",
+      "dataCollected": "Data Collected",
+      "photoVerification": "Photo Verification"
+    }
+  },
+  "crosscutting": {
+    "loading": {
+      "default": "Loading…",
+      "score": "Calculating your score…",
+      "data": "Fetching data…",
+      "analysis": "Running analysis…",
+      "syncing": "Syncing…"
+    },
+    "error": {
+      "default": "Something went wrong",
+      "network": "Network error. Please check your connection.",
+      "timeout": "Request timed out. Please try again.",
+      "notFound": "Resource not found",
+      "unauthorized": "Session expired. Please log in again.",
+      "serverError": "Server error. Please try again later.",
+      "retry": "Retry",
+      "goBack": "Go Back",
+      "contactSupport": "Contact Support"
+    },
+    "empty": {
+      "default": "No data available",
+      "noFarmers": "No farmers found",
+      "noScores": "No scores available yet",
+      "noMissions": "No missions available",
+      "noHistory": "No history found",
+      "noResults": "No results match your filters"
+    },
+    "offline": {
+      "banner": "You are offline",
+      "message": "Some features may be unavailable. Data will sync when connected.",
+      "lastSynced": "Last synced",
+      "syncNow": "Sync Now"
+    },
+    "notifications": {
+      "scoreUpdated": "Your TRUST score has been updated",
+      "missionComplete": "Mission completed!",
+      "visitScheduled": "Visit scheduled successfully",
+      "decisionRecorded": "Decision recorded",
+      "syncComplete": "Data synced successfully",
+      "reminderVisit": "You have a visit scheduled today"
+    }
+  }
+}
