@@ -52,7 +52,7 @@ REDIS_URL=redis://localhost:6379 \
 
 | Var | Default | CI value |
 |-----|---------|----------|
-| `DB_HOST` | `127.0.0.1` | `localhost` |
+| `DB_HOST` | `10.218.164.140` | `localhost` |
 | `DB_PORT` | `3306` | `3306` |
 | `DB_USER` | `farmerpay` | `root` |
 | `DB_PASSWORD` | empty | `test` |

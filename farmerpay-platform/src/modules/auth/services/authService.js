@@ -60,7 +60,7 @@ const generateRefreshToken = (user) => {
  */
 const generateOtpCode = () => {
   // In development, always return 123456 for easy testing
-  if (process.env.NODE_ENV !== 'production') return '123456';
+  // if (process.env.NODE_ENV !== 'production') return '123456';
   return crypto.randomInt(100000, 999999).toString();
 };
 
