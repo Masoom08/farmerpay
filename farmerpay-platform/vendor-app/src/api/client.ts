@@ -1,8 +1,17 @@
 import axios from "axios";
 import { getToken, clearAuth } from "../lib/storage";
 
+const API_BASE_URL =
+  process.env.EXPO_PUBLIC_API_BASE_URL;
+
+if (!API_BASE_URL) {
+  throw new Error(
+    "EXPO_PUBLIC_API_BASE_URL is not defined in .env"
+  );
+}
+
 const client = axios.create({
-  baseURL: "http://10.218.164.140:3000/api/v1",
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

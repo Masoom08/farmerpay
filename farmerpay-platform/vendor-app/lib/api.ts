@@ -1,7 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 
-const API_BASE = "http://10.218.164.140:3000/api/v1";
+const API_BASE = process.env.EXPO_PUBLIC_API_BASE_URL!;
+
+if (!API_BASE) {
+  throw new Error(
+    "EXPO_PUBLIC_API_BASE_URL is not defined in .env"
+  );
+}
 
 export async function getToken(): Promise<string | null> {
   return AsyncStorage.getItem("vendor_token");
