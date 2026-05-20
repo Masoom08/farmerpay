@@ -1,139 +1,309 @@
 /**
  * Record Sale — Vendor records what a farmer purchased.
- * Select farmer → pick items from catalog → quantity → cash/credit → done.
+ * Refactored to use:
+ * - src/api/modules
+ * - src/hooks
+ * - src/components
+ * - src/utils
+ *
+ * Supports:
+ * - Multi-item cart
+ * - Farmer search
+ * - Season auto-detect
+ * - Success screen
  */
-import { useEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator } from "react-native";
-import { apiGet, apiPost, formatRupees } from "../../lib/api";
+
+import { useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+
+import { formatRupees } from "../../lib/api";
+
+import CatalogItemChip from "../../src/components/CatalogItemChip";
+import CartItemCard from "../../src/components/CartItemCard";
+import CartSummary from "../../src/components/CartSummary";
+import FarmerSearchInput from "../../src/components/FarmerSearchInput";
+import PaymentTypeSelector from "../../src/components/PaymentTypeSelector";
+import SeasonSelector from "../../src/components/SeasonSelector";
+
+import { useCatalog } from "../../src/hooks/useCatalog";
+import { useCart } from "../../src/hooks/useCart";
+import { useFarmerSearch } from "../../src/hooks/useFarmerSearch";
+import { useRecordSale } from "../../src/hooks/useRecordSale";
+
+import type { Farmer } from "../../src/types/sale.types";
+import { detectSeason } from "../../src/utils/season.util";
+
+type PaymentType = "cash_sale" | "credit_sale";
 
 export default function RecordSaleScreen() {
-  const [catalog, setCatalog] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Catalog
+  const { catalog, loading: catalogLoading } = useCatalog();
 
-  // Form
-  const [farmerMobile, setFarmerMobile] = useState("");
-  const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [quantity, setQuantity] = useState("1");
-  const [paymentType, setPaymentType] = useState<"cash_sale" | "credit_sale">("cash_sale");
-  const [season, setSeason] = useState("kharif");
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  // Farmer Search
+  const [farmerQuery, setFarmerQuery] = useState("");
+  const [selectedFarmer, setSelectedFarmer] =
+    useState<Farmer | null>(null);
 
-  useEffect(() => {
-    apiGet("/vyapar/catalog")
-      .then((r) => { if (r.success && Array.isArray(r.data)) setCatalog(r.data); })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+  const {
+    farmers,
+    loading: farmerLoading,
+  } = useFarmerSearch(farmerQuery);
 
-  const cost = selectedItem ? (selectedItem.vendor_selling_price || selectedItem.vendorSellingPrice || 0) * (parseInt(quantity, 10) || 1) : 0;
+  // Cart
+  const {
+    cart,
+    addToCart,
+    incrementQuantity,
+    decrementQuantity,
+    removeFromCart,
+    clearCart,
+    isInCart,
+    getItemQuantity,
+    totalItems,
+    uniqueItems,
+    totalAmount,
+  } = useCart();
 
-  const handleSubmit = async () => {
-    if (!farmerMobile || farmerMobile.replace(/\D/g, "").length < 10) { Alert.alert("Enter farmer mobile"); return; }
-    if (!selectedItem) { Alert.alert("Select an item"); return; }
+  // Payment & Season
+  const [paymentType, setPaymentType] =
+    useState<PaymentType>("cash_sale");
 
-    setSubmitting(true);
-    try {
-      const r = await apiPost("/vyapar/transactions", {
-        farmerId: null, // Backend resolves from mobile
-        farmerMobile: farmerMobile.replace(/\D/g, "").slice(-10),
-        transactionType: paymentType,
-        transactionDate: new Date().toISOString().slice(0, 10),
-        season,
-        items: [{
-          inputItemId: selectedItem.input_item_id || selectedItem.inputItemId,
-          inputPackId: selectedItem.input_pack_id || selectedItem.inputPackId,
-          quantity: parseInt(quantity, 10) || 1,
-        }],
-      });
-      if (r.success) setSubmitted(true);
-      else Alert.alert("Error", r.message || "Failed to record sale.");
-    } catch (e: any) {
-      Alert.alert("Error", e?.message || "Connection failed.");
-    } finally {
-      setSubmitting(false);
-    }
+  const [season, setSeason] = useState(detectSeason());
+
+  // Submit Hook
+  const {
+    submitSale,
+    submitting,
+    transaction,
+    reset,
+  } = useRecordSale();
+
+  // Farmer selection
+  const handleSelectFarmer = (farmer: Farmer) => {
+    setSelectedFarmer(farmer);
+    setFarmerQuery(`${farmer.name} (${farmer.mobile})`);
   };
 
-  if (submitted) {
+  // Submit
+  const handleSubmit = async () => {
+    const success = await submitSale({
+      selectedFarmer,
+      farmerMobile: selectedFarmer?.mobile || "",
+      paymentType,
+      season,
+      cart,
+    });
+
+    if (!success) {
+      Alert.alert(
+        "Error",
+        "Failed to record sale."
+      );
+      return;
+    }
+
+    Alert.alert(
+      "Success",
+      "Sale recorded successfully."
+    );
+  };
+
+  // Reset form
+  const handleRecordAnother = () => {
+    clearCart();
+    setSelectedFarmer(null);
+    setFarmerQuery("");
+    setPaymentType("cash_sale");
+    setSeason(detectSeason());
+    reset();
+  };
+
+  // Success Screen
+  if (transaction) {
     return (
       <View style={styles.successCenter}>
         <Text style={{ fontSize: 64 }}>✅</Text>
-        <Text style={styles.successTitle}>Sale recorded!</Text>
-        <Text style={styles.successSub}>{quantity}x {selectedItem?.input_item_id || "item"} → Farmer {farmerMobile}</Text>
-        <Text style={styles.successAmount}>{formatRupees(cost)}</Text>
-        <Text style={styles.successMeta}>{paymentType === "credit_sale" ? "💳 Credit" : "💵 Cash"} · {season}</Text>
-        <TouchableOpacity style={styles.anotherBtn} onPress={() => { setSubmitted(false); setSelectedItem(null); setFarmerMobile(""); setQuantity("1"); }}>
-          <Text style={styles.anotherBtnText}>+ Record another sale</Text>
+
+        <Text style={styles.successTitle}>
+          Sale recorded!
+        </Text>
+
+        <Text style={styles.successSub}>
+          Transaction #{transaction.id}
+        </Text>
+
+        {selectedFarmer && (
+          <Text style={styles.successSub}>
+            {selectedFarmer.name} ·{" "}
+            {selectedFarmer.mobile}
+          </Text>
+        )}
+
+        <Text style={styles.successAmount}>
+          {formatRupees(totalAmount)}
+        </Text>
+
+        <Text style={styles.successMeta}>
+          {paymentType === "credit_sale"
+            ? "💳 Credit"
+            : "💵 Cash"}{" "}
+          · {season}
+        </Text>
+
+        <TouchableOpacity
+          style={styles.anotherBtn}
+          onPress={handleRecordAnother}
+        >
+          <Text style={styles.anotherBtnText}>
+            + Record another sale
+          </Text>
         </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>🛒 Record a sale</Text>
+    <ScrollView
+      style={styles.scroll}
+      contentContainerStyle={styles.content}
+    >
+      <Text style={styles.title}>
+        🛒 Record a sale
+      </Text>
 
-      {/* Farmer mobile */}
-      <Text style={styles.label}>FARMER MOBILE *</Text>
-      <TextInput style={styles.input} placeholder="Farmer's 10-digit mobile" value={farmerMobile} onChangeText={(t) => setFarmerMobile(t.replace(/[^0-9+]/g, ""))} keyboardType="phone-pad" maxLength={13} />
+      {/* Farmer Search */}
+      <Text style={styles.label}>FARMER *</Text>
+      <FarmerSearchInput
+        query={farmerQuery}
+        onChangeQuery={(text) => {
+          setFarmerQuery(text);
+          setSelectedFarmer(null);
+        }}
+        farmers={farmers}
+        loading={farmerLoading}
+        selectedFarmer={selectedFarmer}
+        onSelectFarmer={handleSelectFarmer}
+      />
 
-      {/* Item selection */}
-      <Text style={styles.label}>SELECT ITEM *</Text>
-      {loading ? <ActivityIndicator color="#d97706" /> : (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 12 }}>
-          {catalog.map((item, i) => {
-            const itemId = item.input_item_id || item.inputItemId || `item-${i}`;
-            const price = item.vendor_selling_price || item.vendorSellingPrice || 0;
-            const isSelected = selectedItem && (selectedItem.input_item_id || selectedItem.inputItemId) === itemId;
+      {/* Catalog */}
+      <Text style={styles.label}>
+        SELECT ITEMS *
+      </Text>
+
+      {catalogLoading ? (
+        <ActivityIndicator color="#d97706" />
+      ) : (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={{ marginBottom: 12 }}
+        >
+          {catalog.map((item) => {
+            const itemId =
+              item.input_item_id ||
+              item.inputItemId ||
+              0;
+
             return (
-              <TouchableOpacity key={i} style={[styles.itemChip, isSelected && styles.itemChipActive]} onPress={() => setSelectedItem(item)}>
-                <Text style={[styles.itemChipText, isSelected && { color: "#fff" }]}>{itemId}</Text>
-                <Text style={[styles.itemChipPrice, isSelected && { color: "#fef3c7" }]}>{formatRupees(price)}</Text>
-              </TouchableOpacity>
+              <CatalogItemChip
+                key={itemId}
+                item={item}
+                onPress={addToCart}
+                isInCart={isInCart(itemId)}
+                quantity={getItemQuantity(itemId)}
+                formatRupees={formatRupees}
+              />
             );
           })}
-          {catalog.length === 0 && <Text style={{ color: "#999", fontSize: 12 }}>No catalog items. Add items in Catalog tab first.</Text>}
+
+          {catalog.length === 0 && (
+            <Text
+              style={{
+                color: "#999",
+                fontSize: 12,
+              }}
+            >
+              No catalog items found.
+            </Text>
+          )}
         </ScrollView>
       )}
 
-      {/* Quantity */}
-      <Text style={styles.label}>QUANTITY</Text>
-      <View style={styles.qtyRow}>
-        <TouchableOpacity style={styles.qtyBtn} onPress={() => setQuantity(String(Math.max(1, (parseInt(quantity, 10) || 1) - 1)))}>
-          <Text style={styles.qtyBtnText}>−</Text>
-        </TouchableOpacity>
-        <TextInput style={styles.qtyInput} value={quantity} onChangeText={setQuantity} keyboardType="numeric" textAlign="center" />
-        <TouchableOpacity style={styles.qtyBtn} onPress={() => setQuantity(String((parseInt(quantity, 10) || 0) + 1))}>
-          <Text style={styles.qtyBtnText}>+</Text>
-        </TouchableOpacity>
-        <Text style={styles.totalText}>= {formatRupees(cost)}</Text>
-      </View>
+      {/* Cart */}
+      {cart.length > 0 && (
+        <>
+          <Text style={styles.label}>CART</Text>
 
-      {/* Payment type */}
+          {cart.map((cartItem) => {
+            const itemId =
+              cartItem.item.input_item_id ||
+              cartItem.item.inputItemId ||
+              0;
+
+            return (
+              <CartItemCard
+                key={itemId}
+                cartItem={cartItem}
+                onIncrement={() =>
+                  incrementQuantity(itemId)
+                }
+                onDecrement={() =>
+                  decrementQuantity(itemId)
+                }
+                onRemove={() =>
+                  removeFromCart(itemId)
+                }
+                formatRupees={formatRupees}
+              />
+            );
+          })}
+
+          <CartSummary
+            totalItems={totalItems}
+            uniqueItems={uniqueItems}
+            totalAmount={totalAmount}
+            formatRupees={formatRupees}
+          />
+        </>
+      )}
+
+      {/* Payment */}
       <Text style={styles.label}>PAYMENT</Text>
-      <View style={styles.payRow}>
-        <TouchableOpacity style={[styles.payBtn, paymentType === "cash_sale" && styles.payBtnActive]} onPress={() => setPaymentType("cash_sale")}>
-          <Text style={[styles.payBtnText, paymentType === "cash_sale" && { color: "#16a34a" }]}>💵 Cash</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={[styles.payBtn, paymentType === "credit_sale" && styles.payBtnActiveCredit]} onPress={() => setPaymentType("credit_sale")}>
-          <Text style={[styles.payBtnText, paymentType === "credit_sale" && { color: "#dc2626" }]}>💳 Credit</Text>
-        </TouchableOpacity>
-      </View>
+      <PaymentTypeSelector
+        value={paymentType}
+        onChange={setPaymentType}
+      />
 
       {/* Season */}
       <Text style={styles.label}>SEASON</Text>
-      <View style={styles.payRow}>
-        {["kharif", "rabi", "zaid"].map((s) => (
-          <TouchableOpacity key={s} style={[styles.seasonBtn, season === s && styles.seasonBtnActive]} onPress={() => setSeason(s)}>
-            <Text style={[styles.seasonBtnText, season === s && { color: "#fff" }]}>{s.charAt(0).toUpperCase() + s.slice(1)}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <SeasonSelector
+        value={season}
+        onChange={setSeason}
+      />
 
       {/* Submit */}
-      <TouchableOpacity style={styles.submitBtn} onPress={handleSubmit} disabled={submitting}>
-        {submitting ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitText}>Record Sale</Text>}
+      <TouchableOpacity
+        style={styles.submitBtn}
+        onPress={handleSubmit}
+        disabled={
+          submitting || cart.length === 0
+        }
+      >
+        {submitting ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.submitText}>
+            Record Sale
+          </Text>
+        )}
       </TouchableOpacity>
     </ScrollView>
   );

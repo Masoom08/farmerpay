@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 
-const API_BASE = "http://localhost:3000/api/v1";
+const API_BASE = "http://10.218.164.140:3000/api/v1";
 
 export async function getToken(): Promise<string | null> {
   return AsyncStorage.getItem("vendor_token");

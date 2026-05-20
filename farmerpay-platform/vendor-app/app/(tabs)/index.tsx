@@ -5,9 +5,11 @@ import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, RefreshControl, Alert } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { apiGet, getUser, clearToken, formatRupees } from "../../lib/api";
+import { useLogout } from "../../src/hooks/useLogout";
 
 export default function VendorHome() {
   const router = useRouter();
+  const { handleLogout: logoutUser } = useLogout();
   const [user, setUserState] = useState<any>(null);
   const [perf, setPerf] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -28,11 +30,18 @@ export default function VendorHome() {
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
   const handleLogout = () => {
-    Alert.alert("Logout", "Are you sure?", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Logout", style: "destructive", onPress: async () => { await clearToken(); router.replace("/login" as any); } },
-    ]);
-  };
+  Alert.alert("Logout", "Are you sure?", [
+    { text: "Cancel", style: "cancel" },
+    {
+      text: "Logout",
+      style: "destructive",
+      onPress: async () => {
+        await logoutUser();
+        router.replace("/login");
+      },
+    },
+  ]);
+};
 
   return (
     <ScrollView

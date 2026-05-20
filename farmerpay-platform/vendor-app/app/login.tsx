@@ -61,6 +61,15 @@ export default function VendorLoginScreen() {
           </TouchableOpacity>
 
           <Text style={styles.footer}>No passwords. 4-digit UPI-style MPIN.</Text>
+
+          <TouchableOpacity
+            style={styles.linkContainer}
+            onPress={() => router.push("/register")}
+          >
+            <Text style={styles.linkText}>
+              Don't have an account? Register
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     </>
@@ -79,4 +88,13 @@ const styles = StyleSheet.create({
   btn: { width: "100%", backgroundColor: "#d97706", paddingVertical: 14, borderRadius: 10, alignItems: "center", marginTop: 20 },
   btnText: { color: "#fff", fontWeight: "800", fontSize: 16 },
   footer: { marginTop: 16, fontSize: 11, color: "#aaa" },
+  linkContainer: {
+    marginTop: 18,
+  },
+
+  linkText: {
+    fontSize: 13,
+    color: "#d97706",
+    fontWeight: "600",
+  },
 });
