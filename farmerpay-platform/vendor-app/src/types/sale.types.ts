@@ -10,17 +10,50 @@ export interface ApiResponse<T = any> {
 /**
  * Catalog Item
  */
+/**
+ * Catalog Item
+ */
 export interface CatalogItem {
-  input_item_id: number;
-  input_pack_id: number;
+  id: number;
+  vendor_id: number;
+
+  input_item_id: string;
+  input_pack_id: string;
+
+  mrp_rupees: string;
+  vendor_selling_price: string;
+
+  stock_quantity: number;
+
+  last_stock_update_date: string;
+
+  availability_status:
+    | "in_stock"
+    | "low_stock"
+    | "out_of_stock";
+
+  is_active: boolean;
+
+  createdAt: string;
+  updatedAt: string;
+
+  // Optional frontend-friendly aliases
   item_name?: string;
   pack_name?: string;
-  vendor_selling_price: number;
 
-  // Optional alternate keys returned by backend
-  inputItemId?: number;
-  inputPackId?: number;
-  vendorSellingPrice?: number;
+  inputItemId?: string;
+  inputPackId?: string;
+
+  mrpRupees?: string;
+  vendorSellingPrice?: string;
+
+  stockQuantity?: number;
+  availabilityStatus?:
+    | "in_stock"
+    | "low_stock"
+    | "out_of_stock";
+
+  catalogId?: number;
 }
 
 /**

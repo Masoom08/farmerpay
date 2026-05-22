@@ -5,10 +5,17 @@ import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, Alert, Modal, RefreshControl } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { apiGet, apiPost, apiPut, formatRupees } from "../../../lib/api";
+import { useCatalog } from "../../../src/hooks/useCatalog";
 
 export default function CatalogScreen() {
-  const [items, setItems] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  // const [items, setItems] = useState<any[]>([]);
+  // const [loading, setLoading] = useState(true);
+  const {
+  catalog: items,
+  loading,
+  error,
+  refetch,
+} = useCatalog();
   const [refreshing, setRefreshing] = useState(false);
   const [addModal, setAddModal] = useState(false);
 
@@ -20,17 +27,9 @@ export default function CatalogScreen() {
   const [newStock, setNewStock] = useState("100");
   const [adding, setAdding] = useState(false);
 
-  const load = useCallback(async () => {
-    try {
-      const r = await apiGet("/vyapar/catalog");
-      if (r.success && Array.isArray(r.data)) setItems(r.data);
-    } catch {}
-    setLoading(false);
-    setRefreshing(false);
-  }, []);
+  
 
-  useEffect(() => { load(); }, [load]);
-  useFocusEffect(useCallback(() => { load(); }, [load]));
+  
 
   const handleAdd = async () => {
     if (!newItemId.trim()) { Alert.alert("Enter item name"); return; }
@@ -49,7 +48,7 @@ export default function CatalogScreen() {
         Alert.alert("Added!", `${newItemId} added to catalog.`);
         setAddModal(false);
         setNewItemId(""); setNewPackId(""); setNewMrp(""); setNewPrice(""); setNewStock("100");
-        load();
+        await refetch();
       } else {
         Alert.alert("Error", r.message || "Failed to add.");
       }
@@ -64,13 +63,21 @@ export default function CatalogScreen() {
     const newStockVal = Math.max(0, currentStock + delta);
     try {
       await apiPut(`/vyapar/catalog/${catalogId}`, { stockQuantity: newStockVal });
-      load();
+      await refetch();
     } catch {
       Alert.alert("Error", "Failed to update stock.");
     }
   };
 
   if (loading) return <View style={styles.center}><ActivityIndicator size="large" color="#d97706" /></View>;
+
+  if (error) {
+  return (
+    <View style={styles.center}>
+      <Text>{error}</Text>
+    </View>
+  );
+}
 
   const stockColor = (status: string) => {
     if (status === "in_stock") return "#16a34a";
@@ -83,7 +90,13 @@ export default function CatalogScreen() {
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.content}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} colors={["#d97706"]} />}
+        refreshControl={<RefreshControl refreshing={refreshing} 
+        onRefresh={async () => {
+          setRefreshing(true);
+          await refetch();
+          setRefreshing(false);
+        }} 
+        colors={["#d97706"]} />}
       >
         {/* Add button */}
         <TouchableOpacity style={styles.addBtn} onPress={() => setAddModal(true)}>
@@ -106,7 +119,7 @@ export default function CatalogScreen() {
             const price = Number(item.vendor_selling_price || item.vendorSellingPrice || 0);
             const stock = item.stock_quantity ?? item.stockQuantity ?? 0;
             const status = item.availability_status || item.availabilityStatus || "in_stock";
-            const catId = item.id || item.catalogId;
+            const catId = item.id || item.catalogId ||0;
 
             return (
               <View key={i} style={styles.itemCard}>
