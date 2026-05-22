@@ -39,6 +39,74 @@ const getTransactions = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/**
+ * POST /vyapar/transactions/:id/evidence
+ */
+const uploadEvidence = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const userId = await resolveUserId(req);
+    const vendorId =
+      await resolveVendorId(userId);
+
+    const transactionId = parseInt(
+      req.params.id,
+      10
+    );
+
+    const result =
+      await transactionService.uploadEvidence(
+        vendorId,
+        transactionId,
+        req.body
+      );
+
+    return success(res, {
+      message: 'Evidence uploaded',
+      data: result,
+      statusCode: 201,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * POST /vyapar/transactions/:id/cancel
+ */
+const cancelTransaction = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const userId = await resolveUserId(req);
+    const vendorId =
+      await resolveVendorId(userId);
+
+    const transactionId = parseInt(
+      req.params.id,
+      10
+    );
+
+    const result =
+      await transactionService.cancelTransaction(
+        vendorId,
+        transactionId
+      );
+
+    return success(res, {
+      message: 'Transaction cancelled',
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 /** GET /vyapar/loans */
 const getLinkedLoans = async (req, res, next) => {
   try {
@@ -59,4 +127,11 @@ const addLoanUtilization = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
-module.exports = { createTransaction, getTransactions, getLinkedLoans, addLoanUtilization };
+module.exports = { 
+  createTransaction, 
+  getTransactions, 
+  uploadEvidence,
+  cancelTransaction,
+  getLinkedLoans, 
+  addLoanUtilization,
+ };

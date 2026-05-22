@@ -104,29 +104,72 @@ const getCreditLedger = async (req, res, next) => {
   try {
     const userId = await resolveUserId(req);
     const vendorId = await resolveVendorId(userId);
-    const result = await creditService.getCreditLedger(vendorId);
-    return success(res, { message: 'Credit ledger retrieved', data: result.ledger, meta: { total: result.total, totalBalance: result.totalBalance } });
-  } catch (err) { next(err); }
+
+    const result = await vendorService.getCreditLedger(
+      vendorId,
+      req.query
+    );
+
+    return success(res, {
+      message: 'Credit ledger retrieved',
+      data: result.ledgers,
+      meta: result.meta,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 /** GET /vyapar/credit-ledger/:farmerId */
-const getFarmerCreditDetail = async (req, res, next) => {
+const getFarmerCreditDetail = async (
+  req,
+  res,
+  next
+) => {
   try {
     const userId = await resolveUserId(req);
     const vendorId = await resolveVendorId(userId);
-    const result = await creditService.getFarmerCreditDetail(vendorId, parseInt(req.params.farmerId, 10));
-    return success(res, { message: 'Farmer credit detail retrieved', data: result });
-  } catch (err) { next(err); }
+
+    const result =
+      await vendorService.getFarmerCreditDetail(
+        vendorId,
+        parseInt(req.params.farmerId, 10)
+      );
+
+    return success(res, {
+      message:
+        'Farmer credit detail retrieved',
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 /** POST /vyapar/credit-ledger/:farmerId/payment */
-const recordCreditPayment = async (req, res, next) => {
+const recordCreditPayment = async (
+  req,
+  res,
+  next
+) => {
   try {
     const userId = await resolveUserId(req);
     const vendorId = await resolveVendorId(userId);
-    const result = await creditService.recordPayment(vendorId, parseInt(req.params.farmerId, 10), req.body);
-    return success(res, { message: 'Payment recorded', data: result });
-  } catch (err) { next(err); }
+
+    const result =
+      await vendorService.recordCreditPayment(
+        vendorId,
+        parseInt(req.params.farmerId, 10),
+        req.body
+      );
+
+    return success(res, {
+      message: 'Payment recorded',
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 module.exports = {

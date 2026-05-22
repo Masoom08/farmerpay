@@ -131,7 +131,7 @@ const getUserPermissions = async (userId) => {
  * @returns {Promise<Object>} { userId, otpRequestId, expiresInSeconds }
  */
 const register = async (data) => {
-  const { firstName, lastName, mobile, email, dateOfBirth, gender } = data;
+  const { firstName, lastName, mobile, email, dateOfBirth, gender, role } = data;
   const formattedMobile = mobile.startsWith('+91') ? mobile : `+91${mobile}`;
 
   // Check for existing user
@@ -155,11 +155,13 @@ const register = async (data) => {
     logger.warn(
       `Registration attempted for existing account (mobile=${formattedMobile}, email=${email || 'n/a'})`
     );
-    return {
-      userId: generateUUID(),
-      otpRequestId: generateUUID(),
-      expiresInSeconds: OTP_EXPIRY_MINUTES * 60,
-    };
+    const error = new Error(
+      'This mobile number is already registered. Please sign in or use Forgot MPIN.'
+    );
+    error.statusCode = 409;
+    error.errorCode = 'ACCOUNT_ALREADY_EXISTS';
+
+    throw error;
   }
 
   const transaction = await sequelize.transaction();
@@ -179,14 +181,33 @@ const register = async (data) => {
     }, { transaction });
 
     // Assign default FARMER role
-    const farmerRole = await Role.findOne({ where: { role_name: 'FARMER' } });
-    if (farmerRole) {
-      await UserRole.create({
-        user_id: user.id,
-        role_id: farmerRole.id,
-        assigned_at: new Date(),
-      }, { transaction });
+    const requestedRole = (role || 'FARMER').toUpperCase();
+
+    // Find the role in the roles table.
+    const selectedRole = await Role.findOne({
+      where: {
+        role_name: requestedRole,
+        is_active: true,
+      },
+      transaction,
+    });
+
+    if (!selectedRole) {
+      const error = new Error(`Invalid role: ${requestedRole}`);
+      error.statusCode = 400;
+      error.errorCode = 'INVALID_ROLE';
+      throw error;
     }
+
+    await UserRole.create(
+      {
+        user_id: user.id,          // internal users.id
+        role_id: selectedRole.id,  // e.g. FARMER=1, VENDOR=3
+        assigned_at: new Date(),
+        is_active: true,
+      },
+      { transaction }
+    );
 
     // Generate and store OTP for mobile verification
     const otpCode = generateOtpCode();

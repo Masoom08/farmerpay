@@ -50,6 +50,50 @@ router.get('/transactions', transactionController.getTransactions);
 
 /**
  * @swagger
+ * /vyapar/transactions/{id}/evidence:
+ *   post:
+ *     tags: [Vyapar Transactions]
+ *     summary: Upload receipt/bill/photo evidence for a transaction
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       201:
+ *         description: Evidence uploaded successfully
+ */
+router.post(
+  '/transactions/:id/evidence',
+  transactionController.uploadEvidence
+);
+
+/**
+ * @swagger
+ * /vyapar/transactions/{id}/cancel:
+ *   post:
+ *     tags: [Vyapar Transactions]
+ *     summary: Cancel a transaction
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Transaction cancelled successfully
+ */
+router.post(
+  '/transactions/:id/cancel',
+  transactionController.cancelTransaction
+);
+
+/**
+ * @swagger
  * /vyapar/loans:
  *   get:
  *     tags: [Vyapar Transactions]

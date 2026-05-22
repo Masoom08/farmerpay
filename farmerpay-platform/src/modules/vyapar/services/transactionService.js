@@ -140,4 +140,110 @@ const addLoanUtilization = async (vendorId, loanId, data) => {
   return { utilisationId: util.id };
 };
 
-module.exports = { createTransaction, getTransactions, getLinkedLoans, addLoanUtilization };
+const uploadEvidence = async (
+  vendorId,
+  transactionId,
+  data
+) => {
+  const {
+    VendorTransaction,
+    VendorTransactionEvidence,
+  } = getDb();
+
+  const txn =
+    await VendorTransaction.findOne({
+      where: {
+        id: transactionId,
+        vendor_id: vendorId,
+        is_active: true,
+      },
+    });
+
+  if (!txn) {
+    const err = new Error(
+      'Transaction not found'
+    );
+    err.statusCode = 404;
+    throw err;
+  }
+
+  const evidence =
+    await VendorTransactionEvidence.create({
+      transaction_id: txn.id,
+      document_id:
+        data.documentId || null,
+      evidence_type:
+        data.evidenceType || 'receipt',
+    });
+
+  logger.info(
+    `Evidence uploaded for transaction ${txn.id}`
+  );
+
+  return {
+    evidenceId: evidence.id,
+    transactionId: txn.id,
+  };
+};
+
+const cancelTransaction = async (
+  vendorId,
+  transactionId
+) => {
+  const {
+    VendorTransaction,
+  } = getDb();
+
+  const txn =
+    await VendorTransaction.findOne({
+      where: {
+        id: transactionId,
+        vendor_id: vendorId,
+        is_active: true,
+      },
+    });
+
+  if (!txn) {
+    const err = new Error(
+      'Transaction not found'
+    );
+    err.statusCode = 404;
+    throw err;
+  }
+
+  if (
+    txn.transaction_status ===
+    'cancelled'
+  ) {
+    const err = new Error(
+      'Transaction already cancelled'
+    );
+    err.statusCode = 400;
+    throw err;
+  }
+
+  await txn.update({
+    transaction_status: 'cancelled',
+    payment_status: 'pending',
+  });
+
+  logger.info(
+    `Transaction cancelled: ${txn.transaction_uuid}`
+  );
+
+  return {
+    transactionId: txn.id,
+    transactionUuid:
+      txn.transaction_uuid,
+    status: 'cancelled',
+  };
+};
+
+module.exports = { 
+  createTransaction, 
+  getTransactions, 
+  getLinkedLoans, 
+  addLoanUtilization,
+  uploadEvidence,
+  cancelTransaction,
+ };

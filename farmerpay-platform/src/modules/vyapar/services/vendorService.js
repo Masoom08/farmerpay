@@ -113,4 +113,137 @@ const getRatings = async (vendorId) => {
   return { ratings, averageRating: avg, totalRatings: ratings.length };
 };
 
-module.exports = { registerVendor, getProfile, getCatalog, addCatalogItem, updateCatalogItem, getInventory, getPerformance, getRatings };
+const getCreditLedger = async (vendorId, query = {}) => {
+  const { VendorCreditLedger, User } = getDb();
+  const { page, limit, offset } = parsePagination(query);
+
+  const { count, rows } =
+    await VendorCreditLedger.findAndCountAll({
+      where: {
+        vendor_id: vendorId,
+        is_active: true,
+      },
+      include: [
+        {
+          model: User,
+          as: 'farmer',
+          attributes: [
+            'id',
+            'user_id',
+            'mobile',
+            'first_name',
+            'last_name',
+          ],
+        },
+      ],
+      order: [['updated_at', 'DESC']],
+      limit,
+      offset,
+    });
+
+  return {
+    ledgers: rows,
+    meta: buildMeta(page, limit, count),
+  };
+};
+
+const getFarmerCreditDetail = async (
+  vendorId,
+  farmerId
+) => {
+  const { VendorCreditLedger, User } = getDb();
+
+  const ledger =
+    await VendorCreditLedger.findOne({
+      where: {
+        vendor_id: vendorId,
+        farmer_id: farmerId,
+        is_active: true,
+      },
+      include: [
+        {
+          model: User,
+          as: 'farmer',
+          attributes: [
+            'id',
+            'user_id',
+            'mobile',
+            'first_name',
+            'last_name',
+          ],
+        },
+      ],
+    });
+
+  if (!ledger) {
+    const err = new Error(
+      'Credit ledger not found'
+    );
+    err.statusCode = 404;
+    throw err;
+  }
+
+  return ledger;
+};
+
+const recordCreditPayment = async (
+  vendorId,
+  farmerId,
+  data
+) => {
+  const { VendorCreditLedger } = getDb();
+
+  const ledger =
+    await VendorCreditLedger.findOne({
+      where: {
+        vendor_id: vendorId,
+        farmer_id: farmerId,
+        is_active: true,
+      },
+    });
+
+  if (!ledger) {
+    const err = new Error(
+      'Credit ledger not found'
+    );
+    err.statusCode = 404;
+    throw err;
+  }
+
+  const paymentAmount = Number(data.amount);
+
+  await ledger.update({
+    current_balance:
+      Number(ledger.current_balance) -
+      paymentAmount,
+
+    total_payments_received:
+      Number(
+        ledger.total_payments_received || 0
+      ) + paymentAmount,
+
+    last_payment_amount: paymentAmount,
+    last_payment_date: new Date(),
+  });
+
+  return {
+    farmerId,
+    paymentAmount,
+    currentBalance:
+      ledger.current_balance,
+  };
+};
+
+module.exports = { 
+  registerVendor, 
+  getProfile, 
+  getCatalog, 
+  addCatalogItem, 
+  updateCatalogItem, 
+  getInventory, 
+  getPerformance, 
+  getRatings,
+  getCreditLedger,
+  getFarmerCreditDetail,
+  recordCreditPayment, 
+};
