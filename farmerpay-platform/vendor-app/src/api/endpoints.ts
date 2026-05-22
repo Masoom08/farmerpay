@@ -6,6 +6,7 @@ export const API = {
     VERIFY_OTP: "/auth/verify-otp",
     SET_MPIN: "/auth/set-mpin",
     LOGOUT: "/auth/logout",
+    REFRESH_TOKEN: "/auth/refresh-token",
 
     //Authenticated endpoints
     ME: "/auth/me",

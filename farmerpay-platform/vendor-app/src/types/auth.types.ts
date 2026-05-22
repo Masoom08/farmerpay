@@ -77,6 +77,8 @@ export interface LoginRequest {
 
 export interface LoginResponseData {
   accessToken: string;
+  refreshToken: string;
+  expiresIn?: number;
   user: User;
 }
 

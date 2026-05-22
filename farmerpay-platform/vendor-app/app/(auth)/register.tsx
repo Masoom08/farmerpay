@@ -50,7 +50,7 @@ export default function RegisterScreen() {
       Alert.alert("OTP Sent", response.message || "Verification code sent.");
 
       router.push({
-        pathname: "/verify-otp",
+        pathname: "/(auth)/verify-otp",
         params: {
           otpRequestId: response.data.otpRequestId,
           mobile: cleanMobile,
@@ -68,13 +68,13 @@ export default function RegisterScreen() {
           text: "Forgot MPIN",
           onPress: () =>
             router.push({
-              pathname: "/forgot-mpin",
+              pathname: "/(auth)/forgot-mpin",
               params: { mobile: cleanMobile },
             }),
         },
         {
           text: "Sign In",
-          onPress: () => router.replace("/login"),
+          onPress: () => router.replace("/(auth)/login"),
         },
         {
           text: "Cancel",
@@ -158,7 +158,7 @@ export default function RegisterScreen() {
 
           <TouchableOpacity
             style={styles.linkContainer}
-            onPress={() => router.push("/login")}
+            onPress={() => router.push("/(auth)/login")}
           >
             <Text style={styles.linkText}>
               Already have an account? Sign In

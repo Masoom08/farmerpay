@@ -1,21 +1,24 @@
 import { useState } from "react";
-import { logout } from "../api/modules/auth.api";
-import { clearAuth } from "../lib/storage";
+import { logout  as logoutApi } from "../api/modules/auth.api";
+import { useAuth } from "./useAuth";
+import { clearSecureAuth } from "../lib/secure-storage";
+import { clearUser } from "../lib/storage";
 
 export const useLogout = () => {
   const [loading, setLoading] = useState(false);
+  const { logout } = useAuth();
 
   const handleLogout = async () => {
     setLoading(true);
 
     try {
       try {
-        await logout();
+        await logoutApi();
       } catch {
         // Ignore 404 or API failure
       }
 
-      await clearAuth();
+      await logout()
     } finally {
       setLoading(false);
     }

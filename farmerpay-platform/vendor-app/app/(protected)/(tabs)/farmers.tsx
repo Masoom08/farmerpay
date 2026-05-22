@@ -5,7 +5,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator, RefreshControl } from "react-native";
 import { useFocusEffect } from "expo-router";
-import { apiGet, formatRupees } from "../../lib/api";
+import { apiGet, formatRupees } from "../../../lib/api";
 
 export default function MyFarmersScreen() {
   const [loading, setLoading] = useState(true);

@@ -44,11 +44,14 @@ export async function apiPost(path: string, body?: any): Promise<any> {
   const token = await getToken();
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (token) headers.Authorization = `Bearer ${token}`;
+  console.log("POST URL", `${API_BASE}${path}`);
+console.log("POST BODY", body);
   const res = await fetch(`${API_BASE}${path}`, {
     method: "POST",
     headers,
     body: body ? JSON.stringify(body) : undefined,
   });
+  console.log("STATUS", res.status);
   if (res.status === 401) throw new Error("UNAUTHORIZED");
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();

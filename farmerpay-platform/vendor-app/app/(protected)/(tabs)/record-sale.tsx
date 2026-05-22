@@ -24,22 +24,22 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import { formatRupees } from "../../lib/api";
+import { formatRupees } from "../../../lib/api";
 
-import CatalogItemChip from "../../src/components/CatalogItemChip";
-import CartItemCard from "../../src/components/CartItemCard";
-import CartSummary from "../../src/components/CartSummary";
-import FarmerSearchInput from "../../src/components/FarmerSearchInput";
-import PaymentTypeSelector from "../../src/components/PaymentTypeSelector";
-import SeasonSelector from "../../src/components/SeasonSelector";
+import CatalogItemChip from "../../../src/components/CatalogItemChip";
+import CartItemCard from "../../../src/components/CartItemCard";
+import CartSummary from "../../../src/components/CartSummary";
+import FarmerSearchInput from "../../../src/components/FarmerSearchInput";
+import PaymentTypeSelector from "../../../src/components/PaymentTypeSelector";
+import SeasonSelector from "../../../src/components/SeasonSelector";
 
-import { useCatalog } from "../../src/hooks/useCatalog";
-import { useCart } from "../../src/hooks/useCart";
-import { useFarmerSearch } from "../../src/hooks/useFarmerSearch";
-import { useRecordSale } from "../../src/hooks/useRecordSale";
+import { useCatalog } from "../../../src/hooks/useCatalog";
+import { useCart } from "../../../src/hooks/useCart";
+import { useFarmerSearch } from "../../../src/hooks/useFarmerSearch";
+import { useRecordSale } from "../../../src/hooks/useRecordSale";
 
-import type { Farmer } from "../../src/types/sale.types";
-import { detectSeason } from "../../src/utils/season.util";
+import type { Farmer } from "../../../src/types/sale.types";
+import { detectSeason } from "../../../src/utils/season.util";
 
 type PaymentType = "cash_sale" | "credit_sale";
 

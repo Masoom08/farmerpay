@@ -60,6 +60,7 @@ export const login = async (
     payload
   );
 
+  console.log("AUTH API CALLED");
   return response.data;
 };
 

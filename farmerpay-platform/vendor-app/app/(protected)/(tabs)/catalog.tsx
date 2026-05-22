@@ -4,7 +4,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, Alert, Modal, RefreshControl } from "react-native";
 import { useFocusEffect } from "expo-router";
-import { apiGet, apiPost, apiPut, formatRupees } from "../../lib/api";
+import { apiGet, apiPost, apiPut, formatRupees } from "../../../lib/api";
 
 export default function CatalogScreen() {
   const [items, setItems] = useState<any[]>([]);

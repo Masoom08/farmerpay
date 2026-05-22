@@ -5,42 +5,80 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import { Stack, useRouter } from "expo-router";
-import { apiPost, setToken, setUser } from "../lib/api";
+// import { apiPost, setToken, setUser } from "../../lib/api";
+import { useLogin } from "../../src/hooks/useLogin";
 
 export default function VendorLoginScreen() {
   const router = useRouter();
   const [mobile, setMobile] = useState("");
   const [mpin, setMpin] = useState("");
-  const [loading, setLoading] = useState(false);
+//   const [loading, setLoading] = useState(false);
+    const { loading, handleLogin } =useLogin();
 
-  const handleLogin = async () => {
-    if (mobile.replace(/\D/g, "").length < 10) { Alert.alert("Enter valid mobile"); return; }
-    if (mpin.length !== 4) { Alert.alert("Enter 4-digit MPIN"); return; }
+//   const handleLogin = async () => {
+//     if (mobile.replace(/\D/g, "").length < 10) { Alert.alert("Enter valid mobile"); return; }
+//     if (mpin.length !== 4) { Alert.alert("Enter 4-digit MPIN"); return; }
 
-    setLoading(true);
-    try {
-      const r = await apiPost("/auth/login", {
-        mobile: mobile.replace(/\D/g, "").slice(-10),
-        mpin,
-      });
-      if (r.success && r.data?.accessToken) {
-        await setToken(r.data.accessToken);
-        await setUser({
-          name: `${r.data.user?.firstName || ""} ${r.data.user?.lastName || ""}`.trim(),
-          mobile: r.data.user?.mobile,
-          role: r.data.user?.role,
-        });
-        router.replace("/(tabs)" as any);
-      } else {
-        Alert.alert("Login Failed", r.message || "Check your credentials.");
-      }
-    } catch (e: any) {
-      Alert.alert("Error", e?.message === "UNAUTHORIZED" ? "Invalid mobile or MPIN." : "Cannot connect to server.");
-    } finally {
-      setLoading(false);
-    }
-  };
+//     setLoading(true);
+//     try {
+        
+//         console.log("LOGIN START");
+//         console.log("API BASE", process.env.EXPO_PUBLIC_API_BASE_URL);
+//       const r = await apiPost("/auth/login", {
+//         mobile: mobile.replace(/\D/g, "").slice(-10),
+//         mpin,
+//       });
+//       if (r.success && r.data?.accessToken) {
+//         await setToken(r.data.accessToken);
+//         await setUser({
+//           name: `${r.data.user?.firstName || ""} ${r.data.user?.lastName || ""}`.trim(),
+//           mobile: r.data.user?.mobile,
+//           role: r.data.user?.role,
+//         });
+//         router.replace("/(tabs)" as any);
+//       } else {
+//         Alert.alert("Login Failed", r.message || "Check your credentials.");
+//       }
+//     } catch (e: any) {
+//       Alert.alert("Error", e?.message === "UNAUTHORIZED" ? "Invalid mobile or MPIN." : "Cannot connect to server.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
+const onLogin = async () => {
+
+  const cleanMobile =
+    mobile.replace(/\D/g, "").slice(-10);
+
+  if (cleanMobile.length < 10) {
+    Alert.alert("Enter valid mobile");
+    return;
+  }
+
+  if (mpin.length !== 4) {
+    Alert.alert("Enter 4-digit MPIN");
+    return;
+  }
+
+  try {
+
+    await handleLogin(
+      cleanMobile,
+      mpin
+    );
+
+    router.replace("/(protected)/(tabs)" as any);
+
+  } catch (e: any) {
+
+    Alert.alert(
+      "Login Failed",
+      e?.message ||
+      "Something went wrong"
+    );
+  }
+};
   return (
     <>
       <Stack.Screen options={{ headerShown: false }} />
@@ -56,7 +94,7 @@ export default function VendorLoginScreen() {
           <Text style={styles.label}>MPIN</Text>
           <TextInput style={styles.mpinInput} placeholder="••••" value={mpin} onChangeText={(t) => setMpin(t.replace(/\D/g, ""))} keyboardType="numeric" maxLength={4} secureTextEntry={true} />
 
-          <TouchableOpacity style={styles.btn} onPress={handleLogin} disabled={loading} activeOpacity={0.8}>
+          <TouchableOpacity style={styles.btn} onPress={onLogin} disabled={loading} activeOpacity={0.8}>
             {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Sign In</Text>}
           </TouchableOpacity>
 
