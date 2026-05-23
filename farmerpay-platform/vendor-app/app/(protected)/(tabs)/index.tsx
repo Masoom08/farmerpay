@@ -11,6 +11,8 @@ import client from "../../../src/api/client";
 import { API } from "../../../src/api/endpoints";
 import { useRatings } from "../../../src/hooks/useRatings";
 import { useLogout } from "../../../src/hooks/useLogout";
+import { useTransactions,} from "../../../src/hooks/useTransactions";
+import { getTransactions, } from "../../../src/api/modules/transaction.api";
 
 export default function VendorHome() {
   const router = useRouter();
@@ -19,6 +21,7 @@ export default function VendorHome() {
   const [perf, setPerf] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
   const {ratings, loadRatings } = useRatings();
+  const {transactionCount,totalRevenue,loadTransactions } = useTransactions();
 
   const load = useCallback(async () => {
     try {
@@ -32,6 +35,7 @@ export default function VendorHome() {
         setPerf(p.data.data);
       }
       await loadRatings();
+      await loadTransactions();
     } catch {}
     setRefreshing(false);
   }, [loadRatings]);
@@ -104,11 +108,11 @@ export default function VendorHome() {
       <Text style={styles.sectionLabel}>THIS MONTH</Text>
       <View style={styles.kpiRow}>
         <View style={styles.kpiCard}>
-          <Text style={styles.kpiValue}>{perf?.total_transactions ?? 0}</Text>
+          <Text style={styles.kpiValue}>{transactionCount}</Text>
           <Text style={styles.kpiLabel}>Transactions</Text>
         </View>
         <View style={styles.kpiCard}>
-          <Text style={styles.kpiValue}>{formatRupees(perf?.total_revenue ?? 0)}</Text>
+          <Text style={styles.kpiValue}>{formatRupees(totalRevenue)}</Text>
           <Text style={styles.kpiLabel}>Revenue</Text>
         </View>
       </View>

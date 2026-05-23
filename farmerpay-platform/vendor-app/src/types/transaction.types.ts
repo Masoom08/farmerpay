@@ -26,3 +26,30 @@ export interface TransactionResponse {
     totalPages: number;
   };
 }
+
+export interface TransactionItem {
+  itemId: string;
+  packId: string;
+  quantity: number;
+}
+
+export interface CreateTransactionRequest {
+  farmerId: number;
+
+  transactionType:
+    | "cash_sale"
+    | "credit_sale";
+
+  loanApplicationId?: number | null;
+
+  items: TransactionItem[];
+}
+
+export interface CreateTransactionResponse {
+  success: boolean;
+  message: string;
+
+  data: {
+    transactionId: number;
+  };
+}

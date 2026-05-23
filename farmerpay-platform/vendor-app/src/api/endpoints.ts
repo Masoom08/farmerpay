@@ -31,6 +31,7 @@ export const API = {
     CREATE: "/sales",
     CATALOG: "/vyapar/catalog",
     RECORD: "/vyapar/transactions",
+    CREATE_TRANSACTION: "/vyapar/transactions",
     UPLOAD_EVIDENCE: (transactionId: string | number) =>
       `/vyapar/transactions/${transactionId}/evidence`,
     CANCEL: (transactionId: string | number) =>

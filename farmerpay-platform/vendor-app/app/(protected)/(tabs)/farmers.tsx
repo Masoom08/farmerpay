@@ -3,8 +3,8 @@
  * Shows purchase history, credit balance per farmer.
  */
 import { useEffect, useState, useCallback } from "react";
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, RefreshControl } from "react-native";
-import { useFocusEffect } from "expo-router";
+import { View, Text, ScrollView, StyleSheet, ActivityIndicator, RefreshControl,TouchableOpacity } from "react-native";
+import { useFocusEffect,useRouter } from "expo-router";
 import { apiGet, formatRupees } from "../../../lib/api";
 import {
   getTransactions,
@@ -16,6 +16,7 @@ export default function MyFarmersScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [creditEntries, setCreditEntries] = useState<any[]>([]);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const router = useRouter();
 
   const load = useCallback(async () => {
     try {
@@ -80,6 +81,18 @@ export default function MyFarmersScreen() {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} colors={["#d97706"]} />}
     >
+      <TouchableOpacity
+  style={styles.floatingBtn}
+  onPress={() =>
+    router.push(
+      "/add-transaction" as any
+    )
+  }
+>
+  <Text style={styles.addTxnText}>
+    + Add Transaction
+  </Text>
+</TouchableOpacity>
       <Text style={styles.sectionLabel}>MY FARMERS ({farmers.length})</Text>
 
       {farmers.length === 0 ? (
@@ -112,7 +125,7 @@ export default function MyFarmersScreen() {
 
 const styles = StyleSheet.create({
   scroll: { flex: 1, backgroundColor: "#fffbeb" },
-  content: { padding: 16, paddingBottom: 40 },
+  content: { padding: 16, paddingBottom: 120 },
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
   sectionLabel: { fontSize: 11, fontWeight: "800", color: "#888", letterSpacing: 1, marginBottom: 8 },
 
@@ -126,4 +139,26 @@ const styles = StyleSheet.create({
   emptyCard: { backgroundColor: "#fff", borderRadius: 14, padding: 24, alignItems: "center" },
   emptyTitle: { fontSize: 16, fontWeight: "700", color: "#333", marginTop: 8 },
   emptyText: { color: "#999", textAlign: "center", marginTop: 6, fontSize: 13 },
+  floatingBtn: {
+  position: "absolute",
+  bottom: 20,
+  right: 16,
+
+  backgroundColor: "#d97706",
+
+  borderRadius: 999,
+
+  paddingHorizontal: 18,
+  paddingVertical: 14,
+
+  elevation: 8,
+
+  zIndex: 999,
+},
+
+addTxnText: {
+  color: "#fff",
+  fontSize: 11,
+  fontWeight: "700",
+},
 });
