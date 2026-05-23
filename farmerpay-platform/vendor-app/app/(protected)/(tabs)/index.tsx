@@ -69,7 +69,7 @@ export default function VendorHome() {
       </View>
 
       {/* Quick actions */}
-      <View style={styles.quickRow}>
+      {/* <View style={styles.quickRow}>
         <TouchableOpacity style={[styles.quickCard, { backgroundColor: "#fef3c7" }]} onPress={() => router.push("/(tabs)/record-sale" as any)}>
           <Text style={styles.quickEmoji}>🛒</Text>
           <Text style={styles.quickLabel}>Record Sale</Text>
@@ -86,7 +86,7 @@ export default function VendorHome() {
           <Text style={styles.quickEmoji}>💳</Text>
           <Text style={styles.quickLabel}>Credit</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       {/* Add Farmer + Give Credit */}
       <View style={styles.quickRow}>
@@ -133,10 +133,10 @@ export default function VendorHome() {
         </View>
       </View>
 
-      {/* Logout */}
+      {/* Logout
       <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
         <Text style={styles.logoutText}>🚪 Logout</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </ScrollView>
   );
 }
