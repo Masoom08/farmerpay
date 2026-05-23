@@ -6,6 +6,10 @@ import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator, RefreshControl } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { apiGet, formatRupees } from "../../../lib/api";
+import {
+  getTransactions,
+} from "../../../src/api/modules/transaction.api";
+import { useTransactions } from "../../../src/hooks/useTransactions";
 
 export default function MyFarmersScreen() {
   const [loading, setLoading] = useState(true);
@@ -17,7 +21,7 @@ export default function MyFarmersScreen() {
     try {
       const [cr, tx] = await Promise.all([
         apiGet("/vyapar/credit-ledger").catch(() => ({ success: false, data: [] })),
-        apiGet("/vyapar/transactions?limit=50").catch(() => ({ success: false, data: [] })),
+        getTransactions(50)
       ]);
       if (cr.success && Array.isArray(cr.data)) setCreditEntries(cr.data);
       if (tx.success && Array.isArray(tx.data)) setTransactions(tx.data);
@@ -32,10 +36,10 @@ export default function MyFarmersScreen() {
   // Build farmer list from transactions
   const farmerMap: Record<string, { name: string; mobile: string; txCount: number; totalSpent: number; creditBalance: number; lastDate: string }> = {};
   for (const tx of transactions) {
-    const fId = tx.farmer_id || tx.farmerId || "unknown";
+    const fId = tx.farmerId || "unknown";
     if (!farmerMap[fId]) {
       farmerMap[fId] = {
-        name: tx.farmer_name || tx.farmerName || `Farmer #${fId}`,
+        name: tx.farmerName || `Farmer #${fId}`,
         mobile: tx.farmer_mobile || tx.farmerMobile || "",
         txCount: 0,
         totalSpent: 0,
@@ -44,8 +48,8 @@ export default function MyFarmersScreen() {
       };
     }
     farmerMap[fId].txCount++;
-    farmerMap[fId].totalSpent += Number(tx.transaction_amount || tx.transactionAmount || 0);
-    const d = tx.transaction_date || tx.transactionDate || "";
+    farmerMap[fId].totalSpent += Number(tx.amount || 0);
+    const d = tx.date || "";
     if (d > farmerMap[fId].lastDate) farmerMap[fId].lastDate = d;
   }
 

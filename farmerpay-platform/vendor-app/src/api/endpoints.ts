@@ -47,4 +47,8 @@ export const API = {
   VENDOR: {
     DASHBOARD: "/vendor/dashboard",
   },
+
+  RATINGS: {
+  LIST: "/vyapar/ratings",
+},
 } as const;

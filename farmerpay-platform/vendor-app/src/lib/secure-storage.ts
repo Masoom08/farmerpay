@@ -1,7 +1,8 @@
 import * as SecureStore from "expo-secure-store";
+import { Platform } from "react-native";
+import { SECURE_STORAGE_KEYS } from "../constants/storageKeys";
 
-const isWeb =
-  typeof window !== "undefined";
+const isWeb = Platform.OS === "web";
 
 const ACCESS_TOKEN =
   "access_token";
@@ -20,14 +21,14 @@ export const setAccessToken = async (
 
   if (isWeb) {
     localStorage.setItem(
-      ACCESS_TOKEN,
+      SECURE_STORAGE_KEYS.ACCESS_TOKEN,
       token
     );
     return;
   }
 
   await SecureStore.setItemAsync(
-    ACCESS_TOKEN,
+    SECURE_STORAGE_KEYS.ACCESS_TOKEN,
     token
   );
 };
@@ -36,12 +37,12 @@ export const getAccessToken = async (): Promise<string | null> => {
 
   if (isWeb) {
     return localStorage.getItem(
-      ACCESS_TOKEN
+      SECURE_STORAGE_KEYS.ACCESS_TOKEN
     );
   }
 
   return await SecureStore.getItemAsync(
-    ACCESS_TOKEN
+    SECURE_STORAGE_KEYS.ACCESS_TOKEN
   );
 };
 
@@ -53,14 +54,14 @@ export const setRefreshToken = async (
 
   if (isWeb) {
     localStorage.setItem(
-      REFRESH_TOKEN,
+      SECURE_STORAGE_KEYS.REFRESH_TOKEN,
       token
     );
     return;
   }
 
   await SecureStore.setItemAsync(
-    REFRESH_TOKEN,
+    SECURE_STORAGE_KEYS.REFRESH_TOKEN,
     token
   );
 };
@@ -69,12 +70,12 @@ export const getRefreshToken = async (): Promise<string | null> => {
 
   if (isWeb) {
     return localStorage.getItem(
-      REFRESH_TOKEN
+      SECURE_STORAGE_KEYS.REFRESH_TOKEN
     );
   }
 
   return await SecureStore.getItemAsync(
-    REFRESH_TOKEN
+    SECURE_STORAGE_KEYS.REFRESH_TOKEN
   );
 };
 
@@ -83,24 +84,31 @@ export const getRefreshToken = async (): Promise<string | null> => {
 export const clearSecureAuth = async (): Promise<void> => {
 
   if (isWeb) {
-
     localStorage.removeItem(
-      ACCESS_TOKEN
+      SECURE_STORAGE_KEYS.ACCESS_TOKEN
     );
 
     localStorage.removeItem(
-      REFRESH_TOKEN
+      SECURE_STORAGE_KEYS.REFRESH_TOKEN
+    );
+
+    localStorage.removeItem(
+      SECURE_STORAGE_KEYS.MPIN_ENABLED
     );
 
     return;
   }
 
   await SecureStore.deleteItemAsync(
-    ACCESS_TOKEN
+    SECURE_STORAGE_KEYS.ACCESS_TOKEN
   );
 
   await SecureStore.deleteItemAsync(
-    REFRESH_TOKEN
+    SECURE_STORAGE_KEYS.REFRESH_TOKEN
+  );
+
+  await SecureStore.deleteItemAsync(
+    SECURE_STORAGE_KEYS.MPIN_ENABLED
   );
 };
 
@@ -109,37 +117,32 @@ export const clearSecureAuth = async (): Promise<void> => {
 export const setMpinEnabled = async (
   enabled: boolean
 ): Promise<void> => {
+  const value = JSON.stringify(enabled);
 
   if (isWeb) {
-
+    
     localStorage.setItem(
-      MPIN_ENABLED,
-      JSON.stringify(enabled)
+      SECURE_STORAGE_KEYS.MPIN_ENABLED,
+      value
     );
 
     return;
   }
 
   await SecureStore.setItemAsync(
-    MPIN_ENABLED,
-    JSON.stringify(enabled)
+    SECURE_STORAGE_KEYS.MPIN_ENABLED,
+    value
   );
 };
 
 export const getMpinEnabled = async (): Promise<boolean> => {
-
-  if (isWeb) {
-    return (
-      localStorage.getItem(
-        MPIN_ENABLED
-      ) === "true"
-    );
-  }
-
-  const value =
-    await SecureStore.getItemAsync(
-      MPIN_ENABLED
-    );
+  const value = isWeb
+    ? localStorage.getItem(
+        SECURE_STORAGE_KEYS.MPIN_ENABLED
+      )
+    : await SecureStore.getItemAsync(
+        SECURE_STORAGE_KEYS.MPIN_ENABLED
+      );
 
   return value === "true";
 };

@@ -4,7 +4,12 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, RefreshControl, Alert } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
-import { apiGet, getUser, clearToken, formatRupees } from "../../../lib/api";
+import { apiGet } from "../../../lib/api";
+import { getUser } from "../../../src/lib/storage";
+import { formatRupees } from "../../../src/utils/currency";
+import client from "../../../src/api/client";
+import { API } from "../../../src/api/endpoints";
+import { useRatings } from "../../../src/hooks/useRatings";
 import { useLogout } from "../../../src/hooks/useLogout";
 
 export default function VendorHome() {
@@ -13,18 +18,23 @@ export default function VendorHome() {
   const [user, setUserState] = useState<any>(null);
   const [perf, setPerf] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const {ratings, loadRatings } = useRatings();
 
   const load = useCallback(async () => {
     try {
       const [u, p] = await Promise.all([
         getUser(),
-        apiGet("/vyapar/performance").catch(() => ({ success: false })),
+        client.get("/vyapar/performance")
+        .catch(() => ({ data:{success: false} })),
       ]);
       setUserState(u);
-      if (p.success) setPerf(p.data);
+      if (p.data?.success) {
+        setPerf(p.data.data);
+      }
+      await loadRatings();
     } catch {}
     setRefreshing(false);
-  }, []);
+  }, [loadRatings]);
 
   useEffect(() => { load(); }, [load]);
   useFocusEffect(useCallback(() => { load(); }, [load]));
@@ -108,8 +118,18 @@ export default function VendorHome() {
           <Text style={styles.kpiLabel}>Farmers Served</Text>
         </View>
         <View style={styles.kpiCard}>
-          <Text style={styles.kpiValue}>⭐ {perf?.average_rating?.toFixed(1) ?? "N/A"}</Text>
-          <Text style={styles.kpiLabel}>Rating</Text>
+          <Text style={styles.kpiValue}>
+            ⭐ {
+              ratings?.averageRating
+                ? ratings.averageRating.toFixed(1)
+                : "N/A"
+            }
+          </Text>
+
+          <Text style={styles.kpiLabel}>
+            {ratings?.totalRatings || 0} Ratings
+          </Text>
+
         </View>
       </View>
 
@@ -142,4 +162,25 @@ const styles = StyleSheet.create({
 
   logoutBtn: { marginTop: 24, backgroundColor: "#f3f4f6", borderRadius: 10, paddingVertical: 14, alignItems: "center" },
   logoutText: { color: "#666", fontWeight: "600" },
+  reviewCard: {
+  backgroundColor: "#fff",
+  borderRadius: 12,
+  padding: 14,
+  marginBottom: 8,
+},
+
+reviewName: {
+  fontWeight: "700",
+  color: "#1a1a1a",
+},
+
+reviewStars: {
+  fontSize: 12,
+},
+
+reviewText: {
+  color: "#666",
+  fontSize: 12,
+  marginTop: 6,
+},
 });
