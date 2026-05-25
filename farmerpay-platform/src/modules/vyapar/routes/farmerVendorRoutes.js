@@ -44,6 +44,9 @@ router.post('/make-sathi', ctrl.makeSathi);
 /** POST /vyapar/farmer/register-farmer — vendor registers a new farmer customer */
 router.post('/register-farmer', ctrl.registerFarmer);
 
+/**GET /vyapar/farmer/my-farmers -  */
+router.get('/my-farmers', ctrl.getMyFarmers);
+
 /** POST /vyapar/farmer/give-credit — vendor extends credit to a farmer */
 router.post('/give-credit', ctrl.giveCreditHandler);
 

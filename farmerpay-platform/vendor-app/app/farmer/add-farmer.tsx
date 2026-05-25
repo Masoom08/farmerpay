@@ -5,7 +5,7 @@
 import { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator, Switch } from "react-native";
 import { Stack, useRouter } from "expo-router";
-import { apiPost } from "../lib/api";
+import { apiPost } from "../../lib/api";
 
 export default function AddFarmerScreen() {
   const router = useRouter();

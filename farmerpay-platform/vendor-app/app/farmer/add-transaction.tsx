@@ -6,7 +6,7 @@ import {
 } from "react-native";
 
 import CreateTransactionForm
-  from "../src/components/CreateTransactionForm";
+  from "../../src/components/CreateTransactionForm";
 
 export default function
 AddTransactionScreen() {
@@ -18,9 +18,7 @@ AddTransactionScreen() {
         padding: 16,
       }}
     >
-      <Text style={styles.title}>
-        Add Transaction
-      </Text>
+      
 
       <CreateTransactionForm
         farmerId={13}

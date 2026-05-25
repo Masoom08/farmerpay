@@ -85,7 +85,7 @@ export default function MyFarmersScreen() {
   style={styles.floatingBtn}
   onPress={() =>
     router.push(
-      "/add-transaction" as any
+      "/farmer/add-transaction" as any
     )
   }
 >

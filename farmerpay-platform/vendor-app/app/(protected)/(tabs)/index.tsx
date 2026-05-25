@@ -94,11 +94,11 @@ export default function VendorHome() {
 
       {/* Add Farmer + Give Credit */}
       <View style={styles.quickRow}>
-        <TouchableOpacity style={[styles.quickCard, { backgroundColor: "#f0fdf4", borderWidth: 1.5, borderColor: "#6ee7b7", borderStyle: "dashed" }]} onPress={() => router.push("/add-farmer" as any)}>
+        <TouchableOpacity style={[styles.quickCard, { backgroundColor: "#f0fdf4", borderWidth: 1.5, borderColor: "#6ee7b7", borderStyle: "dashed" }]} onPress={() => router.push("/farmer/add-farmer" as any)}>
           <Text style={styles.quickEmoji}>👤➕</Text>
           <Text style={[styles.quickLabel, { color: "#059669" }]}>Add Farmer</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.quickCard, { backgroundColor: "#fffbeb", borderWidth: 1.5, borderColor: "#fde68a", borderStyle: "dashed" }]} onPress={() => router.push("/give-credit" as any)}>
+        <TouchableOpacity style={[styles.quickCard, { backgroundColor: "#fffbeb", borderWidth: 1.5, borderColor: "#fde68a", borderStyle: "dashed" }]} onPress={() => router.push("/farmer/give-credit" as any)}>
           <Text style={styles.quickEmoji}>💳➕</Text>
           <Text style={[styles.quickLabel, { color: "#92400e" }]}>Give Credit</Text>
         </TouchableOpacity>

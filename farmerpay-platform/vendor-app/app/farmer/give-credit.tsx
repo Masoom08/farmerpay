@@ -5,7 +5,7 @@
 import { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
-import { apiPost, formatRupees } from "../lib/api";
+import { apiPost, formatRupees } from "../../lib/api";
 
 const CREDIT_REASONS = [
   { key: "input_purchase", emoji: "🌱", label: "Input purchase on credit" },

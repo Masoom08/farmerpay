@@ -520,6 +520,91 @@ const registerFarmer = async (vendorUserId, data) => {
 };
 
 /**
+ * List farmers linked to the vendor, with credit and transaction summary.
+ */
+const getMyFarmers = async (vendorUserId) => {
+  const {
+    User,
+    VendorProfile,
+    VendorFarmerLink,
+    VendorCreditLedger,
+  } = getDb();
+
+  // Find vendor profile
+  const vendorProfile = await VendorProfile.findOne({
+    where: { vendor_user_id: vendorUserId },
+  });
+
+  if (!vendorProfile) {
+    const e = new Error('Vendor profile not found');
+    e.statusCode = 404;
+    throw e;
+  }
+
+  const vendorId = vendorProfile.id;
+
+  // Get all linked farmers
+  const farmers = await VendorFarmerLink.findAll({
+    where: {
+      vendor_id: vendorId,
+      is_active: true,
+    },
+
+    include: [
+      {
+        model: User,
+        as: 'farmer',
+        attributes: [
+          'id',
+          'user_id',
+          'first_name',
+          'last_name',
+          'mobile',
+        ],
+      },
+    ],
+
+    order: [['created_at', 'DESC']],
+  });
+
+  // Get all credit ledgers for this vendor
+  const credits = await VendorCreditLedger.findAll({
+    where: {
+      vendor_id: vendorId,
+      is_active: true,
+    },
+  });
+
+  // Create lookup map
+  const creditMap = Object.fromEntries(
+    credits.map((c) => [c.farmer_id, c])
+  );
+
+  return farmers.map((item) => {
+    const credit = creditMap[item.farmer_id];
+
+    return {
+      farmerId: item.farmer?.id,
+      name: `${item.farmer?.first_name || ''} ${item.farmer?.last_name || ''}`.trim(),
+      mobile: item.farmer?.mobile,
+      linkType: item.link_type,
+      transactionCount: item.transaction_count || 0,
+      totalValue: Number(item.total_value || 0),
+      currentBalance: Number(
+        credit?.current_balance || 0
+      ),
+      creditLimit: Number(
+        credit?.credit_limit || 0
+      ),
+      totalCreditGiven: Number(
+        credit?.total_credit_given || 0
+      ),
+      linkedAt: item.created_at,
+    };
+  });
+};
+
+/**
  * Vendor extends credit to a farmer.
  * Updates vendor_credit_ledger (increases current_balance and total_credit_given).
  */
@@ -593,4 +678,5 @@ module.exports = {
   makeSathi,
   registerFarmer,
   giveCredit,
+  getMyFarmers,
 };

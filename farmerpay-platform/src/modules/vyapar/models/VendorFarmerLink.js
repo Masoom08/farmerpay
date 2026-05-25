@@ -5,8 +5,15 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class VendorFarmerLink extends Model {
     static associate(models) {
-      VendorFarmerLink.belongsTo(models.VendorProfile, { foreignKey: 'vendor_id', as: 'vendor' });
-      VendorFarmerLink.belongsTo(models.User, { foreignKey: 'farmer_id', as: 'farmer' });
+      VendorFarmerLink.belongsTo(models.VendorProfile, {
+        foreignKey: 'vendor_id',
+        as: 'vendor',
+      });
+
+      VendorFarmerLink.belongsTo(models.User, {
+        foreignKey: 'farmer_id',
+        as: 'farmer',
+      });
     }
   }
 

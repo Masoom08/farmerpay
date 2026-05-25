@@ -111,6 +111,23 @@ const registerFarmer = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/** GET /vyapar/farmer/my-farmers - list farmers I've registered as a vendor */
+const getMyFarmers = async (req, res, next) => {
+  try {
+    const vendorUserId = await resolveUserId(req);
+
+    const data = await farmerVendorService.getMyFarmers(vendorUserId);
+
+    return success(res, {
+      message: 'Farmers fetched successfully',
+      data,
+      statusCode: 200,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 /** POST /vyapar/farmer/give-credit — vendor extends credit to farmer */
 const giveCreditHandler = async (req, res, next) => {
   try {
@@ -131,4 +148,5 @@ module.exports = {
   makeSathi,
   registerFarmer,
   giveCreditHandler,
+  getMyFarmers,
 };
