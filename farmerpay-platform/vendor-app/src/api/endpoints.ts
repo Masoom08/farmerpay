@@ -14,16 +14,20 @@ export const API = {
   },
 
   FARMERS: {
-    LIST: "/farmers",
-    CREATE: "/farmers",
+    CREATE:
+    "/vyapar/farmer/register-farmer",
+    MY_FARMERS:
+    "/vyapar/farmer/my-farmers",
     DETAILS: (id: string) => `/farmers/${id}`,
     UPDATE: (id: string) => `/farmers/${id}`,
-    MY_FARMERS: "/vyapar/farmer/my-farmers",
   },
 
   CREDIT: {
-    LIST: "/credit",
-    GIVE: "/credit",
+    LIST: "/vyapar/credit-ledger",
+
+    RECORD_PAYMENT: (
+      farmerId: string | number
+    ) => `/vyapar/credit-ledger/${farmerId}/payment`,
   },
 
   SALES: {

@@ -35,11 +35,12 @@ export default function MyFarmersScreen() {
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
   // Build farmer list from transactions
-  const farmerMap: Record<string, { name: string; mobile: string; txCount: number; totalSpent: number; creditBalance: number; lastDate: string }> = {};
+  const farmerMap: Record<string, { farmerId: string; name: string; mobile: string; txCount: number; totalSpent: number; creditBalance: number; lastDate: string }> = {};
   for (const tx of transactions) {
     const fId = tx.farmerId || "unknown";
     if (!farmerMap[fId]) {
       farmerMap[fId] = {
+        farmerId: String(fId),
         name: tx.farmerName || `Farmer #${fId}`,
         mobile: tx.farmer_mobile || tx.farmerMobile || "",
         txCount: 0,
@@ -60,7 +61,8 @@ export default function MyFarmersScreen() {
     if (farmerMap[fId]) {
       farmerMap[fId].creditBalance = Number(c.current_balance || c.currentBalance || 0);
     } else {
-      farmerMap[fId] = {
+      farmerMap[fId] = {  
+        farmerId: String(fId),
         name: c.farmer_name || c.farmerName || `Farmer #${fId}`,
         mobile: "",
         txCount: 0,
@@ -82,17 +84,17 @@ export default function MyFarmersScreen() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} colors={["#d97706"]} />}
     >
       <TouchableOpacity
-  style={styles.floatingBtn}
-  onPress={() =>
-    router.push(
-      "/farmer/add-transaction" as any
-    )
-  }
->
-  <Text style={styles.addTxnText}>
-    + Add Transaction
-  </Text>
-</TouchableOpacity>
+        style={styles.floatingBtn}
+        onPress={() =>
+          router.push(
+            "/farmer/add-transaction" as any
+          )
+        }
+      >
+        <Text style={styles.addTxnText}>
+          + Add Transaction
+        </Text>
+      </TouchableOpacity>
       <Text style={styles.sectionLabel}>MY FARMERS ({farmers.length})</Text>
 
       {farmers.length === 0 ? (
@@ -102,8 +104,24 @@ export default function MyFarmersScreen() {
           <Text style={styles.emptyText}>Record a sale to start tracking your farmer customers.</Text>
         </View>
       ) : (
-        farmers.map((f, i) => (
-          <View key={i} style={styles.farmerCard}>
+        farmers.map((f: any, i) => (
+          <TouchableOpacity
+            key={i}
+            style={styles.farmerCard}
+            // onPress={() => {
+            //   console.log("OPEN FARMER", f);
+
+            //   router.push({
+            //     pathname: "/farmer/[farmerId]",
+            //     params: {
+            //       farmerId:
+            //         f.farmerId ||
+            //         f.id ||
+            //         f.farmer_id,
+            //     },
+            //   });
+            // }}
+          >
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
               <Text style={styles.farmerName}>{f.name}</Text>
               <Text style={styles.farmerTotal}>{formatRupees(f.totalSpent)}</Text>
@@ -116,7 +134,7 @@ export default function MyFarmersScreen() {
                 <Text style={[styles.statText, { color: "#dc2626", fontWeight: "700" }]}>💳 Owes: {formatRupees(f.creditBalance)}</Text>
               )}
             </View>
-          </View>
+          </TouchableOpacity>
         ))
       )}
     </ScrollView>

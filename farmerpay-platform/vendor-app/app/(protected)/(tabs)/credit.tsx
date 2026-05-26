@@ -4,7 +4,12 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, Alert, Modal, RefreshControl } from "react-native";
 import { useFocusEffect } from "expo-router";
-import { apiGet, apiPost, formatRupees } from "../../../lib/api";
+// import { apiGet, apiPost, formatRupees } from "../../../lib/api";
+import { formatRupees } from "../../../src/utils/currency";
+import {
+  getCreditLedger,
+  recordPayment,
+} from "../../../src/api/modules/credit.api";
 
 export default function CreditLedgerScreen() {
   const [entries, setEntries] = useState<any[]>([]);
@@ -20,7 +25,7 @@ export default function CreditLedgerScreen() {
 
   const load = useCallback(async () => {
     try {
-      const r = await apiGet("/vyapar/credit-ledger");
+      const r = await getCreditLedger();
       if (r.success && Array.isArray(r.data)) setEntries(r.data);
     } catch {}
     setLoading(false);
@@ -38,10 +43,15 @@ export default function CreditLedgerScreen() {
     if (!payAmount || parseFloat(payAmount) <= 0) { Alert.alert("Enter amount"); return; }
     setPaying(true);
     try {
-      const r = await apiPost(`/vyapar/credit-ledger/${payFarmerId}/payment`, {
-        amount: parseFloat(payAmount),
-        paymentDate: new Date().toISOString().slice(0, 10),
-      });
+      const r = await recordPayment(
+  payFarmerId!,
+  {
+    amount: parseFloat(payAmount),
+    paymentDate: new Date()
+      .toISOString()
+      .slice(0, 10),
+  }
+);
       if (r.success) {
         Alert.alert("Payment Recorded", `${formatRupees(parseFloat(payAmount))} received from ${payFarmerName}.`);
         setPayModal(false);
@@ -93,7 +103,12 @@ export default function CreditLedgerScreen() {
         ) : (
           entries.map((e, i) => {
             const balance = Number(e.current_balance || e.currentBalance || 0);
-            const fName = e.farmer_name || e.farmerName || `Farmer #${e.farmer_id || e.farmerId}`;
+            const fName =
+  e.farmer
+    ? `${e.farmer.first_name} ${e.farmer.last_name}`
+    : e.farmer_name ||
+      e.farmerName ||
+      `Farmer #${e.farmer_id || e.farmerId}`;
             const fId = e.farmer_id || e.farmerId;
             const given = Number(e.total_credit_given || e.totalCreditGiven || 0);
             const received = Number(e.total_payments_received || e.totalPaymentsReceived || 0);
@@ -102,7 +117,16 @@ export default function CreditLedgerScreen() {
             return (
               <View key={i} style={[styles.creditCard, balance > 0 && styles.creditCardOwes]}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
-                  <Text style={styles.creditName}>{fName}</Text>
+                  <View> 
+                    <Text style={styles.creditName}>
+                      {fName}
+                    </Text>
+                  {e.farmer?.mobile && (
+                    <Text style={styles.mobileText}>
+                      📞 {e.farmer.mobile}
+                    </Text>
+                  )}
+                  </View>
                   <Text style={[styles.creditBalance, { color: balance > 0 ? "#dc2626" : "#16a34a" }]}>
                     {balance > 0 ? `Owes ${formatRupees(balance)}` : "Cleared ✓"}
                   </Text>
@@ -189,4 +213,9 @@ const styles = StyleSheet.create({
   label: { fontSize: 11, fontWeight: "700", color: "#555", marginTop: 8, marginBottom: 4 },
   modalInput: { borderWidth: 1, borderColor: "#d1d5db", borderRadius: 10, padding: 14, fontSize: 18, fontWeight: "700", textAlign: "center" },
   modalBtn: { flex: 1, paddingVertical: 12, borderRadius: 10, alignItems: "center" },
+  mobileText: {
+  fontSize: 12,
+  color: "#888",
+  marginTop: 2,
+},
 });

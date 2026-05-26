@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import { getCatalog } from "../api/modules/sales.api";
-import type { CatalogItem } from "../types/sale.types";
+import { getCatalog } from "../api/modules/catalog.api";
+import type { CatalogItem } from "../types/catalog.types";
 
 export const useCatalog = () => {
   const [catalog, setCatalog] = useState<CatalogItem[]>([]);

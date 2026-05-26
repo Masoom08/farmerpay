@@ -3,19 +3,19 @@ import { useState } from "react";
 import { recordSale } from "../api/modules/sales.api";
 import type {
   CartItem,
-  Farmer,
   RecordSalePayload,
   Transaction,
 } from "../types/sale.types";
+import type { Farmer } from "../types/farmer.types";
 import type { Season } from "../utils/season.util";
 
 type PaymentType = "cash_sale" | "credit_sale";
 
 interface RecordSaleParams {
   selectedFarmer: Farmer | null;
-  farmerMobile: string;
+  //farmerMobile: string;
   paymentType: PaymentType;
-  season: Season;
+  //season: Season;
   cart: CartItem[];
   loanApplicationId?: number | null;
 }
@@ -28,18 +28,15 @@ export const useRecordSale = () => {
 
   const submitSale = async ({
     selectedFarmer,
-    farmerMobile,
+    // farmerMobile,
     paymentType,
-    season,
+    // season,
     cart,
     loanApplicationId = null,
   }: RecordSaleParams): Promise<boolean> => {
     // Validation
-    const mobile =
-      selectedFarmer?.mobile || farmerMobile;
-
-    if (!mobile || mobile.replace(/\D/g, "").length < 10) {
-      setError("Please select a valid farmer.");
+    if (!selectedFarmer?.farmerId) {
+      setError("Please select a farmer.");
       return false;
     }
 
@@ -53,21 +50,23 @@ export const useRecordSale = () => {
 
     try {
       const payload: RecordSalePayload = {
-        farmerId: selectedFarmer?.id ?? null,
-        farmerMobile: mobile.replace(/\D/g, "").slice(-10),
+        farmerId: selectedFarmer!.farmerId,
+
         transactionType: paymentType,
-        transactionDate: new Date()
-          .toISOString()
-          .slice(0, 10),
-        season,
-        loan_application_id: loanApplicationId,
+
+        loanApplicationId,
+
         items: cart.map((cartItem) => ({
-          inputItemId:
-            cartItem.item.input_item_id ||
-            cartItem.item.inputItemId!,
-          inputPackId:
-            cartItem.item.input_pack_id ||
-            cartItem.item.inputPackId!,
+          itemId:
+            cartItem.item.input_item_id ??
+            cartItem.item.inputItemId ??
+            "",
+
+          packId:
+            cartItem.item.input_pack_id ??
+            cartItem.item.inputPackId ??
+            "",
+
           quantity: cartItem.quantity,
         })),
       };

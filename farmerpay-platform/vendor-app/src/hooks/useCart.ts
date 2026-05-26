@@ -1,38 +1,63 @@
 import { useMemo, useState } from "react";
 
-import type { CartItem, CatalogItem } from "../types/sale.types";
+import type {
+  CartItem,
+  CatalogItem,
+} from "../types/sale.types";
 
 export const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
 
   /**
-   * Add item to cart.
-   * If item already exists, increase quantity by 1.
+   * Add item to cart
    */
-  const addToCart = (item: CatalogItem) => {
-    const itemId = item.input_item_id || item.inputItemId;
-    const price =
-      item.vendor_selling_price || item.vendorSellingPrice || 0;
+  const addToCart = (
+    item: CatalogItem
+  ) => {
+    const itemId = Number(
+      item.input_item_id ??
+        item.inputItemId ??
+        0
+    );
+
+    const price = Number(
+      item.vendor_selling_price ??
+        item.vendorSellingPrice ??
+        0
+    );
 
     setCart((prev) => {
       const existing = prev.find(
         (cartItem) =>
-          (cartItem.item.input_item_id ||
-            cartItem.item.inputItemId) === itemId
+          Number(
+            cartItem.item
+              .input_item_id ??
+              cartItem.item
+                .inputItemId ??
+              0
+          ) === itemId
       );
 
+      // already exists → increment
       if (existing) {
         return prev.map((cartItem) =>
-          (cartItem.item.input_item_id ||
-            cartItem.item.inputItemId) === itemId
+          Number(
+            cartItem.item
+              .input_item_id ??
+              cartItem.item
+                .inputItemId ??
+              0
+          ) === itemId
             ? {
                 ...cartItem,
-                quantity: cartItem.quantity + 1,
+                quantity:
+                  cartItem.quantity + 1,
               }
             : cartItem
         );
       }
 
+      // add new
       return [
         ...prev,
         {
@@ -45,16 +70,24 @@ export const useCart = () => {
   };
 
   /**
-   * Increase quantity by 1
+   * Increment quantity
    */
-  const incrementQuantity = (itemId: number) => {
+  const incrementQuantity = (
+    itemId: number
+  ) => {
     setCart((prev) =>
       prev.map((cartItem) =>
-        (cartItem.item.input_item_id ||
-          cartItem.item.inputItemId) === itemId
+        Number(
+          cartItem.item
+            .input_item_id ??
+            cartItem.item
+              .inputItemId ??
+            0
+        ) === Number(itemId)
           ? {
               ...cartItem,
-              quantity: cartItem.quantity + 1,
+              quantity:
+                cartItem.quantity + 1,
             }
           : cartItem
       )
@@ -62,28 +95,37 @@ export const useCart = () => {
   };
 
   /**
-   * Decrease quantity by 1.
-   * Remove item if quantity becomes 0.
+   * Decrement quantity
    */
-  const decrementQuantity = (itemId: number) => {
+  const decrementQuantity = (
+    itemId: number
+  ) => {
     setCart((prev) =>
       prev
         .map((cartItem) =>
-          (cartItem.item.input_item_id ||
-            cartItem.item.inputItemId) === itemId
+          Number(
+            cartItem.item
+              .input_item_id ??
+              cartItem.item
+                .inputItemId ??
+              0
+          ) === Number(itemId)
             ? {
                 ...cartItem,
-                quantity: cartItem.quantity - 1,
+                quantity:
+                  cartItem.quantity - 1,
               }
             : cartItem
         )
-        .filter((cartItem) => cartItem.quantity > 0)
+        .filter(
+          (cartItem) =>
+            cartItem.quantity > 0
+        )
     );
   };
 
   /**
-   * Set exact quantity.
-   * Removes item if quantity <= 0.
+   * Update exact quantity
    */
   const updateQuantity = (
     itemId: number,
@@ -96,8 +138,13 @@ export const useCart = () => {
 
     setCart((prev) =>
       prev.map((cartItem) =>
-        (cartItem.item.input_item_id ||
-          cartItem.item.inputItemId) === itemId
+        Number(
+          cartItem.item
+            .input_item_id ??
+            cartItem.item
+              .inputItemId ??
+            0
+        ) === Number(itemId)
           ? {
               ...cartItem,
               quantity,
@@ -108,65 +155,90 @@ export const useCart = () => {
   };
 
   /**
-   * Remove item completely
+   * Remove item
    */
-  const removeFromCart = (itemId: number) => {
+  const removeFromCart = (
+    itemId: number
+  ) => {
     setCart((prev) =>
       prev.filter(
         (cartItem) =>
-          (cartItem.item.input_item_id ||
-            cartItem.item.inputItemId) !== itemId
+          Number(
+            cartItem.item
+              .input_item_id ??
+              cartItem.item
+                .inputItemId ??
+              0
+          ) !== Number(itemId)
       )
     );
   };
 
   /**
-   * Clear entire cart
+   * Clear cart
    */
   const clearCart = () => {
     setCart([]);
   };
 
   /**
-   * Check if item is already in cart
+   * Check if exists
    */
-  const isInCart = (itemId: number) => {
+  const isInCart = (
+    itemId: number
+  ) => {
     return cart.some(
       (cartItem) =>
-        (cartItem.item.input_item_id ||
-          cartItem.item.inputItemId) === itemId
+        Number(
+          cartItem.item
+            .input_item_id ??
+            cartItem.item
+              .inputItemId ??
+            0
+        ) === Number(itemId)
     );
   };
 
   /**
-   * Get quantity for a specific item
+   * Get quantity
    */
-  const getItemQuantity = (itemId: number) => {
+  const getItemQuantity = (
+    itemId: number
+  ) => {
     const found = cart.find(
       (cartItem) =>
-        (cartItem.item.input_item_id ||
-          cartItem.item.inputItemId) === itemId
+        Number(
+          cartItem.item
+            .input_item_id ??
+            cartItem.item
+              .inputItemId ??
+            0
+        ) === Number(itemId)
     );
 
     return found?.quantity || 0;
   };
 
   /**
-   * Total number of units
+   * Total quantity
    */
   const totalItems = useMemo(
     () =>
       cart.reduce(
-        (sum, cartItem) => sum + cartItem.quantity,
+        (sum, cartItem) =>
+          sum + cartItem.quantity,
         0
       ),
     [cart]
   );
 
   /**
-   * Number of distinct products
+   * Unique products
    */
-  const uniqueItems = cart.length;
+  const uniqueItems = useMemo(
+    () => cart.length,
+    [cart]
+  );
 
   /**
    * Total amount
@@ -175,7 +247,9 @@ export const useCart = () => {
     () =>
       cart.reduce(
         (sum, cartItem) =>
-          sum + cartItem.quantity * cartItem.price,
+          sum +
+          cartItem.quantity *
+            cartItem.price,
         0
       ),
     [cart]
@@ -184,7 +258,6 @@ export const useCart = () => {
   return {
     cart,
 
-    // actions
     addToCart,
     incrementQuantity,
     decrementQuantity,
@@ -192,11 +265,9 @@ export const useCart = () => {
     removeFromCart,
     clearCart,
 
-    // helpers
     isInCart,
     getItemQuantity,
 
-    // totals
     totalItems,
     uniqueItems,
     totalAmount,

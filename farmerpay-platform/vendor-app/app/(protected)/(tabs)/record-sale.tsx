@@ -31,14 +31,14 @@ import CartItemCard from "../../../src/components/CartItemCard";
 import CartSummary from "../../../src/components/CartSummary";
 import FarmerSearchInput from "../../../src/components/FarmerSearchInput";
 import PaymentTypeSelector from "../../../src/components/PaymentTypeSelector";
-import SeasonSelector from "../../../src/components/SeasonSelector";
+// import SeasonSelector from "../../../src/components/SeasonSelector";
 
 import { useCatalog } from "../../../src/hooks/useCatalog";
 import { useCart } from "../../../src/hooks/useCart";
 import { useFarmerSearch } from "../../../src/hooks/useFarmerSearch";
 import { useRecordSale } from "../../../src/hooks/useRecordSale";
 
-import type { Farmer } from "../../../src/types/sale.types";
+import type { Farmer } from "../../../src/types/farmer.types";
 import { detectSeason } from "../../../src/utils/season.util";
 
 type PaymentType = "cash_sale" | "credit_sale";
@@ -76,45 +76,77 @@ export default function RecordSaleScreen() {
   const [paymentType, setPaymentType] =
     useState<PaymentType>("cash_sale");
 
-  const [season, setSeason] = useState(detectSeason());
+  // const [season, setSeason] = useState(detectSeason());
 
   // Submit Hook
   const {
     submitSale,
     submitting,
     transaction,
+    error,
     reset,
   } = useRecordSale();
 
   // Farmer selection
   const handleSelectFarmer = (farmer: Farmer) => {
-    setSelectedFarmer(farmer);
-    setFarmerQuery(`${farmer.name} (${farmer.mobile})`);
-  };
+  console.log(
+    "======== SELECTING FARMER ========"
+  );
+
+  console.log("selected farmer:", farmer);
+
+  setSelectedFarmer(farmer);
+
+  setFarmerQuery(
+    `${farmer.name} (${farmer.mobile})`
+  );
+};
 
   // Submit
   const handleSubmit = async () => {
-    const success = await submitSale({
-      selectedFarmer,
-      farmerMobile: selectedFarmer?.mobile || "",
-      paymentType,
-      season,
-      cart,
-    });
+  console.log("======== RECORD SALE CLICKED ========");
 
-    if (!success) {
-      Alert.alert(
-        "Error",
-        "Failed to record sale."
-      );
-      return;
-    }
+  console.log("selectedFarmer:", selectedFarmer);
 
+  console.log("paymentType:", paymentType);
+
+  console.log("cart:", JSON.stringify(cart, null, 2));
+
+  console.log("cart length:", cart.length);
+
+  const success = await submitSale({
+    selectedFarmer,
+    paymentType,
+    cart,
+  });
+
+  console.log("======== submitSale START ========");
+
+console.log("selectedFarmer:", selectedFarmer);
+
+console.log("paymentType:", paymentType);
+
+console.log("cart:", JSON.stringify(cart, null, 2));
+
+
+  console.log("submit success:", success);
+
+  console.log("hook error:", error);
+
+  if (!success) {
     Alert.alert(
-      "Success",
-      "Sale recorded successfully."
+      "Error",
+      error || "Failed to record sale."
     );
-  };
+
+    return;
+  }
+
+  Alert.alert(
+    "Success",
+    "Sale recorded successfully."
+  );
+};
 
   // Reset form
   const handleRecordAnother = () => {
@@ -122,9 +154,10 @@ export default function RecordSaleScreen() {
     setSelectedFarmer(null);
     setFarmerQuery("");
     setPaymentType("cash_sale");
-    setSeason(detectSeason());
+    // setSeason(detectSeason());
     reset();
   };
+
 
   // Success Screen
   if (transaction) {
@@ -137,7 +170,7 @@ export default function RecordSaleScreen() {
         </Text>
 
         <Text style={styles.successSub}>
-          Transaction #{transaction.id}
+          Transaction #{transaction.transactionId}
         </Text>
 
         {selectedFarmer && (
@@ -148,14 +181,14 @@ export default function RecordSaleScreen() {
         )}
 
         <Text style={styles.successAmount}>
-          {formatRupees(totalAmount)}
+          {formatRupees(transaction.amount)}
         </Text>
 
         <Text style={styles.successMeta}>
           {paymentType === "credit_sale"
             ? "💳 Credit"
             : "💵 Cash"}{" "}
-          · {season}
+          {/* · {season} */}
         </Text>
 
         <TouchableOpacity
@@ -185,7 +218,7 @@ export default function RecordSaleScreen() {
         query={farmerQuery}
         onChangeQuery={(text) => {
           setFarmerQuery(text);
-          setSelectedFarmer(null);
+          // setSelectedFarmer(null);
         }}
         farmers={farmers}
         loading={farmerLoading}
@@ -207,22 +240,22 @@ export default function RecordSaleScreen() {
           style={{ marginBottom: 12 }}
         >
           {catalog.map((item) => {
-            const itemId =
-              item.input_item_id ||
-              item.inputItemId ||
-              0;
+  const itemId = Number(
+    item.input_item_id ??
+    0
+  );
 
-            return (
-              <CatalogItemChip
-                key={itemId}
-                item={item}
-                onPress={addToCart}
-                isInCart={isInCart(itemId)}
-                quantity={getItemQuantity(itemId)}
-                formatRupees={formatRupees}
-              />
-            );
-          })}
+  return (
+    <CatalogItemChip
+      key={itemId}
+      item={item}
+      onPress={addToCart}
+      isInCart={isInCart(itemId)}
+      quantity={getItemQuantity(itemId)}
+      formatRupees={formatRupees}
+    />
+  );
+})}
 
           {catalog.length === 0 && (
             <Text
@@ -243,10 +276,11 @@ export default function RecordSaleScreen() {
           <Text style={styles.label}>CART</Text>
 
           {cart.map((cartItem) => {
-            const itemId =
-              cartItem.item.input_item_id ||
-              cartItem.item.inputItemId ||
-              0;
+            const itemId = Number(
+              cartItem.item.input_item_id ??
+              cartItem.item.inputItemId ??
+              0
+            );
 
             return (
               <CartItemCard
@@ -283,15 +317,19 @@ export default function RecordSaleScreen() {
       />
 
       {/* Season */}
-      <Text style={styles.label}>SEASON</Text>
+      {/* <Text style={styles.label}>SEASON</Text>
       <SeasonSelector
         value={season}
         onChange={setSeason}
-      />
+      /> */}
 
       {/* Submit */}
       <TouchableOpacity
-        style={styles.submitBtn}
+        style={[
+          styles.submitBtn,
+          (submitting || cart.length === 0) &&
+            styles.submitBtnDisabled,
+        ]}
         onPress={handleSubmit}
         disabled={
           submitting || cart.length === 0
@@ -339,7 +377,7 @@ const styles = StyleSheet.create({
 
   submitBtn: { marginTop: 24, backgroundColor: "#d97706", paddingVertical: 16, borderRadius: 12, alignItems: "center" },
   submitText: { color: "#fff", fontWeight: "800", fontSize: 16 },
-
+  submitBtnDisabled: { opacity: 0.5,},
   successCenter: { flex: 1, justifyContent: "center", alignItems: "center", padding: 24, backgroundColor: "#f0fdf4" },
   successTitle: { fontSize: 24, fontWeight: "800", color: "#16a34a", marginTop: 12 },
   successSub: { fontSize: 14, color: "#666", marginTop: 8 },

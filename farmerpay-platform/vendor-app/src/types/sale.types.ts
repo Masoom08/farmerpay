@@ -1,3 +1,5 @@
+import type { Farmer } from "./farmer.types";
+
 /**
  * Common API response structure
  */
@@ -56,14 +58,7 @@ export interface CatalogItem {
   catalogId?: number;
 }
 
-/**
- * Farmer
- */
-export interface Farmer {
-  id: number;
-  name: string;
-  mobile: string;
-}
+
 
 /**
  * Cart Item
@@ -78,8 +73,8 @@ export interface CartItem {
  * Sale Item Payload
  */
 export interface RecordSaleItemPayload {
-  inputItemId: number;
-  inputPackId: number;
+  itemId: string;
+  packId: string;
   quantity: number;
 }
 
@@ -87,12 +82,16 @@ export interface RecordSaleItemPayload {
  * Record Sale Payload
  */
 export interface RecordSalePayload {
-  farmerId?: number | null;
-  farmerMobile: string;
-  transactionType: "cash_sale" | "credit_sale";
-  transactionDate: string;
-  season: "kharif" | "rabi" | "zaid";
-  loan_application_id?: number | null;
+  farmerId: number;
+
+  transactionType:
+    | "cash_sale"
+    | "credit_sale"
+    | "return"
+    | "exchange";
+
+  loanApplicationId?: number | null;
+
   items: RecordSaleItemPayload[];
 }
 
@@ -100,13 +99,9 @@ export interface RecordSalePayload {
  * Transaction
  */
 export interface Transaction {
-  id: number;
-  transaction_number?: string;
-  total_amount?: number;
-  transactionType?: "cash_sale" | "credit_sale";
-  transactionDate?: string;
-  season?: "kharif" | "rabi" | "zaid";
-  status?: string;
+  transactionId: number;
+  transactionUuid: string;
+  amount: number;
 }
 
 /**

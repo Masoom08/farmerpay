@@ -4,8 +4,12 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, Alert, Modal, RefreshControl } from "react-native";
 import { useFocusEffect } from "expo-router";
-import { apiGet, apiPost, apiPut, formatRupees } from "../../../lib/api";
+import { formatRupees } from "../../../src/utils/currency";
 import { useCatalog } from "../../../src/hooks/useCatalog";
+import {
+  addCatalogItem,
+  updateCatalogStock,
+} from "../../../src/api/modules/catalog.api";
 
 export default function CatalogScreen() {
   // const [items, setItems] = useState<any[]>([]);
@@ -37,13 +41,13 @@ export default function CatalogScreen() {
 
     setAdding(true);
     try {
-      const r = await apiPost("/vyapar/catalog", {
-        inputItemId: newItemId.trim().toUpperCase().replace(/\s+/g, "-"),
-        inputPackId: newPackId.trim() || "STANDARD",
-        mrpRupees: parseFloat(newMrp) || parseFloat(newPrice),
-        vendorSellingPrice: parseFloat(newPrice),
-        stockQuantity: parseInt(newStock, 10) || 100,
-      });
+      const r = await addCatalogItem({
+      itemId: newItemId.trim(),
+      packId: newPackId.trim(),
+      mrp: parseFloat(newMrp) || parseFloat(newPrice),
+      sellingPrice: parseFloat(newPrice),
+      stock: parseInt(newStock, 10) || 100,
+    });
       if (r.success) {
         Alert.alert("Added!", `${newItemId} added to catalog.`);
         setAddModal(false);
@@ -62,7 +66,7 @@ export default function CatalogScreen() {
   const updateStock = async (catalogId: number, currentStock: number, delta: number) => {
     const newStockVal = Math.max(0, currentStock + delta);
     try {
-      await apiPut(`/vyapar/catalog/${catalogId}`, { stockQuantity: newStockVal });
+      await updateCatalogStock(catalogId, { stockQuantity: newStockVal });
       await refetch();
     } catch {
       Alert.alert("Error", "Failed to update stock.");
@@ -113,13 +117,28 @@ export default function CatalogScreen() {
           </View>
         ) : (
           items.map((item, i) => {
-            const id = item.input_item_id || item.inputItemId || `item-${i}`;
-            const pack = item.input_pack_id || item.inputPackId || "Standard";
-            const mrp = Number(item.mrp_rupees || item.mrpRupees || 0);
-            const price = Number(item.vendor_selling_price || item.vendorSellingPrice || 0);
-            const stock = item.stock_quantity ?? item.stockQuantity ?? 0;
-            const status = item.availability_status || item.availabilityStatus || "in_stock";
-            const catId = item.id || item.catalogId ||0;
+           const id =
+  item.input_item_id || `item-${i}`;
+
+const pack =
+  item.input_pack_id || "Standard";
+
+const mrp = Number(
+  item.mrp_rupees || 0
+);
+
+const price = Number(
+  item.vendor_selling_price || 0
+);
+
+const stock =
+  item.stock_quantity ?? 0;
+
+const status =
+  item.availability_status ||
+  "in_stock";
+
+const catId = item.id || 0;
 
             return (
               <View key={i} style={styles.itemCard}>
@@ -162,8 +181,8 @@ export default function CatalogScreen() {
             <Text style={styles.label}>Item Name *</Text>
             <TextInput style={styles.modalInput} placeholder="e.g. DAP-FERTILIZER" value={newItemId} onChangeText={setNewItemId} autoCapitalize="characters" />
 
-            <Text style={styles.label}>Pack Size</Text>
-            <TextInput style={styles.modalInput} placeholder="e.g. 50KG, 1L, 5KG" value={newPackId} onChangeText={setNewPackId} />
+            <Text style={styles.label}>Pack Id</Text>
+            <TextInput style={styles.modalInput} placeholder="e.g. PK-1, PACK-2" value={newPackId} onChangeText={setNewPackId} />
 
             <View style={{ flexDirection: "row", gap: 8 }}>
               <View style={{ flex: 1 }}>

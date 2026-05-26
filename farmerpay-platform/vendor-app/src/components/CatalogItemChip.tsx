@@ -24,14 +24,18 @@ const CatalogItemChip: React.FC<CatalogItemChipProps> = ({
   formatRupees,
 }) => {
   const itemName =
-    item.item_name ||
-    item.pack_name ||
-    `Item ${item.input_item_id || item.inputItemId}`;
+    item.item_name ??
+    item.pack_name ??
+    `Item ${
+      item.input_item_id ??
+      item.inputItemId
+    }`;
 
-  const price =
-    item.vendor_selling_price ||
-    item.vendorSellingPrice ||
-    0;
+  const price = Number(
+    item.vendor_selling_price ??
+    item.vendorSellingPrice ??
+    0
+  );
 
   return (
     <TouchableOpacity
