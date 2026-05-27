@@ -2,9 +2,9 @@
  * Vendor Home — Dashboard overview with KPIs.
  */
 import { useEffect, useState, useCallback } from "react";
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, RefreshControl, Alert } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, RefreshControl, Alert,Image } from "react-native";
+import { Ionicons, MaterialCommunityIcons, } from "@expo/vector-icons";
 import { useRouter, useFocusEffect } from "expo-router";
-import { apiGet } from "../../../lib/api";
 import { getUser } from "../../../src/lib/storage";
 import { formatRupees } from "../../../src/utils/currency";
 import client from "../../../src/api/client";
@@ -13,6 +13,17 @@ import { useRatings } from "../../../src/hooks/useRatings";
 import { useLogout } from "../../../src/hooks/useLogout";
 import { useTransactions,} from "../../../src/hooks/useTransactions";
 import { getTransactions, } from "../../../src/api/modules/transaction.api";
+
+const AddFarmerIcon = require(
+  "../../../src/assets/addfarmer.png"
+);
+
+const GiveCreditIcon = require(
+  "../../../src/assets/addcredit.png"
+);
+const ShopLogo = require(
+  "../../../src/assets/image.png"
+);
 
 export default function VendorHome() {
   const router = useRouter();
@@ -65,7 +76,15 @@ export default function VendorHome() {
     >
       {/* Welcome */}
       <View style={styles.welcome}>
-        <Text style={styles.welcomeEmoji}>🏪</Text>
+       <Image
+          source={ShopLogo}
+          style={{
+            width: 56,
+            height: 56,
+            borderRadius: 12,
+          }}
+          resizeMode="contain"
+        />
         <View style={{ flex: 1 }}>
           <Text style={styles.welcomeName}>Namaste, {user?.name || "Vendor"}!</Text>
           <Text style={styles.welcomeRole}>FarmerPay Vendor Portal</Text>
@@ -93,7 +112,7 @@ export default function VendorHome() {
       </View> */}
 
       {/* Add Farmer + Give Credit */}
-      <View style={styles.quickRow}>
+      {/* <View style={styles.quickRow}>
         <TouchableOpacity style={[styles.quickCard, { backgroundColor: "#f0fdf4", borderWidth: 1.5, borderColor: "#6ee7b7", borderStyle: "dashed" }]} onPress={() => router.push("/farmer/add-farmer" as any)}>
           <Text style={styles.quickEmoji}>👤➕</Text>
           <Text style={[styles.quickLabel, { color: "#059669" }]}>Add Farmer</Text>
@@ -101,6 +120,135 @@ export default function VendorHome() {
         <TouchableOpacity style={[styles.quickCard, { backgroundColor: "#fffbeb", borderWidth: 1.5, borderColor: "#fde68a", borderStyle: "dashed" }]} onPress={() => router.push("/farmer/give-credit" as any)}>
           <Text style={styles.quickEmoji}>💳➕</Text>
           <Text style={[styles.quickLabel, { color: "#92400e" }]}>Give Credit</Text>
+        </TouchableOpacity>
+      </View> */}
+      <View style={styles.actionContainer}>
+        {/* Add Farmer */}
+        <TouchableOpacity
+          style={styles.actionCard}
+          activeOpacity={0.85}
+          onPress={() =>
+            router.push(
+              "/farmer/add-farmer" as any
+            )
+          }
+        >
+          <View
+            style={[
+              styles.iconWrapper,
+              {
+                backgroundColor: "#ecfdf5",
+              },
+            ]}
+          >
+            <Image
+              source={AddFarmerIcon}
+              style={styles.actionIcon}
+              resizeMode="contain"
+            />
+          </View>
+
+          <View style={styles.actionContent}>
+            <Text
+              style={[
+                styles.actionTitle,
+                {
+                  color: "#047857",
+                },
+              ]}
+            >
+              Add Farmer
+            </Text>
+
+            <Text style={styles.actionSubtitle}>
+              Register a new farmer to
+              start transactions
+            </Text>
+          </View>
+
+          {/* <View
+            style={[
+              styles.arrowCircle,
+              {
+                backgroundColor: "#ecfdf5",
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.arrow,
+                {
+                  color: "#10b981",
+                },
+              ]}
+            >
+              →
+            </Text>
+          </View> */}
+        </TouchableOpacity>
+
+        {/* Give Credit */}
+        <TouchableOpacity
+          style={styles.actionCard}
+          activeOpacity={0.85}
+          onPress={() =>
+            router.push(
+              "/farmer/give-credit" as any
+            )
+          }
+        >
+          <View
+            style={[
+              styles.iconWrapper,
+              {
+                backgroundColor: "#fffbeb",
+              },
+            ]}
+          >
+            <Image
+              source={GiveCreditIcon}
+              style={styles.actionIcon}
+              resizeMode="contain"
+            />
+          </View>
+
+          <View style={styles.actionContent}>
+            <Text
+              style={[
+                styles.actionTitle,
+                {
+                  color: "#92400e",
+                },
+              ]}
+            >
+              Give Credit
+            </Text>
+
+            <Text style={styles.actionSubtitle}>
+              Provide credit support
+              to a farmer
+            </Text>
+          </View>
+
+          {/* <View
+            style={[
+              styles.arrowCircle,
+              {
+                backgroundColor: "#fef3c7",
+              },
+            ]}
+          >
+            <Text
+              style={[
+                styles.arrow,
+                {
+                  color: "#f59e0b",
+                },
+              ]}
+            >
+              →
+            </Text>
+          </View> */}
         </TouchableOpacity>
       </View>
 
@@ -186,5 +334,78 @@ reviewText: {
   color: "#666",
   fontSize: 12,
   marginTop: 6,
+},
+welcomeIcon: {
+  width: 56,
+  height: 56,
+  borderRadius: 16,
+  backgroundColor: "rgba(255,255,255,0.15)",
+  alignItems: "center",
+  justifyContent: "center",
+},
+
+actionContainer: {
+  gap: 14,
+  marginBottom: 18,
+},
+
+actionCard: {
+  flexDirection: "row",
+  alignItems: "center",
+  backgroundColor: "#fff",
+  borderRadius: 24,
+  padding: 16,
+  overflow: "hidden",
+  shadowColor: "#000",
+  shadowOpacity: 0.06,
+  shadowRadius: 10,
+  shadowOffset: {
+    width: 0,
+    height: 4,
+  },
+  elevation: 3,
+},
+
+iconWrapper: {
+  width: 72,
+  height: 72,
+  borderRadius: 999,
+  alignItems: "center",
+  justifyContent: "center",
+},
+
+actionIcon: {
+  width: 58,
+  height: 58,
+},
+
+actionContent: {
+  flex: 1,
+  marginLeft: 14,
+},
+
+actionTitle: {
+  fontSize: 20,
+  fontWeight: "800",
+},
+
+actionSubtitle: {
+  fontSize: 13,
+  color: "#6b7280",
+  marginTop: 4,
+  lineHeight: 18,
+},
+
+arrowCircle: {
+  width: 44,
+  height: 44,
+  borderRadius: 999,
+  alignItems: "center",
+  justifyContent: "center",
+},
+
+arrow: {
+  fontSize: 24,
+  fontWeight: "700",
 },
 });

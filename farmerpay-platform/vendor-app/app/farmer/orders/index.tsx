@@ -12,7 +12,6 @@ import {
 } from "expo-router";
 
 import { useEffect, useState } from "react";
-
 import { getTransactions } from "../../../src/api/modules/transaction.api";
 
 export default function OrdersScreen() {

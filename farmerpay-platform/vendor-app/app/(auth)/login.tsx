@@ -5,7 +5,6 @@
 import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import { Stack, useRouter } from "expo-router";
-// import { apiPost, setToken, setUser } from "../../lib/api";
 import { useLogin } from "../../src/hooks/useLogin";
 
 export default function VendorLoginScreen() {

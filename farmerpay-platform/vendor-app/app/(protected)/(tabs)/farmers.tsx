@@ -5,10 +5,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, StyleSheet, ActivityIndicator, RefreshControl,TouchableOpacity } from "react-native";
 import { useFocusEffect,useRouter } from "expo-router";
-import { apiGet, formatRupees } from "../../../lib/api";
-import {
-  getTransactions,
-} from "../../../src/api/modules/transaction.api";
+import { formatRupees } from "../../../src/utils/currency";
+import { getCreditLedger } from "../../../src/api/modules/credit.api";
+import { getTransactions, } from "../../../src/api/modules/transaction.api";
 import { useTransactions } from "../../../src/hooks/useTransactions";
 
 export default function MyFarmersScreen() {
@@ -21,8 +20,12 @@ export default function MyFarmersScreen() {
   const load = useCallback(async () => {
     try {
       const [cr, tx] = await Promise.all([
-        apiGet("/vyapar/credit-ledger").catch(() => ({ success: false, data: [] })),
-        getTransactions(50)
+        getCreditLedger().catch(() => ({
+          success: false,
+          data: [],
+        })),
+
+        getTransactions(50),
       ]);
       if (cr.success && Array.isArray(cr.data)) setCreditEntries(cr.data);
       if (tx.success && Array.isArray(tx.data)) setTransactions(tx.data);

@@ -1,11 +1,8 @@
 import { Tabs } from "expo-router";
-import {
-  Text,
-  TouchableOpacity,
-} from "react-native";
-
+import { Text, TouchableOpacity, } from "react-native";
 import { useState } from "react";
 import AppDrawer from "../../../src/components/AppDrawer";
+import { Ionicons, MaterialCommunityIcons,} from "@expo/vector-icons";
 
 const icon =
   (emoji: string) => () =>
@@ -28,16 +25,12 @@ export default function VendorTabLayout() {
           },
 
           headerTintColor: "#fff",
-
           tabBarActiveTintColor: "#d97706",
-
           tabBarInactiveTintColor: "#999",
-
           tabBarStyle: {
             paddingBottom: 4,
             height: 56,
           },
-
           tabBarLabelStyle: {
             fontSize: 11,
             fontWeight: "600",
@@ -52,15 +45,11 @@ export default function VendorTabLayout() {
                 marginRight: 16,
               }}
             >
-              <Text
-                style={{
-                  fontSize: 24,
-                  color: "#fff",
-                  fontWeight: "700",
-                }}
-              >
-                ☰
-              </Text>
+               <Ionicons
+                name="menu"
+                size={26}
+                color="#fff"
+              />
             </TouchableOpacity>
           ),
         }}
@@ -69,8 +58,24 @@ export default function VendorTabLayout() {
           name="index"
           options={{
             title: "Home",
-            tabBarIcon: icon("🏪"),
-            headerTitle: "FarmerPay Vendor",
+
+            headerTitle:
+              "FarmerPay Vendor",
+
+            tabBarIcon: ({
+              focused,
+              color,
+            }) => (
+              <Ionicons
+                name={
+                  focused
+                    ? "home"
+                    : "home-outline"
+                }
+                size={22}
+                color={color}
+              />
+            ),
           }}
         />
 
@@ -78,8 +83,24 @@ export default function VendorTabLayout() {
           name="record-sale"
           options={{
             title: "Sell",
-            tabBarIcon: icon("🛒"),
-            headerTitle: "Record Sale",
+
+            headerTitle:
+              "Record Sale",
+
+            tabBarIcon: ({
+              focused,
+              color,
+            }) => (
+              <Ionicons
+                name={
+                  focused
+                    ? "cart"
+                    : "cart-outline"
+                }
+                size={22}
+                color={color}
+              />
+            ),
           }}
         />
 
@@ -87,8 +108,24 @@ export default function VendorTabLayout() {
           name="farmers"
           options={{
             title: "Farmers",
-            tabBarIcon: icon("👥"),
-            headerTitle: "My Farmers",
+
+            headerTitle:
+              "Farmer Transactions",
+
+            tabBarIcon: ({
+              focused,
+              color,
+            }) => (
+              <Ionicons
+                name={
+                  focused
+                    ? "people"
+                    : "people-outline"
+                }
+                size={22}
+                color={color}
+              />
+            ),
           }}
         />
 
@@ -96,9 +133,24 @@ export default function VendorTabLayout() {
           name="catalog"
           options={{
             title: "Catalog",
-            tabBarIcon: icon("📦"),
+
             headerTitle:
               "Catalog & Inventory",
+
+            tabBarIcon: ({
+              focused,
+              color,
+            }) => (
+              <MaterialCommunityIcons
+                name={
+                  focused
+                    ? "package-variant"
+                    : "package-variant-closed"
+                }
+                size={22}
+                color={color}
+              />
+            ),
           }}
         />
 
@@ -106,8 +158,24 @@ export default function VendorTabLayout() {
           name="credit"
           options={{
             title: "Credit",
-            tabBarIcon: icon("💳"),
-            headerTitle: "Credit Ledger",
+
+            headerTitle:
+              "Credit Ledger",
+
+            tabBarIcon: ({
+              focused,
+              color,
+            }) => (
+              <MaterialCommunityIcons
+                name={
+                  focused
+                    ? "credit-card"
+                    : "credit-card-outline"
+                }
+                size={22}
+                color={color}
+              />
+            ),
           }}
         />
       </Tabs>

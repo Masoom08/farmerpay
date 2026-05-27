@@ -4,7 +4,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, Alert, Modal, RefreshControl } from "react-native";
 import { useFocusEffect } from "expo-router";
-// import { apiGet, apiPost, formatRupees } from "../../../lib/api";
 import { formatRupees } from "../../../src/utils/currency";
 import {
   getCreditLedger,

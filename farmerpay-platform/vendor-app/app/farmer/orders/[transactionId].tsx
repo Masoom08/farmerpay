@@ -7,13 +7,8 @@ import {
 } from "react-native";
 
 import { useLocalSearchParams } from "expo-router";
-
 import { useEffect, useState } from "react";
-
-import {
-  getTransactionDetails,
-} from "../../../src/api/modules/sales.api";
-
+import { getTransactionDetails,} from "../../../src/api/modules/sales.api";
 import { formatRupees } from "../../../src/utils/currency";
 
 export default function OrderDetailScreen() {
