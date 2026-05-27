@@ -12,10 +12,12 @@ export const getCreditLedger = async () => {
 export const recordPayment = async (
   farmerId: number | string,
   payload: {
-    amount: number;
+    paymentAmount: number;
     paymentDate: string;
   }
 ) => {
+  console.log("API PAYLOAD =>", payload);
+
   const response = await client.post(
     API.CREDIT.RECORD_PAYMENT(farmerId),
     payload

@@ -86,7 +86,7 @@ export default function MyFarmersScreen() {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} colors={["#d97706"]} />}
     >
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.floatingBtn}
         onPress={() =>
           router.push(
@@ -97,7 +97,7 @@ export default function MyFarmersScreen() {
         <Text style={styles.addTxnText}>
           + Add Transaction
         </Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <Text style={styles.sectionLabel}>MY FARMERS ({farmers.length})</Text>
 
       {farmers.length === 0 ? (

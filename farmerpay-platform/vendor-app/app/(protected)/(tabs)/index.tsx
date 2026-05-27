@@ -13,6 +13,7 @@ import { useRatings } from "../../../src/hooks/useRatings";
 import { useLogout } from "../../../src/hooks/useLogout";
 import { useTransactions,} from "../../../src/hooks/useTransactions";
 import { getTransactions, } from "../../../src/api/modules/transaction.api";
+import { farmerApi } from "../../../src/api/modules/farmer.api";
 
 const AddFarmerIcon = require(
   "../../../src/assets/addfarmer.png"
@@ -31,25 +32,38 @@ export default function VendorHome() {
   const [user, setUserState] = useState<any>(null);
   const [perf, setPerf] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [farmersCount, setFarmersCount] = useState(0);
   const {ratings, loadRatings } = useRatings();
   const {transactionCount,totalRevenue,loadTransactions } = useTransactions();
 
   const load = useCallback(async () => {
     try {
-      const [u, p] = await Promise.all([
+      const [u, p, farmers,] = await Promise.all([
         getUser(),
         client.get("/vyapar/performance")
         .catch(() => ({ data:{success: false} })),
+        farmerApi.getMyFarmers(),
       ]);
       setUserState(u);
       if (p.data?.success) {
         setPerf(p.data.data);
       }
+      if (Array.isArray(farmers)) {
+      setFarmersCount(farmers.length);
+    } else {
+      setFarmersCount(0);
+    }
+
+
       await loadRatings();
       await loadTransactions();
-    } catch {}
+    } catch(e) {
+      console.log(e);
+    }
     setRefreshing(false);
-  }, [loadRatings]);
+  }, [loadRatings,
+    loadTransactions
+  ]);
 
   useEffect(() => { load(); }, [load]);
   useFocusEffect(useCallback(() => { load(); }, [load]));
@@ -266,7 +280,8 @@ export default function VendorHome() {
       </View>
       <View style={styles.kpiRow}>
         <View style={styles.kpiCard}>
-          <Text style={styles.kpiValue}>{perf?.unique_farmers_served ?? 0}</Text>
+          <Text style={styles.kpiValue}>  {farmersCount}
+</Text>
           <Text style={styles.kpiLabel}>Farmers Served</Text>
         </View>
         <View style={styles.kpiCard}>

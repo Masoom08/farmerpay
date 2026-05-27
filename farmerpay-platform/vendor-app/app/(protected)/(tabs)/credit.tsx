@@ -38,33 +38,76 @@ export default function CreditLedgerScreen() {
   const totalGiven = entries.reduce((sum, e) => sum + Number(e.total_credit_given || e.totalCreditGiven || 0), 0);
   const totalCollected = entries.reduce((sum, e) => sum + Number(e.total_payments_received || e.totalPaymentsReceived || 0), 0);
 
-  const handlePayment = async () => {
-    if (!payAmount || parseFloat(payAmount) <= 0) { Alert.alert("Enter amount"); return; }
-    setPaying(true);
-    try {
-      const r = await recordPayment(
-  payFarmerId!,
-  {
-    amount: parseFloat(payAmount),
-    paymentDate: new Date()
-      .toISOString()
-      .slice(0, 10),
+const handlePayment = async () => {
+  const amount = parseFloat(
+    payAmount.replace(/[^0-9.]/g, "")
+  );
+
+  if (isNaN(amount) || amount <= 0) {
+    Alert.alert(
+      "Invalid Amount",
+      "Please enter valid amount"
+    );
+    return;
   }
-);
-      if (r.success) {
-        Alert.alert("Payment Recorded", `${formatRupees(parseFloat(payAmount))} received from ${payFarmerName}.`);
-        setPayModal(false);
-        setPayAmount("");
-        load();
-      } else {
-        Alert.alert("Error", r.message || "Failed.");
-      }
-    } catch (e: any) {
-      Alert.alert("Error", e?.message || "Connection failed.");
-    } finally {
-      setPaying(false);
+
+  if (!payFarmerId) {
+    Alert.alert(
+      "Error",
+      "Farmer ID missing"
+    );
+    return;
+  }
+
+  setPaying(true);
+
+  try {
+    const payload = {
+      paymentAmount: amount,
+      paymentDate: new Date().toISOString(),
+    };
+
+    console.log("FINAL PAYLOAD =>", payload);
+
+    const r = await recordPayment(
+      payFarmerId,
+      payload
+    );
+
+    console.log("SUCCESS =>", r);
+
+    if (r.success) {
+      Alert.alert(
+        "Payment Recorded",
+        `${formatRupees(amount)} received from ${payFarmerName}.`
+      );
+
+      setPayModal(false);
+      setPayAmount("");
+
+      await load();
+    } else {
+      Alert.alert(
+        "Error",
+        r.message || "Failed"
+      );
     }
-  };
+
+  } catch (e: any) {
+    console.log(
+      "BACKEND ERROR =>",
+      e?.response?.data
+    );
+
+    Alert.alert(
+      "Payment Failed",
+      e?.response?.data?.message ||
+      "Something went wrong"
+    );
+  } finally {
+    setPaying(false);
+  }
+};
 
   if (loading) return <View style={styles.center}><ActivityIndicator size="large" color="#d97706" /></View>;
 
