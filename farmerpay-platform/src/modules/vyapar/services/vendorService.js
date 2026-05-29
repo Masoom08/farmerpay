@@ -210,7 +210,7 @@ const recordCreditPayment = async (
     throw err;
   }
 
-  const paymentAmount = Number(data.amount);
+  const paymentAmount = Number(data.paymentAmount);
 
   await ledger.update({
     current_balance:
