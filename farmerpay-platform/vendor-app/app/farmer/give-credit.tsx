@@ -5,7 +5,9 @@
 import { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
-import { apiPost, formatRupees } from "../../lib/api";
+import { formatRupees } from "../../src/utils/currency";
+
+import { farmerApi } from "../../src/api/modules/farmer.api";
 
 const CREDIT_REASONS = [
   { key: "input_purchase", emoji: "🌱", label: "Input purchase on credit" },
@@ -34,19 +36,25 @@ export default function GiveCreditScreen() {
 
     setSubmitting(true);
     try {
-      const r = await apiPost("/vyapar/farmer/give-credit", {
-        farmerId: farmerId ? parseInt(farmerId, 10) : null,
-        farmerMobile: farmerMobile || null,
-        amount: parseFloat(amount),
-        reason,
-        notes: notes.trim(),
-        dueDate: dueDate || null,
-      });
-      if (r.success) {
-        setSubmitted(true);
-      } else {
-        Alert.alert("Error", r.message || "Failed to extend credit.");
-      }
+      const r = await await farmerApi.giveCredit({
+  farmerId: farmerId
+    ? parseInt(farmerId, 10)
+    : null,
+
+  farmerMobile:
+    farmerMobile || null,
+
+  amount: parseFloat(amount),
+
+  reason,
+
+  notes: notes.trim(),
+
+  dueDate: dueDate || null,
+});
+
+setSubmitted(true);
+      
     } catch (e: any) {
       Alert.alert("Error", e?.message || "Connection failed.");
     } finally {

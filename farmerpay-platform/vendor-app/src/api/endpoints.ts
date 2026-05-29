@@ -18,6 +18,8 @@ export const API = {
     "/vyapar/farmer/register-farmer",
     MY_FARMERS:
     "/vyapar/farmer/my-farmers",
+    GIVE_CREDIT:
+    "/vyapar/farmer/give-credit",
     DETAILS: (id: string) => `/farmers/${id}`,
     UPDATE: (id: string) => `/farmers/${id}`,
   },

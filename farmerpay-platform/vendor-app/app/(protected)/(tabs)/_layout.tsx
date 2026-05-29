@@ -110,7 +110,7 @@ export default function VendorTabLayout() {
             title: "Farmers",
 
             headerTitle:
-              "Farmer Transactions",
+              "My Farmers",
 
             tabBarIcon: ({
               focused,
@@ -128,10 +128,36 @@ export default function VendorTabLayout() {
             ),
           }}
         />
+        
+        <Tabs.Screen
+          name="transactions"
+          options={{
+            title: "Transactions",
+
+            headerTitle:
+              "Farmer Transactions",
+
+            tabBarIcon: ({
+              focused,
+              color,
+            }) => (
+              <MaterialCommunityIcons
+                name={
+                  focused
+                    ? "swap-horizontal-circle"
+                    : "swap-horizontal"
+                }
+                size={22}
+                color={color}
+              />
+            ),
+          }}
+        />
 
         <Tabs.Screen
           name="catalog"
           options={{
+            href: null,
             title: "Catalog",
 
             headerTitle:

@@ -1,17 +1,12 @@
 export interface CatalogItem {
   id: number;
   vendor_id: number;
-
   input_item_id: string;
   input_pack_id: string;
-
   mrp_rupees: string;
   vendor_selling_price: string;
-
   stock_quantity: number;
-
   last_stock_update_date: string;
-
   availability_status:
     | "in_stock"
     | "low_stock"
@@ -19,6 +14,12 @@ export interface CatalogItem {
 
   is_active: boolean;
 
+  /* NEW FIELDS */
+  quantity?: number;
+  unit?: string;
+  brand?: string;
+  category?: string;
+  description?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -29,6 +30,11 @@ export interface AddCatalogPayload {
   mrp: number;
   sellingPrice: number;
   stock: number;
+  quantity?: number;
+  unit?: string;
+  brand?: string;
+  category?: string;
+  description?: string;
 }
 
 export interface UpdateStockPayload {

@@ -41,6 +41,36 @@ export interface RegisterFarmerResponse {
   };
 }
 
+export interface GiveCreditPayload {
+  farmerId?: number | null;
+
+  farmerMobile?: string | null;
+
+  amount: number;
+
+  reason: string;
+
+  notes?: string;
+
+  dueDate?: string | null;
+}
+
+export interface GiveCreditResponse {
+  success: boolean;
+
+  message: string;
+
+  data: {
+    farmerId: number;
+
+    amount: number;
+
+    newBalance: number;
+
+    reason: string;
+  };
+}
+
 export interface MyFarmersResponse {
   success: boolean;
   message: string;

@@ -5,6 +5,8 @@ import type { FarmerSearchResponse, } from "../../types/sale.types";
 import type { 
   RegisterFarmerPayload,
   RegisterFarmerResponse,
+  GiveCreditPayload,
+  GiveCreditResponse,
   MyFarmersResponse,
 } from "../../types/farmer.types";
 /**
@@ -42,6 +44,21 @@ export const farmerApi = {
     return response.data.data;
   },
 
+   /**
+   * Give credit
+   */
+  async giveCredit(
+    payload: GiveCreditPayload
+  ) {
+    const response =
+      await client.post<GiveCreditResponse>(
+        API.FARMERS.GIVE_CREDIT,
+        payload
+      );
+
+    return response.data.data;
+  },
+  
   /**
    * Get vendor farmers
    */
