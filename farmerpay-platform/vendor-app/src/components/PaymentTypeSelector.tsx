@@ -6,7 +6,7 @@ import {
   StyleSheet,
 } from "react-native";
 
-type PaymentType = "cash_sale" | "credit_sale";
+import type { PaymentType } from "../types/payment.types";
 
 interface PaymentTypeSelectorProps {
   value: PaymentType;
@@ -21,14 +21,16 @@ const PaymentTypeSelector: React.FC<
       <TouchableOpacity
         style={[
           styles.button,
-          value === "cash_sale" && styles.cashActive,
+          value === "cash_sale" &&
+            styles.cashActive,
         ]}
         onPress={() => onChange("cash_sale")}
       >
         <Text
           style={[
             styles.text,
-            value === "cash_sale" && styles.cashText,
+            value === "cash_sale" &&
+              styles.cashText,
           ]}
         >
           💵 Cash
@@ -51,6 +53,27 @@ const PaymentTypeSelector: React.FC<
           ]}
         >
           💳 Credit
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.button,
+          value === "cash_credit_sale" &&
+            styles.cashCreditActive,
+        ]}
+        onPress={() =>
+          onChange("cash_credit_sale")
+        }
+      >
+        <Text
+          style={[
+            styles.text,
+            value === "cash_credit_sale" &&
+              styles.cashCreditText,
+          ]}
+        >
+          💵 Cash + 💳 Credit
         </Text>
       </TouchableOpacity>
     </View>
@@ -91,11 +114,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#fef2f2",
   },
 
+  cashCreditActive: {
+    borderColor: "#2563eb",
+    backgroundColor: "#eff6ff",
+  },
+
   cashText: {
     color: "#16a34a",
   },
 
   creditText: {
     color: "#dc2626",
+  },
+
+  cashCreditText: {
+    color: "#2563eb",
   },
 });

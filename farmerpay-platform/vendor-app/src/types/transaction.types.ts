@@ -28,9 +28,8 @@ export interface TransactionResponse {
 }
 
 export interface TransactionItem {
-  itemId: string;
-  packId: string;
-  quantity: number;
+  category: string;
+  unitPrice: number;
 }
 
 export interface CreateTransactionRequest {

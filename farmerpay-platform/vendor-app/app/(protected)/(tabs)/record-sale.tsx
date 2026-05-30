@@ -22,30 +22,31 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  TextInput,
 } from "react-native";
 
 import { formatRupees } from "../../../lib/api";
-
-import CatalogItemChip from "../../../src/components/CatalogItemChip";
-import CartItemCard from "../../../src/components/CartItemCard";
-import CartSummary from "../../../src/components/CartSummary";
+import type { PaymentType } from "../../../src/types/payment.types";
+// import CatalogItemChip from "../../../src/components/CatalogItemChip";
+// import CartItemCard from "../../../src/components/CartItemCard";
+// import CartSummary from "../../../src/components/CartSummary";
 import FarmerSearchInput from "../../../src/components/FarmerSearchInput";
 import PaymentTypeSelector from "../../../src/components/PaymentTypeSelector";
 // import SeasonSelector from "../../../src/components/SeasonSelector";
 
-import { useCatalog } from "../../../src/hooks/useCatalog";
-import { useCart } from "../../../src/hooks/useCart";
+// import { useCatalog } from "../../../src/hooks/useCatalog";
+// import { useCart } from "../../../src/hooks/useCart";
 import { useFarmerSearch } from "../../../src/hooks/useFarmerSearch";
 import { useRecordSale } from "../../../src/hooks/useRecordSale";
 
 import type { Farmer } from "../../../src/types/farmer.types";
 import { detectSeason } from "../../../src/utils/season.util";
+import {TRANSACTION_CATEGORIES} from "../../../src/constants/categories";
 
-type PaymentType = "cash_sale" | "credit_sale";
 
 export default function RecordSaleScreen() {
   // Catalog
-  const { catalog, loading: catalogLoading } = useCatalog();
+  // const { catalog, loading: catalogLoading } = useCatalog();
 
   // Farmer Search
   const [farmerQuery, setFarmerQuery] = useState("");
@@ -58,23 +59,36 @@ export default function RecordSaleScreen() {
   } = useFarmerSearch(farmerQuery);
 
   // Cart
-  const {
-    cart,
-    addToCart,
-    incrementQuantity,
-    decrementQuantity,
-    removeFromCart,
-    clearCart,
-    isInCart,
-    getItemQuantity,
-    totalItems,
-    uniqueItems,
-    totalAmount,
-  } = useCart();
+  // const {
+  //   cart,
+  //   addToCart,
+  //   incrementQuantity,
+  //   decrementQuantity,
+  //   removeFromCart,
+  //   clearCart,
+  //   isInCart,
+  //   getItemQuantity,
+  //   totalItems,
+  //   uniqueItems,
+  //   totalAmount,
+  // } = useCart();
 
   // Payment & Season
   const [paymentType, setPaymentType] =
     useState<PaymentType>("cash_sale");
+
+  const [selectedCategory, setSelectedCategory] =
+    useState("");
+
+  const [amount, setAmount] =
+    useState("");
+
+  const [items, setItems] = useState<
+    {
+      category: string;
+      unitPrice: number;
+    }[]
+  >([]);
 
   // const [season, setSeason] = useState(detectSeason());
 
@@ -110,24 +124,23 @@ export default function RecordSaleScreen() {
 
   console.log("paymentType:", paymentType);
 
-  console.log("cart:", JSON.stringify(cart, null, 2));
+  console.log("items:", JSON.stringify(items, null, 2));
 
-  console.log("cart length:", cart.length);
+  console.log("items length:", items.length);
 
   const success = await submitSale({
     selectedFarmer,
     paymentType,
-    cart,
+    items,
   });
 
   console.log("======== submitSale START ========");
 
-console.log("selectedFarmer:", selectedFarmer);
+  console.log("selectedFarmer:", selectedFarmer);
 
-console.log("paymentType:", paymentType);
+  console.log("paymentType:", paymentType);
 
-console.log("cart:", JSON.stringify(cart, null, 2));
-
+  console.log("items:", JSON.stringify(items, null, 2));
 
   console.log("submit success:", success);
 
@@ -150,7 +163,7 @@ console.log("cart:", JSON.stringify(cart, null, 2));
 
   // Reset form
   const handleRecordAnother = () => {
-    clearCart();
+    setItems([]);
     setSelectedFarmer(null);
     setFarmerQuery("");
     setPaymentType("cash_sale");
@@ -203,6 +216,11 @@ console.log("cart:", JSON.stringify(cart, null, 2));
     );
   }
 
+  const canSubmit =
+  !!selectedFarmer &&
+  paymentType &&
+  items.length > 0;
+
   return (
     <ScrollView
       style={styles.scroll}
@@ -226,88 +244,116 @@ console.log("cart:", JSON.stringify(cart, null, 2));
         onSelectFarmer={handleSelectFarmer}
       />
 
-      {/* Catalog */}
-      <Text style={styles.label}>
-        SELECT ITEMS *
+        <Text style={styles.label}>
+  CATEGORY *
+</Text>
+
+<ScrollView
+  horizontal
+  showsHorizontalScrollIndicator={false}
+  style={{ marginBottom: 12 }}
+>
+  {TRANSACTION_CATEGORIES.map((category) => (
+    <TouchableOpacity
+      key={category}
+      style={[
+        styles.categoryChip,
+        selectedCategory === category &&
+          styles.categoryChipActive,
+      ]}
+      onPress={() =>
+        setSelectedCategory(category)
+      }
+    >
+      <Text
+        style={[
+          styles.categoryChipText,
+          selectedCategory === category && {
+            color: "#fff",
+          },
+        ]}
+      >
+        {category}
       </Text>
+    </TouchableOpacity>
+  ))}
+</ScrollView>
 
-      {catalogLoading ? (
-        <ActivityIndicator color="#d97706" />
-      ) : (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{ marginBottom: 12 }}
-        >
-          {catalog.map((item) => {
-  const itemId = Number(
-    item.input_item_id ??
-    0
-  );
+<Text style={styles.label}>
+  AMOUNT *
+</Text>
 
-  return (
-    <CatalogItemChip
-      key={itemId}
-      item={item}
-      onPress={addToCart}
-      isInCart={isInCart(itemId)}
-      quantity={getItemQuantity(itemId)}
-      formatRupees={formatRupees}
-    />
-  );
-})}
+<TextInput
+  style={styles.input}
+  value={amount}
+  onChangeText={setAmount}
+  keyboardType="numeric"
+  placeholder="Enter amount"
+/>
 
-          {catalog.length === 0 && (
-            <Text
-              style={{
-                color: "#999",
-                fontSize: 12,
-              }}
-            >
-              No catalog items found.
-            </Text>
-          )}
-        </ScrollView>
-      )}
+<TouchableOpacity
+  style={styles.addBtn}
+  onPress={() => {
+    if (!selectedCategory) {
+      Alert.alert(
+        "Error",
+        "Select a category"
+      );
+      return;
+    }
 
-      {/* Cart */}
-      {cart.length > 0 && (
-        <>
-          <Text style={styles.label}>CART</Text>
+    if (!amount) {
+      Alert.alert(
+        "Error",
+        "Enter amount"
+      );
+      return;
+    }
 
-          {cart.map((cartItem) => {
-            const itemId = Number(
-              cartItem.item.input_item_id ??
-              cartItem.item.inputItemId ??
-              0
-            );
+    setItems((prev) => [
+      ...prev,
+      {
+        category: selectedCategory,
+        unitPrice: Number(amount),
+      },
+    ]);
 
-            return (
-              <CartItemCard
-                key={itemId}
-                cartItem={cartItem}
-                onIncrement={() =>
-                  incrementQuantity(itemId)
-                }
-                onDecrement={() =>
-                  decrementQuantity(itemId)
-                }
-                onRemove={() =>
-                  removeFromCart(itemId)
-                }
-                formatRupees={formatRupees}
-              />
-            );
-          })}
+    setSelectedCategory("");
+    setAmount("");
+  }}
+>
+  <Text style={styles.addBtnText}>
+    + Add Category
+  </Text>
+</TouchableOpacity>
 
-          <CartSummary
-            totalItems={totalItems}
-            uniqueItems={uniqueItems}
-            totalAmount={totalAmount}
-            formatRupees={formatRupees}
-          />
-        </>
-      )}
+{items.length > 0 && (
+  <>
+    <Text style={styles.label}>
+      ADDED CATEGORIES
+    </Text>
+
+    {items.map((item, index) => (
+      <View
+        key={index}
+        style={{
+          backgroundColor: "#fff",
+          padding: 12,
+          borderRadius: 10,
+          marginBottom: 8,
+        }}
+      >
+        <Text>
+          {item.category}
+        </Text>
+
+        <Text>
+          ₹{item.unitPrice}
+        </Text>
+      </View>
+    ))}
+  </>
+)}
 
       {/* Payment */}
       <Text style={styles.label}>PAYMENT</Text>
@@ -324,15 +370,30 @@ console.log("cart:", JSON.stringify(cart, null, 2));
       /> */}
 
       {/* Submit */}
+      {!canSubmit && (
+  <Text
+    style={{
+      color: "#dc2626",
+      fontSize: 12,
+      marginTop: 12,
+    }}
+  >
+    {!selectedFarmer
+      ? "Select a farmer"
+      : items.length === 0
+      ? "Add at least one category"
+      : "Select payment type"}
+  </Text>
+)}
       <TouchableOpacity
         style={[
           styles.submitBtn,
-          (submitting || cart.length === 0) &&
+          (submitting || !canSubmit ) &&
             styles.submitBtnDisabled,
         ]}
         onPress={handleSubmit}
         disabled={
-          submitting || cart.length === 0
+           submitting || !canSubmit
         }
       >
         {submitting ? (
@@ -385,4 +446,37 @@ const styles = StyleSheet.create({
   successMeta: { fontSize: 12, color: "#888", marginTop: 4 },
   anotherBtn: { marginTop: 20, backgroundColor: "#d97706", paddingVertical: 12, paddingHorizontal: 24, borderRadius: 10 },
   anotherBtnText: { color: "#fff", fontWeight: "700" },
+  categoryChip: {
+  paddingHorizontal: 14,
+  paddingVertical: 10,
+  borderRadius: 12,
+  backgroundColor: "#fff",
+  borderWidth: 1,
+  borderColor: "#d1d5db",
+  marginRight: 8,
+},
+
+categoryChipActive: {
+  backgroundColor: "#d97706",
+  borderColor: "#d97706",
+},
+
+categoryChipText: {
+  fontSize: 12,
+  fontWeight: "600",
+},
+
+addBtn: {
+  backgroundColor: "#16a34a",
+  paddingVertical: 12,
+  borderRadius: 10,
+  alignItems: "center",
+  marginTop: 12,
+  marginBottom: 12,
+},
+
+addBtnText: {
+  color: "#fff",
+  fontWeight: "700",
+},
 });

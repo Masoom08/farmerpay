@@ -52,10 +52,20 @@ export const API = {
   },
 
   VENDOR: {
+    REGISTER: "/vyapar/register",
     DASHBOARD: "/vendor/dashboard",
   },
 
   RATINGS: {
   LIST: "/vyapar/ratings",
 },
+
+LOCATION: {
+    STATES: "/location/states",
+    DISTRICTS: (stateId: number) =>
+      `/location/states/${stateId}/districts`,
+    BLOCKS: (districtId: number) =>
+      `/location/districts/${districtId}/blocks`
+  },
+
 } as const;

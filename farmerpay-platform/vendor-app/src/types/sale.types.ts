@@ -73,9 +73,8 @@ export interface CartItem {
  * Sale Item Payload
  */
 export interface RecordSaleItemPayload {
-  itemId: string;
-  packId: string;
-  quantity: number;
+   category: string;
+  unitPrice: number;
 }
 
 /**

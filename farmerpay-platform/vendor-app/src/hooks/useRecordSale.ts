@@ -2,24 +2,25 @@ import { useState } from "react";
 
 import { recordSale } from "../api/modules/sales.api";
 import type {
-  CartItem,
   RecordSalePayload,
   Transaction,
 } from "../types/sale.types";
 import type { Farmer } from "../types/farmer.types";
 import type { Season } from "../utils/season.util";
 
-type PaymentType = "cash_sale" | "credit_sale";
+import type { PaymentType } from "../types/payment.types";
 
 interface RecordSaleParams {
   selectedFarmer: Farmer | null;
-  //farmerMobile: string;
   paymentType: PaymentType;
-  //season: Season;
-  cart: CartItem[];
+
+  items: {
+    category: string;
+    unitPrice: number;
+  }[];
+
   loanApplicationId?: number | null;
 }
-
 export const useRecordSale = () => {
   const [submitting, setSubmitting] = useState(false);
   const [transaction, setTransaction] =
@@ -31,7 +32,7 @@ export const useRecordSale = () => {
     // farmerMobile,
     paymentType,
     // season,
-    cart,
+    items,
     loanApplicationId = null,
   }: RecordSaleParams): Promise<boolean> => {
     // Validation
@@ -40,7 +41,7 @@ export const useRecordSale = () => {
       return false;
     }
 
-    if (cart.length === 0) {
+    if (items.length === 0) {
       setError("Please add at least one item to the cart.");
       return false;
     }
@@ -51,24 +52,9 @@ export const useRecordSale = () => {
     try {
       const payload: RecordSalePayload = {
         farmerId: selectedFarmer!.farmerId,
-
         transactionType: paymentType,
-
         loanApplicationId,
-
-        items: cart.map((cartItem) => ({
-          itemId:
-            cartItem.item.input_item_id ??
-            cartItem.item.inputItemId ??
-            "",
-
-          packId:
-            cartItem.item.input_pack_id ??
-            cartItem.item.inputPackId ??
-            "",
-
-          quantity: cartItem.quantity,
-        })),
+        items,
       };
 
       const response = await recordSale(payload);

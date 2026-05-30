@@ -6,6 +6,7 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { useLogin } from "../../src/hooks/useLogin";
+import { getVendorProfile } from "../../src/api/modules/vendor.api";
 
 export default function VendorLoginScreen() {
   const router = useRouter();
@@ -62,21 +63,63 @@ const onLogin = async () => {
 
   try {
 
-    await handleLogin(
-      cleanMobile,
-      mpin
+  await handleLogin(
+    cleanMobile,
+    mpin
+  );
+
+  try {
+
+    const profile =
+      await getVendorProfile();
+
+    console.log(
+      "VENDOR PROFILE",
+      profile
     );
 
-    router.replace("/(protected)/(tabs)" as any);
-
-  } catch (e: any) {
-
-    Alert.alert(
-      "Login Failed",
-      e?.message ||
-      "Something went wrong"
+    router.replace(
+      "/(protected)/(tabs)" as any
     );
+
+  } catch (profileError: any) {
+
+    const errorCode =
+      profileError?.response?.data?.errorCode;
+
+    if (errorCode === "RES_001") {
+
+      router.replace(
+        "/(auth)/vendor-onboarding"
+      );
+
+      return;
+    }
+
+    throw profileError;
   }
+
+} catch (e: any) {
+  const status = e?.response?.status;
+  const errorCode = e?.response?.data?.errorCode;
+
+  if (
+    status === 401 ||
+    errorCode === "AUTH_001" ||
+    e?.message === "UNAUTHORIZED"
+  ) {
+    Alert.alert(
+      "Account Not Found",
+      "Your account doesn't exist. Please register before signing in."
+    );
+    return;
+  }
+
+  Alert.alert(
+    "Login Failed",
+    "Unable to sign in. Please try again."
+  );
+}
 };
   return (
     <>
