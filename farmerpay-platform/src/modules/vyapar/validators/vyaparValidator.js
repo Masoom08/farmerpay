@@ -42,9 +42,11 @@ const updateCatalogSchema = Joi.object({
 const createTransactionSchema = Joi.object({
   farmerId: Joi.number().integer().positive().required(),
   items: Joi.array().items(Joi.object({
-    itemId: Joi.string().required(),
-    packId: Joi.string().required(),
-    quantity: Joi.number().integer().positive().required(),
+    category: Joi.string().required(),
+    unitPrice: Joi.number().positive().required(),
+    // itemId: Joi.string().required(),
+    // packId: Joi.string().required(),
+    //quantity: Joi.number().integer().positive().required(),
   })).min(1).required(),
   transactionType: Joi.string().valid('cash_sale', 'credit_sale', 'return', 'exchange').required(),
   loanApplicationId: Joi.number().integer().positive().allow(null),

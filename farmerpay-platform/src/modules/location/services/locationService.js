@@ -37,8 +37,14 @@ const getTranslatedName = (translations, language, fallbackName) => {
 const getStates = async (language = 'en') => {
   const cacheKey = `lgd:states:${language}`;
 
-  // Try cache first
-  const cached = await getKey(cacheKey);
+  let cached = null;
+
+  try {
+    cached = await getKey(cacheKey);
+  } catch (err) {
+    logger.warn("Redis unavailable, skipping cache");
+  }
+
   if (cached) return cached;
 
   const { LgdState, LgdStateTranslation } = getDb();
@@ -64,7 +70,11 @@ const getStates = async (language = 'en') => {
     gstCode: s.gst_code,
   }));
 
+  try {
   await setWithTTL(cacheKey, result, CACHE_TTL);
+} catch (err) {
+  logger.warn("Redis unavailable, skipping cache write");
+}
   return result;
 };
 
@@ -77,8 +87,15 @@ const getStates = async (language = 'en') => {
 const getDistricts = async (stateId, language = 'en') => {
   const cacheKey = `lgd:districts:${stateId}:${language}`;
 
-  const cached = await getKey(cacheKey);
-  if (cached) return cached;
+  let cached = null;
+
+try {
+  cached = await getKey(cacheKey);
+} catch (err) {
+  logger.warn("Redis unavailable, skipping cache");
+}
+
+if (cached) return cached;
 
   const { LgdDistrict, LgdDistrictTranslation } = getDb();
 
@@ -99,7 +116,11 @@ const getDistricts = async (stateId, language = 'en') => {
     districtNameEn: d.district_name_en || d.district_name,
   }));
 
+  try {
   await setWithTTL(cacheKey, result, CACHE_TTL);
+} catch (err) {
+  logger.warn("Redis unavailable, skipping cache write");
+}
   return result;
 };
 
@@ -112,8 +133,15 @@ const getDistricts = async (stateId, language = 'en') => {
 const getBlocks = async (districtId, language = 'en') => {
   const cacheKey = `lgd:blocks:${districtId}:${language}`;
 
-  const cached = await getKey(cacheKey);
-  if (cached) return cached;
+  let cached = null;
+
+try {
+  cached = await getKey(cacheKey);
+} catch (err) {
+  logger.warn("Redis unavailable, skipping cache");
+}
+
+if (cached) return cached;
 
   const { LgdBlock, LgdBlockTranslation } = getDb();
 
@@ -134,7 +162,11 @@ const getBlocks = async (districtId, language = 'en') => {
     blockNameEn: b.block_name_en || b.block_name,
   }));
 
+  try {
   await setWithTTL(cacheKey, result, CACHE_TTL);
+} catch (err) {
+  logger.warn("Redis unavailable, skipping cache write");
+}
   return result;
 };
 
@@ -147,8 +179,15 @@ const getBlocks = async (districtId, language = 'en') => {
 const getVillages = async (blockId, language = 'en') => {
   const cacheKey = `lgd:villages:${blockId}:${language}`;
 
-  const cached = await getKey(cacheKey);
-  if (cached) return cached;
+  let cached = null;
+
+try {
+  cached = await getKey(cacheKey);
+} catch (err) {
+  logger.warn("Redis unavailable, skipping cache");
+}
+
+if (cached) return cached;
 
   const { LgdVillage, LgdVillageTranslation } = getDb();
 
@@ -172,7 +211,11 @@ const getVillages = async (blockId, language = 'en') => {
     hasBankBranch: v.has_bank_branch,
   }));
 
+  try {
   await setWithTTL(cacheKey, result, CACHE_TTL);
+} catch (err) {
+  logger.warn("Redis unavailable, skipping cache write");
+}
   return result;
 };
 

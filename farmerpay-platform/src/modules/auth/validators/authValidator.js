@@ -50,6 +50,9 @@ const registerSchema = Joi.object({
   email: Joi.string().email().max(120).allow('', null),
   dateOfBirth: Joi.date().iso().max('now').allow(null),
   gender: Joi.string().valid('male', 'female', 'other').allow(null),
+  role: Joi.string()
+    .valid('FARMER', 'VENDOR', 'ADMIN')
+    .default('FARMER'),
 });
 
 /**

@@ -23,12 +23,16 @@ module.exports = (sequelize, DataTypes) => {
           key: 'id',
         },
       },
-      input_item_id: {
-        type: DataTypes.STRING(36),
+      category: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
       },
-      input_pack_id: {
-        type: DataTypes.STRING(36),
-      },
+      // input_item_id: {
+      //   type: DataTypes.STRING(36),
+      // },
+      // input_pack_id: {
+      //   type: DataTypes.STRING(36),
+      // },
       quantity: {
         type: DataTypes.INTEGER,
       },

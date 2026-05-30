@@ -10,7 +10,7 @@ let db;
 const getDb = () => { if (!db) db = require('../../../shared/models'); return db; };
 
 const createTransaction = async (vendorId, data) => {
-  const { VendorTransaction, VendorTransactionItem, VendorProductCatalog, VendorCreditLedger, VendorFarmerLink, sequelize: seq } = getDb();
+  const { VendorTransaction, VendorTransactionItem, VendorCreditLedger, VendorFarmerLink, sequelize: seq } = getDb();
   const transaction = await seq.transaction();
 
   try {
@@ -19,20 +19,29 @@ const createTransaction = async (vendorId, data) => {
     const lineItems = [];
 
     for (const item of data.items) {
-      const catalog = await VendorProductCatalog.findOne({
-        where: { vendor_id: vendorId, input_item_id: item.itemId, input_pack_id: item.packId, is_active: true },
+      // const catalog = await VendorProductCatalog.findOne({
+      //   where: { vendor_id: vendorId, input_item_id: item.itemId, input_pack_id: item.packId, is_active: true },
+      // });
+
+      //const unitPrice = catalog ? parseFloat(catalog.vendor_selling_price) : 0;
+      //const lineTotal = quantity * unitPrice;
+      const unitPrice = Number(item.unitPrice);
+
+      totalAmount += unitPrice;
+      lineItems.push({ 
+        category: item.category,
+        // input_item_id: item.itemId, 
+        // input_pack_id: item.packId, 
+        quantity: null,
+        unit_price: unitPrice, 
+        line_total: unitPrice 
       });
 
-      const unitPrice = catalog ? parseFloat(catalog.vendor_selling_price) : 0;
-      const lineTotal = unitPrice * item.quantity;
-      totalAmount += lineTotal;
-      lineItems.push({ input_item_id: item.itemId, input_pack_id: item.packId, quantity: item.quantity, unit_price: unitPrice, line_total: lineTotal });
-
       // Update stock
-      if (catalog) {
-        const newStock = Math.max(0, catalog.stock_quantity - item.quantity);
-        await catalog.update({ stock_quantity: newStock, availability_status: newStock === 0 ? 'out_of_stock' : newStock < 10 ? 'low_stock' : 'in_stock' }, { transaction });
-      }
+      // if (catalog) {
+      //   const newStock = Math.max(0, catalog.stock_quantity - item.quantity);
+      //   await catalog.update({ stock_quantity: newStock, availability_status: newStock === 0 ? 'out_of_stock' : newStock < 10 ? 'low_stock' : 'in_stock' }, { transaction });
+      // }
     }
 
     const txn = await VendorTransaction.create({
