@@ -42,7 +42,7 @@ import { useRecordSale } from "../../../src/hooks/useRecordSale";
 import type { Farmer } from "../../../src/types/farmer.types";
 import { detectSeason } from "../../../src/utils/season.util";
 import {TRANSACTION_CATEGORIES} from "../../../src/constants/categories";
-
+import { Ionicons } from "@expo/vector-icons";
 
 export default function RecordSaleScreen() {
   // Catalog
@@ -113,6 +113,14 @@ export default function RecordSaleScreen() {
 
   setFarmerQuery(
     `${farmer.name} (${farmer.mobile})`
+  );
+};
+
+const removeItem = (indexToRemove: number) => {
+  setItems((prev) =>
+    prev.filter(
+      (_, index) => index !== indexToRemove
+    )
   );
 };
 
@@ -336,20 +344,28 @@ export default function RecordSaleScreen() {
     {items.map((item, index) => (
       <View
         key={index}
-        style={{
-          backgroundColor: "#fff",
-          padding: 12,
-          borderRadius: 10,
-          marginBottom: 8,
-        }}
+        style={styles.addedItemCard}
       >
-        <Text>
-          {item.category}
-        </Text>
+        <View>
+          <Text style={styles.itemName}>
+            {item.category}
+          </Text>
 
-        <Text>
-          ₹{item.unitPrice}
-        </Text>
+          <Text style={styles.itemAmount}>
+            ₹{item.unitPrice}
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          onPress={() => removeItem(index)}
+          style={styles.deleteBtn}
+        >
+          <Ionicons
+            name="close-circle"
+            size={26}
+            color="#dc2626"
+          />
+        </TouchableOpacity>
       </View>
     ))}
   </>
@@ -478,5 +494,30 @@ addBtn: {
 addBtnText: {
   color: "#fff",
   fontWeight: "700",
+},
+
+addedItemCard: {
+  backgroundColor: "#fff",
+  padding: 12,
+  borderRadius: 10,
+  marginBottom: 8,
+  flexDirection: "row",
+  justifyContent: "space-between",
+  alignItems: "center",
+},
+
+itemName: {
+  fontSize: 15,
+  fontWeight: "600",
+},
+
+itemAmount: {
+  marginTop: 4,
+  color: "#16a34a",
+  fontWeight: "700",
+},
+
+deleteBtn: {
+  padding: 4,
 },
 });
