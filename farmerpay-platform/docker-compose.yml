@@ -7,7 +7,7 @@ services:
     container_name: farmerpay-mysql
     restart: unless-stopped
     ports:
-      - '10.218.164.140:3306:3306'  # Bind to localhost only — never expose to network
+      - '106.201.104.106:3306:3306'  # Bind to localhost only — never expose to network
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-change_me_root}
       MYSQL_DATABASE: ${MYSQL_DATABASE:-farmerpay_dev}
@@ -28,7 +28,7 @@ services:
     container_name: farmerpay-redis
     restart: unless-stopped
     ports:
-      - '10.218.164.140:6379:6379'  # Bind to localhost only
+      - '106.201.104.106:6379:6379'  # Bind to localhost only
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_dev_pass}
@@ -44,8 +44,8 @@ services:
     container_name: farmerpay-rabbitmq
     restart: unless-stopped
     ports:
-      - '10.218.164.140:5672:5672'    # Bind to localhost only
-      - '10.218.164.140:15672:15672'  # Management UI — localhost only
+      - '106.201.104.106:5672:5672'    # Bind to localhost only
+      - '106.201.104.106:15672:15672'  # Management UI — localhost only
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-farmerpay}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-change_me_password}

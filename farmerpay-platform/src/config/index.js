@@ -16,7 +16,7 @@ const config = {
 
   // Database (MySQL)
   db: {
-    host: process.env.DB_HOST || '10.218.164.140',
+    host: process.env.DB_HOST || '106.201.104.106',
     port: parseInt(process.env.DB_PORT, 10) || 3306,
     name: process.env.DB_NAME || 'farmerpay_dev',
     user: process.env.DB_USER || 'farmerpay',
@@ -38,7 +38,7 @@ const config = {
 
   // Redis
   redis: {
-    host: process.env.REDIS_HOST || '10.218.164.140',
+    host: process.env.REDIS_HOST || '106.201.104.106',
     port: parseInt(process.env.REDIS_PORT, 10) || 6379,
     password: process.env.REDIS_PASSWORD || undefined,
     db: parseInt(process.env.REDIS_DB, 10) || 0,
