@@ -111,7 +111,7 @@ const dbConfig = {
       ...sharedDialectOptions,
       ssl: {
         require: true,
-        rejectUnauthorized: true,
+        rejectUnauthorized: false,
       },
     },
     timezone: '+05:30',
