@@ -86,6 +86,7 @@ export interface RecordSalePayload {
   transactionType:
     | "cash_sale"
     | "credit_sale"
+    | "cash_credit_sale"
     | "return"
     | "exchange";
 

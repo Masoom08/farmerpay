@@ -632,17 +632,19 @@ const giveCredit = async (vendorUserId, data) => {
   const [credit, created] = await VendorCreditLedger.findOrCreate({
     where: { vendor_id: vendorId, farmer_id: farmerId },
     defaults: {
-      current_balance: amount,
-      credit_limit: amount * 2,
-      total_credit_given: amount,
+      current_balance: 0,
+      credit_limit: amount,
+      total_credit_given: 0,
       total_payments_received: 0,
       is_active: true,
     },
   });
 
   if (!created) {
-    credit.current_balance = parseFloat(credit.current_balance) + amount;
-    credit.total_credit_given = parseFloat(credit.total_credit_given) + amount;
+    credit.credit_limit = parseFloat(credit.credit_limit || 0) + amount;
+
+    // credit.current_balance = parseFloat(credit.current_balance) + amount;
+    // credit.total_credit_given = parseFloat(credit.total_credit_given) + amount;
     await credit.save();
   }
 
@@ -662,7 +664,8 @@ const giveCredit = async (vendorUserId, data) => {
   return {
     farmerId,
     amount,
-    newBalance: parseFloat(credit.current_balance),
+    // newBalance: parseFloat(credit.current_balance),
+    newCreditLimit: parseFloat(credit.credit_limit),
     reason: data.reason,
   };
 };

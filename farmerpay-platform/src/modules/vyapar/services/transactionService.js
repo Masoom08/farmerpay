@@ -61,11 +61,32 @@ const createTransaction = async (vendorId, data) => {
 
     // Update credit ledger for credit sales
     if (data.transactionType === 'credit_sale') {
-      const [ledger] = await VendorCreditLedger.upsert({
-        vendor_id: vendorId, farmer_id: data.farmerId,
-        current_balance: seq.literal(`COALESCE(current_balance, 0) + ${totalAmount}`),
-      }, { transaction });
+
+    const ledger =
+      await VendorCreditLedger.findOne({
+        where: {
+          vendor_id: vendorId,
+          farmer_id: data.farmerId,
+        },
+        transaction,
+      });
+
+    if (!ledger) {
+      throw new Error( 'Credit limit not configured for farmer' );
     }
+
+    const creditLimit = Number(ledger.credit_limit);
+    const outstanding = Number(ledger.current_balance);
+    const availableCredit = creditLimit - outstanding;
+
+    if (totalAmount > availableCredit) {
+      throw new Error( `Credit limit exceeded. Available: ₹${availableCredit}` );
+    }
+
+    ledger.current_balance = outstanding + totalAmount;
+    ledger.total_credit_given = Number(ledger.total_credit_given || 0) + totalAmount;
+    await ledger.save({ transaction });
+  }
 
     // Update farmer link
     await VendorFarmerLink.upsert({
@@ -111,11 +132,16 @@ const getTransactions = async (vendorId, filters = {}, query = {}) => {
   if (filters.startDate) where.transaction_date = { [Op.gte]: filters.startDate };
   if (filters.endDate) where.transaction_date = { ...where.transaction_date, [Op.lte]: filters.endDate };
 
-  const { count, rows } = await VendorTransaction.findAndCountAll({
-    where, limit, offset,
-    include: [{ model: User, as: 'farmer', attributes: ['first_name', 'last_name', 'mobile'] }],
-    order: [['transaction_date', 'DESC']],
-  });
+  const count = await VendorTransaction.count({
+  where
+});
+
+const rows = await VendorTransaction.findAll({
+  where,
+  limit,
+  offset,
+  order: [['transaction_date', 'DESC']],
+});
 
   return {
     transactions: rows.map((t) => ({

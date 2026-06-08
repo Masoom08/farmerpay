@@ -14,25 +14,35 @@ export default function TransactionScreen() {
   const router = useRouter();
 
   const load = useCallback(async () => {
-    try {
-      const [cr, tx] = await Promise.all([
-        getCreditLedger().catch(() => ({
-          success: false,
-          data: [],
-        })),
+  try {
+    const [cr, tx] = await Promise.all([
+      getCreditLedger().catch(() => ({
+        success: false,
+        data: [],
+      })),
+      getTransactions(50),
+    ]);
 
-        getTransactions(50),
-      ]);
-      if (cr.success && Array.isArray(cr.data)) setCreditEntries(cr.data);
-      if (tx.success && Array.isArray(tx.data)) setTransactions(tx.data);
-    } catch {}
+    console.log("CREDIT RESPONSE", cr);
+    console.log("TRANSACTION RESPONSE", tx);
+
+    if (cr.success && Array.isArray(cr.data))
+      setCreditEntries(cr.data);
+
+    if (tx.success && Array.isArray(tx.data))
+      setTransactions(tx.data);
+
+  } catch (err) {
+    console.log("LOAD ERROR", err);
+  } finally {
     setLoading(false);
     setRefreshing(false);
-  }, []);
+  }
+}, []);
 
   useEffect(() => { load(); }, [load]);
   useFocusEffect(useCallback(() => { load(); }, [load]));
-
+  console.log("TRANSACTIONS STATE", transactions);
   // Build farmer list from transactions
   const farmerMap: Record<string, { farmerId: string; name: string; mobile: string; txCount: number; totalSpent: number; creditBalance: number; lastDate: string }> = {};
   for (const tx of transactions) {

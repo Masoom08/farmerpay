@@ -58,9 +58,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
-      agent_id: {
-        type: DataTypes.INTEGER,
-      },
+      // agent_id: {
+      //   type: DataTypes.INTEGER,
+      // },
       loan_application_id: {
         type: DataTypes.INTEGER,
       },

@@ -50,14 +50,27 @@ export const useRecordSale = () => {
     setError(null);
 
     try {
-      const payload: RecordSalePayload = {
-        farmerId: selectedFarmer!.farmerId,
-        transactionType: paymentType,
-        loanApplicationId,
-        items,
-      };
+  const payload: RecordSalePayload = {
+    farmerId: selectedFarmer!.farmerId,
+    transactionType: paymentType,
+    loanApplicationId,
+    items,
+  };
 
-      const response = await recordSale(payload);
+  console.log(
+    "SALE PAYLOAD",
+    JSON.stringify(payload, null, 2)
+  );
+
+  console.log("BEFORE API CALL");
+
+  const response = await recordSale(payload);
+
+  console.log("AFTER API CALL");
+  console.log(
+    "RESPONSE",
+    JSON.stringify(response, null, 2)
+  );
 
       if (response.success) {
         setTransaction(response.data);
@@ -69,13 +82,32 @@ export const useRecordSale = () => {
       );
       return false;
     } catch (err: any) {
-      setError(
-        err?.response?.data?.message ||
-          err?.message ||
-          "Failed to record sale."
-      );
-      return false;
-    } finally {
+  console.log("===== SALE ERROR =====");
+  console.log(err);
+
+  console.log(
+    "STATUS",
+    err?.response?.status
+  );
+
+  console.log(
+    "DATA",
+    JSON.stringify(err?.response?.data, null, 2)
+  );
+
+  console.log(
+    "MESSAGE",
+    err?.message
+  );
+
+  setError(
+    err?.response?.data?.message ||
+    err?.message ||
+    "Failed to record sale."
+  );
+
+  return false;
+} finally {
       setSubmitting(false);
     }
   };
