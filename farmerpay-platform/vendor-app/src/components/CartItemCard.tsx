@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
-
 import type { CartItem } from "../types/sale.types";
 
 interface CartItemCardProps {

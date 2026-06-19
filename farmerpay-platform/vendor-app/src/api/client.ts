@@ -1,7 +1,4 @@
-import axios,{
-  AxiosError,
-  InternalAxiosRequestConfig,
-} from "axios";
+import axios,{ AxiosError, InternalAxiosRequestConfig,} from "axios";
 import {
   getAccessToken,
   getRefreshToken,
@@ -12,8 +9,7 @@ import {
 import { clearUser } from "../lib/storage";
 import { API } from "./endpoints";
 
-const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL;
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 if (!API_BASE_URL) {
   throw new Error(

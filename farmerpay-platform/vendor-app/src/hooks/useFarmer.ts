@@ -1,22 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-
 import { farmerApi } from "../api/modules/farmer.api";
+import type { Farmer} from "../types/farmer.types";
 
-import type {
-  Farmer,
-} from "../types/farmer.types";
-
-export const useFarmer = (
-  searchQuery?: string
-) => {
-  const [farmers, setFarmers] =
-    useState<Farmer[]>([]);
-
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] =
-    useState<string | null>(null);
+export const useFarmer = ( searchQuery?: string) => {
+  const [farmers, setFarmers] = useState<Farmer[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchFarmers = async () => {
     try {
@@ -48,8 +37,7 @@ export const useFarmer = (
       return farmers;
     }
 
-    const query =
-      searchQuery.toLowerCase();
+    const query = searchQuery.toLowerCase();
 
     return farmers.filter((farmer) => {
       return (

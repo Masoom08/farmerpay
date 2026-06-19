@@ -1,4 +1,3 @@
-// src/types/auth.types.ts
 
 // ---------- Generic API Response ----------
 export interface ApiResponse<T> {

@@ -38,13 +38,21 @@ module.exports = (sequelize, DataTypes) => {
         },
       },
       transaction_type: {
-        type: DataTypes.ENUM('cash_sale', 'credit_sale', 'return', 'exchange'),
+        type: DataTypes.ENUM('cash_sale', 'credit_sale', 'cash_credit_sale', 'return', 'exchange'),
       },
       transaction_date: {
         type: DataTypes.DATEONLY,
       },
       transaction_amount: {
         type: DataTypes.DECIMAL(15, 2),
+      },
+      cash_amount: {
+        type: DataTypes.DECIMAL(12,2),
+        defaultValue: 0
+      },
+      credit_amount: {
+        type: DataTypes.DECIMAL(12,2),
+        defaultValue: 0
       },
       transaction_status: {
         type: DataTypes.ENUM('completed', 'pending', 'cancelled'),

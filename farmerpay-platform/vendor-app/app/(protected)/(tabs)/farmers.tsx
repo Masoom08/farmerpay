@@ -1,9 +1,4 @@
-import {
-  useEffect,
-  useState,
-  useCallback,
-} from "react";
-
+import { useEffect, useState, useCallback} from "react";
 import {
   View,
   Text,
@@ -13,37 +8,21 @@ import {
   RefreshControl,
   TouchableOpacity,
 } from "react-native";
-
-import {
-  useFocusEffect,
-  useRouter,
-} from "expo-router";
-
+import { useFocusEffect, useRouter} from "expo-router";
 import { formatRupees } from "../../../src/utils/currency";
-
 import { farmerApi } from "../../../src/api/modules/farmer.api";
-
-import type {
-  Farmer,
-} from "../../../src/types/farmer.types";
+import type { Farmer} from "../../../src/types/farmer.types";
 
 export default function MyFarmersScreen() {
   const router = useRouter();
 
-  const [loading, setLoading] =
-    useState(true);
-
-  const [refreshing, setRefreshing] =
-    useState(false);
-
-  const [farmers, setFarmers] =
-    useState<Farmer[]>([]);
+  const [loading, setLoading] =useState(true);
+  const [refreshing, setRefreshing] =useState(false);
+  const [farmers, setFarmers] =useState<Farmer[]>([]);
 
   const load = useCallback(async () => {
     try {
-      const data =
-        await farmerApi.getMyFarmers();
-
+      const data = await farmerApi.getMyFarmers();
       setFarmers(data || []);
     } catch (err) {
       console.log(err);
@@ -124,53 +103,53 @@ export default function MyFarmersScreen() {
                 marginBottom: 4,
               }}
             >
-              <Text
-                style={styles.farmerName}
-              >
-                {f.name}
-              </Text>
-
-              <Text
-                style={
-                  styles.farmerTotal
-                }
-              >
-                {formatRupees(
-                  f.totalValue || 0
-                )}
+              <Text style={styles.farmerName}>{f.name}</Text>
+              <Text style={styles.farmerTotal}>
+                {formatRupees(f.totalValue || 0)}
               </Text>
             </View>
 
-            <Text
-              style={styles.farmerMobile}
-            >
-              📞 {f.mobile}
-            </Text>
+            <Text style={styles.farmerMobile}>📞 {f.mobile}</Text>
 
-            <View
-              style={styles.farmerStats}
-            >
+            <View style={styles.farmerStats}>
+              <Text style={styles.statText}>
+                📋 {f.transactionCount || 0} orders
+              </Text>
+            </View>
+
+            <View style={{ marginTop: 6 }}>
               <Text
-                style={styles.statText}
+                style={[
+                  styles.statText,
+                  {
+                    color:
+                      Number(f.totalCreditGiven || 0) > 0
+                        ? "#16a34a"
+                        : "#dc2626",
+                    fontWeight: "700",
+                  },
+                ]}
               >
-                📋{" "}
-                {f.transactionCount || 0}{" "}
-                orders
+                {Number(f.totalCreditGiven || 0) > 0
+                  ? `💳 Credit Given: ${formatRupees(
+                      f.totalCreditGiven || 0
+                    )}`
+                  : "Credit Not Given"}
               </Text>
 
-              {f.currentBalance > 0 && (
+              {Number(f.currentBalance || 0) > 0 && (
                 <Text
                   style={[
                     styles.statText,
                     {
                       color: "#dc2626",
                       fontWeight: "700",
+                      marginTop: 2,
                     },
                   ]}
                 >
-                  💳 Owes:{" "}
-                  {formatRupees(
-                    f.currentBalance
+                  Outstanding: {formatRupees(
+                    f.currentBalance || 0
                   )}
                 </Text>
               )}

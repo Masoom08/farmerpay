@@ -30,8 +30,6 @@ export const registerVendor = async (
   }
 };
 
-// src/api/modules/vendor.api.ts
-
 export const getVendorProfile = async () => {
   const response = await client.get(
     "/vyapar/profile"

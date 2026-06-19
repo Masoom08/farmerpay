@@ -23,8 +23,8 @@ export default function TransactionScreen() {
       getTransactions(50),
     ]);
 
-    console.log("CREDIT RESPONSE", cr);
-    console.log("TRANSACTION RESPONSE", tx);
+    // console.log("CREDIT RESPONSE", cr);
+    // console.log("TRANSACTION RESPONSE", tx);
 
     if (cr.success && Array.isArray(cr.data))
       setCreditEntries(cr.data);
@@ -42,7 +42,7 @@ export default function TransactionScreen() {
 
   useEffect(() => { load(); }, [load]);
   useFocusEffect(useCallback(() => { load(); }, [load]));
-  console.log("TRANSACTIONS STATE", transactions);
+  // console.log("TRANSACTIONS STATE", transactions);
   // Build farmer list from transactions
   const farmerMap: Record<string, { farmerId: string; name: string; mobile: string; txCount: number; totalSpent: number; creditBalance: number; lastDate: string }> = {};
   for (const tx of transactions) {
@@ -69,16 +69,16 @@ export default function TransactionScreen() {
     const fId = c.farmer_id || c.farmerId || "unknown";
     if (farmerMap[fId]) {
       farmerMap[fId].creditBalance = Number(c.current_balance || c.currentBalance || 0);
-    } else {
-      farmerMap[fId] = {  
-        farmerId: String(fId),
-        name: c.farmer_name || c.farmerName || `Farmer #${fId}`,
-        mobile: "",
-        txCount: 0,
-        totalSpent: 0,
-        creditBalance: Number(c.current_balance || c.currentBalance || 0),
-        lastDate: "",
-      };
+    // } else {
+    //   farmerMap[fId] = {  
+    //     farmerId: String(fId),
+    //     name: c.farmer_name || c.farmerName || `Farmer #${fId}`,
+    //     mobile: "",
+    //     txCount: 0,
+    //     totalSpent: 0,
+    //     creditBalance: Number(c.current_balance || c.currentBalance || 0),
+    //     lastDate: "",
+    //   };
     }
   }
 

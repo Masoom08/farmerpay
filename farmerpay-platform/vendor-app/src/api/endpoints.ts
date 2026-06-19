@@ -57,8 +57,8 @@ export const API = {
   },
 
   RATINGS: {
-  LIST: "/vyapar/ratings",
-},
+    LIST: "/vyapar/ratings",
+  },
 
 LOCATION: {
     STATES: "/location/states",

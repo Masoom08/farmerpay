@@ -1,21 +1,7 @@
-import {
-  ReactNode,
-  useEffect,
-  useState,
-} from "react";
-
+import { ReactNode, useEffect, useState} from "react";
 import { AuthContext } from "../auth/auth.context";
-
-import {
-  getRefreshToken,
-  clearSecureAuth,
-} from "../lib/secure-storage";
-
-import {
-  getUser,
-  clearUser,
-} from "../lib/storage";
-
+import { getRefreshToken, clearSecureAuth} from "../lib/secure-storage";
+import { getUser, clearUser} from "../lib/storage";
 import { StoredUser } from "../types/auth.types";
 
 interface Props {

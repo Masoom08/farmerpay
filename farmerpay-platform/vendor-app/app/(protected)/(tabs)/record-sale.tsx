@@ -24,39 +24,22 @@ import {
   ActivityIndicator,
   TextInput,
 } from "react-native";
-
 import { formatRupees } from "../../../lib/api";
 import type { PaymentType } from "../../../src/types/payment.types";
-// import CatalogItemChip from "../../../src/components/CatalogItemChip";
-// import CartItemCard from "../../../src/components/CartItemCard";
-// import CartSummary from "../../../src/components/CartSummary";
 import FarmerSearchInput from "../../../src/components/FarmerSearchInput";
 import PaymentTypeSelector from "../../../src/components/PaymentTypeSelector";
-// import SeasonSelector from "../../../src/components/SeasonSelector";
-
-// import { useCatalog } from "../../../src/hooks/useCatalog";
-// import { useCart } from "../../../src/hooks/useCart";
 import { useFarmerSearch } from "../../../src/hooks/useFarmerSearch";
 import { useRecordSale } from "../../../src/hooks/useRecordSale";
-
 import type { Farmer } from "../../../src/types/farmer.types";
 import { detectSeason } from "../../../src/utils/season.util";
 import {TRANSACTION_CATEGORIES} from "../../../src/constants/categories";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function RecordSaleScreen() {
-  // Catalog
   // const { catalog, loading: catalogLoading } = useCatalog();
-
-  // Farmer Search
   const [farmerQuery, setFarmerQuery] = useState("");
-  const [selectedFarmer, setSelectedFarmer] =
-    useState<Farmer | null>(null);
-
-  const {
-    farmers,
-    loading: farmerLoading,
-  } = useFarmerSearch(farmerQuery);
+  const [selectedFarmer, setSelectedFarmer] = useState<Farmer | null>(null);
+  const {farmers, loading: farmerLoading} = useFarmerSearch(farmerQuery);
 
   // Cart
   // const {
@@ -74,100 +57,80 @@ export default function RecordSaleScreen() {
   // } = useCart();
 
   // Payment & Season
-  const [paymentType, setPaymentType] =
-    useState<PaymentType>("cash_sale");
+  const [paymentType, setPaymentType] = useState<PaymentType>("cash_sale");
 
-  const [selectedCategory, setSelectedCategory] =
-    useState("");
+  const [cashAmount, setCashAmount] = useState("");
+  const [creditAmount, setCreditAmount] = useState("");
 
-  const [amount, setAmount] =
-    useState("");
-
-  const [items, setItems] = useState<
-    {
-      category: string;
-      unitPrice: number;
-    }[]
-  >([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [amount, setAmount] = useState("");
+  const [items, setItems] = useState<{
+    category: string;
+    unitPrice: number;
+  }[]>([]);
 
   // const [season, setSeason] = useState(detectSeason());
 
-  // Submit Hook
-  const {
-    submitSale,
-    submitting,
-    transaction,
-    error,
-    reset,
-  } = useRecordSale();
+  const { submitSale, submitting, transaction, error, reset,} = useRecordSale();
 
   // Farmer selection
   const handleSelectFarmer = (farmer: Farmer) => {
-  console.log(
-    "======== SELECTING FARMER ========"
-  );
+    console.log("selected farmer:", farmer);
+    setSelectedFarmer(farmer);
+    setFarmerQuery( `${farmer.name} (${farmer.mobile})`);
+  };
 
-  console.log("selected farmer:", farmer);
-
-  setSelectedFarmer(farmer);
-
-  setFarmerQuery(
-    `${farmer.name} (${farmer.mobile})`
-  );
-};
-
-const removeItem = (indexToRemove: number) => {
-  setItems((prev) =>
-    prev.filter(
-      (_, index) => index !== indexToRemove
-    )
-  );
-};
+  const removeItem = (indexToRemove: number) => {
+    setItems((prev) =>
+      prev.filter(
+        (_, index) => index !== indexToRemove
+      )
+    );
+  };
 
   // Submit
   const handleSubmit = async () => {
-  console.log("======== RECORD SALE CLICKED ========");
+    console.log("selectedFarmer:", selectedFarmer);
+    console.log("paymentType:", paymentType);
+    console.log("items:", JSON.stringify(items, null, 2));
+    console.log("items length:", items.length);
+    const result = await submitSale({
+      selectedFarmer,
+      paymentType,
+      items,
+      cashAmount: Number(cashAmount || 0),
+      creditAmount: Number(creditAmount || 0),
+    });
 
-  console.log("selectedFarmer:", selectedFarmer);
+    
+    console.log("selectedFarmer:", selectedFarmer);
+    console.log("paymentType:", paymentType);
+    console.log("items:", JSON.stringify(items, null, 2));
+    console.log("submit success:", result.success);
+    console.log("hook error:", error);
+    if (!result.success) {
+      const errorMsg = result.error || "Failed to record sale.";
 
-  console.log("paymentType:", paymentType);
-
-  console.log("items:", JSON.stringify(items, null, 2));
-
-  console.log("items length:", items.length);
-
-  const success = await submitSale({
-    selectedFarmer,
-    paymentType,
-    items,
-  });
-
-  console.log("======== submitSale START ========");
-
-  console.log("selectedFarmer:", selectedFarmer);
-
-  console.log("paymentType:", paymentType);
-
-  console.log("items:", JSON.stringify(items, null, 2));
-
-  console.log("submit success:", success);
-
-  console.log("hook error:", error);
-
-  if (!success) {
-    Alert.alert(
-      "Error",
-      error || "Failed to record sale."
-    );
-
-    return;
-  }
-
-  Alert.alert(
-    "Success",
-    "Sale recorded successfully."
-  );
-};
+      if (errorMsg.includes("Credit limit not configured")) {
+        Alert.alert(
+          "Credit Not Set",
+          "This farmer has no credit limit. Please add credit in Give Credit first."
+        );
+        return;
+      }
+      if (errorMsg.includes("Credit limit exceeded")) {
+        Alert.alert(
+          "Credit Limit Exceeded",
+          errorMsg +
+            "\n\nPlease increase credit in Give Credit."
+        );
+        return;
+      }
+      Alert.alert("Error", errorMsg);
+      return;
+    }
+    Alert.alert("Success","Sale recorded successfully.");
+  };
 
   // Reset form
   const handleRecordAnother = () => {
@@ -206,10 +169,13 @@ const removeItem = (indexToRemove: number) => {
         </Text>
 
         <Text style={styles.successMeta}>
-          {paymentType === "credit_sale"
+        {
+          paymentType === "credit_sale"
             ? "💳 Credit"
-            : "💵 Cash"}{" "}
-          {/* · {season} */}
+            : paymentType === "cash_credit_sale"
+            ? "💵 + 💳 Cash + Credit"
+            : "💵 Cash"
+        }
         </Text>
 
         <TouchableOpacity
@@ -252,124 +218,124 @@ const removeItem = (indexToRemove: number) => {
         onSelectFarmer={handleSelectFarmer}
       />
 
-        <Text style={styles.label}>
-  CATEGORY *
-</Text>
-
-<ScrollView
-  horizontal
-  showsHorizontalScrollIndicator={false}
-  style={{ marginBottom: 12 }}
->
-  {TRANSACTION_CATEGORIES.map((category) => (
-    <TouchableOpacity
-      key={category}
-      style={[
-        styles.categoryChip,
-        selectedCategory === category &&
-          styles.categoryChipActive,
-      ]}
-      onPress={() =>
-        setSelectedCategory(category)
-      }
-    >
-      <Text
-        style={[
-          styles.categoryChipText,
-          selectedCategory === category && {
-            color: "#fff",
-          },
-        ]}
-      >
-        {category}
+      <Text style={styles.label}>
+        CATEGORY *
       </Text>
-    </TouchableOpacity>
-  ))}
-</ScrollView>
 
-<Text style={styles.label}>
-  AMOUNT *
-</Text>
-
-<TextInput
-  style={styles.input}
-  value={amount}
-  onChangeText={setAmount}
-  keyboardType="numeric"
-  placeholder="Enter amount"
-/>
-
-<TouchableOpacity
-  style={styles.addBtn}
-  onPress={() => {
-    if (!selectedCategory) {
-      Alert.alert(
-        "Error",
-        "Select a category"
-      );
-      return;
-    }
-
-    if (!amount) {
-      Alert.alert(
-        "Error",
-        "Enter amount"
-      );
-      return;
-    }
-
-    setItems((prev) => [
-      ...prev,
-      {
-        category: selectedCategory,
-        unitPrice: Number(amount),
-      },
-    ]);
-
-    setSelectedCategory("");
-    setAmount("");
-  }}
->
-  <Text style={styles.addBtnText}>
-    + Add Category
-  </Text>
-</TouchableOpacity>
-
-{items.length > 0 && (
-  <>
-    <Text style={styles.label}>
-      ADDED CATEGORIES
-    </Text>
-
-    {items.map((item, index) => (
-      <View
-        key={index}
-        style={styles.addedItemCard}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ marginBottom: 12 }}
       >
-        <View>
-          <Text style={styles.itemName}>
-            {item.category}
+        {TRANSACTION_CATEGORIES.map((category) => (
+          <TouchableOpacity
+            key={category}
+            style={[
+              styles.categoryChip,
+              selectedCategory === category &&
+                styles.categoryChipActive,
+            ]}
+            onPress={() =>
+              setSelectedCategory(category)
+            }
+          >
+            <Text
+              style={[
+                styles.categoryChipText,
+                selectedCategory === category && {
+                  color: "#fff",
+                },
+              ]}
+            >
+              {category}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      <Text style={styles.label}>
+        AMOUNT *
+      </Text>
+
+      <TextInput
+        style={styles.input}
+        value={amount}
+        onChangeText={setAmount}
+        keyboardType="numeric"
+        placeholder="Enter amount"
+      />
+
+      <TouchableOpacity
+        style={styles.addBtn}
+        onPress={() => {
+          if (!selectedCategory) {
+            Alert.alert(
+              "Error",
+              "Select a category"
+            );
+            return;
+          }
+
+          if (!amount) {
+            Alert.alert(
+              "Error",
+              "Enter amount"
+            );
+            return;
+          }
+
+          setItems((prev) => [
+            ...prev,
+            {
+              category: selectedCategory,
+              unitPrice: Number(amount),
+            },
+          ]);
+
+          setSelectedCategory("");
+          setAmount("");
+        }}
+      >
+        <Text style={styles.addBtnText}>
+          + Add Category
+        </Text>
+      </TouchableOpacity>
+
+      {items.length > 0 && (
+        <>
+          <Text style={styles.label}>
+            ADDED CATEGORIES
           </Text>
 
-          <Text style={styles.itemAmount}>
-            ₹{item.unitPrice}
-          </Text>
-        </View>
+          {items.map((item, index) => (
+            <View
+              key={index}
+              style={styles.addedItemCard}
+            >
+              <View>
+                <Text style={styles.itemName}>
+                  {item.category}
+                </Text>
 
-        <TouchableOpacity
-          onPress={() => removeItem(index)}
-          style={styles.deleteBtn}
-        >
-          <Ionicons
-            name="close-circle"
-            size={26}
-            color="#dc2626"
-          />
-        </TouchableOpacity>
-      </View>
-    ))}
-  </>
-)}
+                <Text style={styles.itemAmount}>
+                  ₹{item.unitPrice}
+                </Text>
+              </View>
+
+              <TouchableOpacity
+                onPress={() => removeItem(index)}
+                style={styles.deleteBtn}
+              >
+                <Ionicons
+                  name="close-circle"
+                  size={26}
+                  color="#dc2626"
+                />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </>
+      )}
 
       {/* Payment */}
       <Text style={styles.label}>PAYMENT</Text>
@@ -378,29 +344,44 @@ const removeItem = (indexToRemove: number) => {
         onChange={setPaymentType}
       />
 
-      {/* Season */}
-      {/* <Text style={styles.label}>SEASON</Text>
-      <SeasonSelector
-        value={season}
-        onChange={setSeason}
-      /> */}
+      {paymentType === "cash_credit_sale" && (
+        <>
+          <Text style={styles.label}>CASH AMOUNT *</Text>
+          <TextInput
+            style={styles.input}
+            value={cashAmount}
+            onChangeText={setCashAmount}
+            keyboardType="numeric"
+            placeholder="Enter cash amount"
+          />
+
+          <Text style={styles.label}>CREDIT AMOUNT *</Text>
+          <TextInput
+            style={styles.input}
+            value={creditAmount}
+            onChangeText={setCreditAmount}
+            keyboardType="numeric"
+            placeholder="Enter credit amount"
+          />
+        </>
+      )}
 
       {/* Submit */}
       {!canSubmit && (
-  <Text
-    style={{
-      color: "#dc2626",
-      fontSize: 12,
-      marginTop: 12,
-    }}
-  >
-    {!selectedFarmer
-      ? "Select a farmer"
-      : items.length === 0
-      ? "Add at least one category"
-      : "Select payment type"}
-  </Text>
-)}
+        <Text
+          style={{
+            color: "#dc2626",
+            fontSize: 12,
+            marginTop: 12,
+          }}
+        >
+          {!selectedFarmer
+            ? "Select a farmer"
+            : items.length === 0
+            ? "Add at least one category"
+            : "Select payment type"}
+        </Text>
+      )}
       <TouchableOpacity
         style={[
           styles.submitBtn,

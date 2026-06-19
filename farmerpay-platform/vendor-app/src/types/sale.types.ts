@@ -12,9 +12,6 @@ export interface ApiResponse<T = any> {
 /**
  * Catalog Item
  */
-/**
- * Catalog Item
- */
 export interface CatalogItem {
   id: number;
   vendor_id: number;
@@ -58,8 +55,6 @@ export interface CatalogItem {
   catalogId?: number;
 }
 
-
-
 /**
  * Cart Item
  */
@@ -82,16 +77,15 @@ export interface RecordSaleItemPayload {
  */
 export interface RecordSalePayload {
   farmerId: number;
-
   transactionType:
     | "cash_sale"
     | "credit_sale"
     | "cash_credit_sale"
     | "return"
     | "exchange";
-
+  cashAmount?: number;
+  creditAmount?: number;
   loanApplicationId?: number | null;
-
   items: RecordSaleItemPayload[];
 }
 

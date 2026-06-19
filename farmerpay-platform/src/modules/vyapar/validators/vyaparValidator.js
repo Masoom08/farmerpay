@@ -49,6 +49,17 @@ const createTransactionSchema = Joi.object({
     //quantity: Joi.number().integer().positive().required(),
   })).min(1).required(),
   transactionType: Joi.string().valid('cash_sale', 'credit_sale', 'cash_credit_sale', 'return', 'exchange').required(),
+  cashAmount: Joi.when('transactionType', {
+    is: 'cash_credit_sale',
+    then: Joi.number().positive().required(),
+    otherwise: Joi.number().min(0).optional()
+  }),
+
+  creditAmount: Joi.when('transactionType', {
+    is: 'cash_credit_sale',
+    then: Joi.number().positive().required(),
+    otherwise: Joi.number().min(0).optional()
+  }),
   loanApplicationId: Joi.number().integer().positive().allow(null),
 });
 

@@ -1,10 +1,6 @@
 import client from "../client";
-
 import { API } from "../endpoints";
-
-import {
-  RatingsResponse,
-} from "../../types/rating.types";
+import { RatingsResponse,} from "../../types/rating.types";
 
 export const getRatings =
   async (): Promise<RatingsResponse> => {

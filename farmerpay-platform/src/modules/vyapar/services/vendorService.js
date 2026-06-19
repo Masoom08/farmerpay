@@ -212,15 +212,28 @@ const recordCreditPayment = async (
 
   const paymentAmount = Number(data.paymentAmount);
 
+  if (!paymentAmount || paymentAmount <= 0) {
+    const err = new Error('Invalid payment amount');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const outstanding = Number(ledger.current_balance || 0);
+
+  if (paymentAmount > outstanding) {
+    const err = new Error(
+      `Payment exceeds outstanding balance ₹${outstanding}`
+    );
+    err.statusCode = 400;
+    throw err;
+  }
+
   await ledger.update({
     current_balance:
-      Number(ledger.current_balance) -
-      paymentAmount,
+      Number(ledger.current_balance) - paymentAmount,
 
     total_payments_received:
-      Number(
-        ledger.total_payments_received || 0
-      ) + paymentAmount,
+      Number( ledger.total_payments_received || 0) + paymentAmount,
 
     last_payment_amount: paymentAmount,
     last_payment_date: new Date(),

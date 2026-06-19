@@ -10,48 +10,117 @@ let db;
 const getDb = () => { if (!db) db = require('../../../shared/models'); return db; };
 
 const createTransaction = async (vendorId, data) => {
+  console.log("FULL DATA:", data);
+console.log("cashAmount raw:", data.cashAmount);
+console.log("creditAmount raw:", data.creditAmount);
+console.log("transactionType raw:", data.transactionType);
   const { VendorTransaction, VendorTransactionItem, VendorCreditLedger, VendorFarmerLink, sequelize: seq } = getDb();
   const transaction = await seq.transaction();
 
   try {
-    // Calculate totals from catalog prices
     let totalAmount = 0;
     const lineItems = [];
 
     for (const item of data.items) {
-      // const catalog = await VendorProductCatalog.findOne({
-      //   where: { vendor_id: vendorId, input_item_id: item.itemId, input_pack_id: item.packId, is_active: true },
-      // });
-
-      //const unitPrice = catalog ? parseFloat(catalog.vendor_selling_price) : 0;
-      //const lineTotal = quantity * unitPrice;
+     
       const unitPrice = Number(item.unitPrice);
 
       totalAmount += unitPrice;
       lineItems.push({ 
         category: item.category,
-        // input_item_id: item.itemId, 
-        // input_pack_id: item.packId, 
         quantity: null,
         unit_price: unitPrice, 
         line_total: unitPrice 
       });
+    }
 
-      // Update stock
-      // if (catalog) {
-      //   const newStock = Math.max(0, catalog.stock_quantity - item.quantity);
-      //   await catalog.update({ stock_quantity: newStock, availability_status: newStock === 0 ? 'out_of_stock' : newStock < 10 ? 'low_stock' : 'in_stock' }, { transaction });
-      // }
+    console.log("STEP 1 totalAmount:", totalAmount);
+
+    let cashAmount = 0;
+let creditAmount = 0;
+
+if (data.transactionType === 'cash_sale') {
+  cashAmount = totalAmount;
+}
+else if (data.transactionType === 'credit_sale') {
+  creditAmount = totalAmount;
+}
+else if (data.transactionType === 'cash_credit_sale') {
+  cashAmount = Number(data.cashAmount || 0);
+  creditAmount = Number(data.creditAmount || 0);
+
+  if (cashAmount <= 0 || creditAmount <= 0) {
+    const err = new Error(
+      "cashAmount and creditAmount are required for cash_credit_sale"
+    );
+    err.statusCode = 400;
+    throw err;
+  }
+
+  if (Math.abs((cashAmount + creditAmount) - totalAmount) > 0.01) {
+    const err = new Error(
+      `Cash + Credit (${cashAmount + creditAmount}) must equal total (${totalAmount})`
+    );
+    err.statusCode = 400;
+    throw err;
+  }
+}
+else {
+  const err = new Error("Invalid transactionType");
+  err.statusCode = 400;
+  throw err;
+}
+
+    console.log({
+      totalAmount,
+      cashAmount,
+      creditAmount
+    });
+
+    if (cashAmount < 0 || creditAmount < 0) {
+      const err = new Error("Invalid payment split");
+      err.statusCode = 400;
+      throw err;
+    }
+
+    if (Math.abs((cashAmount + creditAmount) - totalAmount) > 0.01) {
+      const err = new Error(
+        `Cash + Credit (${cashAmount + creditAmount}) must equal total (${totalAmount})`
+      );
+      err.statusCode = 400;
+      throw err;
+    }
+    let transactionStatus = 'completed';
+    let paymentStatus = 'paid';
+
+    if (data.transactionType === 'credit_sale') {
+      transactionStatus = 'pending';
+      paymentStatus = 'credit_given';
+    }
+
+    if (data.transactionType === 'cash_credit_sale') {
+      transactionStatus = 'pending';
+      paymentStatus = 'partial_paid';
     }
 
     const txn = await VendorTransaction.create({
-      transaction_uuid: generateUUID(), vendor_id: vendorId, farmer_id: data.farmerId,
-      transaction_type: data.transactionType, transaction_date: new Date(),
+      transaction_uuid: generateUUID(), 
+      vendor_id: vendorId, 
+      farmer_id: data.farmerId,
+      transaction_type: data.transactionType, 
+      transaction_date: new Date(),
       transaction_amount: totalAmount,
-      transaction_status: data.transactionType === 'cash_sale' ? 'completed' : 'pending',
-      payment_status: data.transactionType === 'cash_sale' ? 'paid' : 'credit_given',
+
+      cash_amount: cashAmount,
+      credit_amount: creditAmount,
+
+      transaction_status: transactionStatus,
+      payment_status: paymentStatus,
+
       loan_application_id: data.loanApplicationId || null,
     }, { transaction });
+
+    console.log("STEP 2 txn created:", txn.id);
 
     // Create line items
     await VendorTransactionItem.bulkCreate(
@@ -60,7 +129,7 @@ const createTransaction = async (vendorId, data) => {
     );
 
     // Update credit ledger for credit sales
-    if (data.transactionType === 'credit_sale') {
+    if (creditAmount > 0) {
 
     const ledger =
       await VendorCreditLedger.findOne({
@@ -71,31 +140,49 @@ const createTransaction = async (vendorId, data) => {
         transaction,
       });
 
-    if (!ledger) {
-      throw new Error( 'Credit limit not configured for farmer' );
+      if (!ledger) {
+        const err = new Error('Credit limit not configured for farmer');
+        err.statusCode = 400; // or 400
+        throw err;
+      }
+
+      console.log("STEP 3 entered credit block");
+      console.log("LEDGER:", ledger?.toJSON());
+
+      const creditLimit = Number(ledger.credit_limit);
+      const outstanding = Number(ledger.current_balance);
+      const availableCredit = creditLimit - outstanding;
+
+      console.log({
+        creditLimit,
+        outstanding,
+        availableCredit,
+        creditAmount,
+      });
+      if (creditAmount > availableCredit) {
+        const err = new Error(
+          `Credit limit exceeded. Available: ₹${availableCredit}`
+        );
+        err.statusCode = 400;
+        throw err;
+      }
+
+      ledger.current_balance = Number(ledger.current_balance || 0) + creditAmount;
+      ledger.total_credit_given = Number(ledger.total_credit_given || 0) + creditAmount;
+      await ledger.save({ transaction });
     }
 
-    const creditLimit = Number(ledger.credit_limit);
-    const outstanding = Number(ledger.current_balance);
-    const availableCredit = creditLimit - outstanding;
-
-    if (totalAmount > availableCredit) {
-      throw new Error( `Credit limit exceeded. Available: ₹${availableCredit}` );
-    }
-
-    ledger.current_balance = outstanding + totalAmount;
-    ledger.total_credit_given = Number(ledger.total_credit_given || 0) + totalAmount;
-    await ledger.save({ transaction });
-  }
-
+    console.log("STEP 4 before farmer link upsert");
     // Update farmer link
     await VendorFarmerLink.upsert({
       vendor_id: vendorId, farmer_id: data.farmerId,
-      link_type: data.transactionType === 'credit_sale' ? 'credit_customer' : 'regular_customer',
+      link_type: creditAmount > 0 ? 'credit_customer' : 'regular_customer',
       last_transaction_date: new Date(),
       transaction_count: seq.literal('COALESCE(transaction_count, 0) + 1'),
       total_value: seq.literal(`COALESCE(total_value, 0) + ${totalAmount}`),
     }, { transaction });
+
+    console.log("STEP 5 after farmer link upsert");
 
     await transaction.commit();
 
@@ -133,15 +220,28 @@ const getTransactions = async (vendorId, filters = {}, query = {}) => {
   if (filters.endDate) where.transaction_date = { ...where.transaction_date, [Op.lte]: filters.endDate };
 
   const count = await VendorTransaction.count({
-  where
-});
+    where
+  });
 
-const rows = await VendorTransaction.findAll({
-  where,
-  limit,
-  offset,
-  order: [['transaction_date', 'DESC']],
-});
+  const rows = await VendorTransaction.findAll({
+    where,
+    limit,
+    offset,
+    order: [['transaction_date', 'DESC']],
+
+    include: [
+      {
+        model: User,
+        as: 'farmer',
+        attributes: [
+          'id',
+          'first_name',
+          'last_name',
+          'mobile',
+        ],
+      },
+    ],
+  });
 
   return {
     transactions: rows.map((t) => ({

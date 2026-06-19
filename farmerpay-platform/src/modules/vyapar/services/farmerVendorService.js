@@ -487,7 +487,7 @@ const registerFarmer = async (vendorUserId, data) => {
 
   // Set up credit if requested
   if (data.giveCredit && data.creditLimit > 0) {
-    const [credit] = await VendorCreditLedger.findOrCreate({
+    const [credit, creditCreated] = await VendorCreditLedger.findOrCreate({
       where: { vendor_id: vendorId, farmer_id: farmerUser.id },
       defaults: {
         current_balance: 0,
@@ -497,8 +497,9 @@ const registerFarmer = async (vendorUserId, data) => {
         is_active: true,
       },
     });
-    if (!credit.isNewRecord) {
-      credit.credit_limit = data.creditLimit;
+    if (!creditCreated) {
+      credit.credit_limit = 
+        Number(credit.credit_limit || 0) + Number(data.creditLimit);
       await credit.save();
     }
     // Update link type to credit_customer

@@ -1,9 +1,4 @@
-import React, {
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-
+import React, { useEffect, useRef, useState,} from "react";
 import {
   Modal,
   View,
@@ -16,10 +11,7 @@ import {
   Alert
 } from "react-native";
 
-import {
-  Ionicons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import { Ionicons, MaterialIcons} from "@expo/vector-icons";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useAuth } from "../hooks/useAuth";
 import { useLogout } from "../hooks/useLogout";
@@ -31,22 +23,12 @@ interface Props {
   onClose: () => void;
 }
 
-export default function AppDrawer({
-  visible,
-  onClose,
-}: Props) {
+export default function AppDrawer({ visible, onClose}: Props) {
   const { user } = useAuth();
   const router = useRouter();
-
-  const { handleLogout: logoutUser } =
-    useLogout();
-
-  const slideAnim = useRef(
-    new Animated.Value(DRAWER_WIDTH)
-  ).current;
-
-  const [showModal, setShowModal] =
-    useState(visible);
+  const { handleLogout: logoutUser } = useLogout();
+  const slideAnim = useRef( new Animated.Value(DRAWER_WIDTH)).current;
+  const [showModal, setShowModal] = useState(visible);
 
   useEffect(() => {
     if (visible) {
@@ -78,8 +60,6 @@ export default function AppDrawer({
       onClose();
     });
   };
-
-
 
   const handleLogout = () => {
   Alert.alert(

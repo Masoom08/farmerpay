@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-
 import {
   View,
   Text,
@@ -9,9 +8,7 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-
-import { useCreateTransaction }
-  from "../hooks/useTransactions";
+import { useCreateTransaction } from "../hooks/useTransactions";
 
 interface Item {
   itemId: string;
@@ -19,35 +16,19 @@ interface Item {
   quantity: string;
 }
 
-export default function
-CreateTransactionForm() {
+export default function CreateTransactionForm() {
+  const { handleCreateTransaction, loading,} = useCreateTransaction();
+  const [farmerId, setFarmerId] = useState("");
+  const [ transactionType, setTransactionType,] = useState("cash_sale");
+  const [ loanApplicationId, setLoanApplicationId,] = useState("");
 
-  const {
-    handleCreateTransaction,
-    loading,
-  } = useCreateTransaction();
-
-  const [farmerId, setFarmerId] =
-    useState("");
-
-  const [
-    transactionType,
-    setTransactionType,
-  ] = useState("cash_sale");
-
-  const [
-    loanApplicationId,
-    setLoanApplicationId,
-  ] = useState("");
-
-  const [items, setItems] =
-    useState<Item[]>([
-      {
-        itemId: "",
-        packId: "",
-        quantity: "",
-      },
-    ]);
+  const [items, setItems] = useState<Item[]>([
+    {
+      itemId: "",
+      packId: "",
+      quantity: "",
+    },
+  ]);
 
   const addItem = () => {
     setItems([
@@ -60,14 +41,9 @@ CreateTransactionForm() {
     ]);
   };
 
-  const removeItem = (
-    index: number
-  ) => {
-
+  const removeItem = ( index: number) => {
     const updated = [...items];
-
     updated.splice(index, 1);
-
     setItems(updated);
   };
 
