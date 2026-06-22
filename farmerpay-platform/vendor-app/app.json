@@ -19,7 +19,11 @@
       "expo-secure-store"
     ],
     "extra": {
-      "apiBaseUrl": "http://10.0.2.2:3000/api/v1"
+      "apiBaseUrl": "http://10.0.2.2:3000/api/v1",
+      "router": {},
+      "eas": {
+        "projectId": "01c538ae-d438-4aff-bec2-938f5db73a2c"
+      }
     },
     "android": {
       "package": "com.anonymous.farmerpayvendor"
