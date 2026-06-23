@@ -62,9 +62,14 @@ app.use(
     // back to `true` so local tooling still works. A blank env var should
     // not silently open the API to every origin in prod — that's how we
     // got credential-bearing CORS breaches in prior audits.
-    origin: config.cors.allowedOrigins.length > 0
-      ? config.cors.allowedOrigins.map(s => s.trim()).filter(Boolean)
-      : (config.env === 'production' ? false : true),
+    // origin: config.cors.allowedOrigins.length > 0
+    //   ? config.cors.allowedOrigins.map(s => s.trim()).filter(Boolean)
+    //   : (config.env === 'production' ? false : true),
+    origin: [
+      "http://localhost:8082",
+      "http://localhost:8081",
+      "http://localhost:19006"
+    ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     // x-aadhaar-token is the Tier-2 step-up header that apiDicePost sends
@@ -74,6 +79,8 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-ID', 'X-Language', 'x-aadhaar-token'],
   })
 );
+
+app.options("*", cors());
 
 // ─── Body Parsing ──────────────────────────────────────────────────
 app.use(express.json({ limit: '10mb' }));

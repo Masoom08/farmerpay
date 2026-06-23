@@ -2,7 +2,7 @@
  * Catalog & Inventory — Vendor manages products, stock, prices.
  */
 import { useEffect, useState, useCallback } from "react";
-import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, Alert, Modal, RefreshControl } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, Modal, RefreshControl } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { formatRupees } from "../../../src/utils/currency";
 import { useCatalog } from "../../../src/hooks/useCatalog";
@@ -11,16 +11,16 @@ import {
   addCatalogItem,
   updateCatalogStock,
 } from "../../../src/api/modules/catalog.api";
+import { showAlert } from "../../../src/utils/showAlert";
 
 export default function CatalogScreen() {
-  // const [items, setItems] = useState<any[]>([]);
-  // const [loading, setLoading] = useState(true);
   const {
-  catalog: items,
-  loading,
-  error,
-  refetch,
-} = useCatalog();
+    catalog: items,
+    loading,
+    error,
+    refetch,
+  } = useCatalog();
+
   const [refreshing, setRefreshing] = useState(false);
   const [addModal, setAddModal] = useState(false);
 
@@ -39,76 +39,66 @@ export default function CatalogScreen() {
   const [newDescription, setNewDescription] = useState("");
 
   const units = [
-  "kg",
-  "litre",
-  "piece",
-];
+    "kg",
+    "litre",
+    "piece",
+  ];
 
   const handleAdd = async () => {
-   if (!newItemId.trim()) {
-  Alert.alert("Validation", "Item Name is required");
-  return;
-}
+    if (!newItemId.trim()) {
+      showAlert("Validation", "Item Name is required");
+      return;
+    }
 
-if (!newPrice.trim()) {
-  Alert.alert("Validation", "Selling Price is required");
-  return;
-}
+    if (!newPrice.trim()) {
+      showAlert("Validation", "Selling Price is required");
+      return;
+    }
 
-if (!newStock.trim()) {
-  Alert.alert("Validation", "Stock is required");
-  return;
-}
+    if (!newStock.trim()) {
+      showAlert("Validation", "Stock is required");
+      return;
+    }
 
-if (!newQuantity.trim()) {
-  Alert.alert("Validation", "Quantity is required");
-  return;
-}
+    if (!newQuantity.trim()) {
+      showAlert("Validation", "Quantity is required");
+      return;
+    }
 
     setAdding(true);
     try {
       const r = await addCatalogItem({
-  itemId: newItemId.trim(),
-  packId: newPackId.trim(),
-
-  mrp: parseFloat(newMrp) || parseFloat(newPrice),
-
-  sellingPrice: parseFloat(newPrice),
-
-  stock: parseInt(newStock, 10) || 0,
-
-  quantity: parseFloat(newQuantity) || 0,
-
-  unit: newUnit,
-
-  brand: newBrand.trim(),
-
-  category: newCategory.trim(),
-
-  description: newDescription.trim(),
-});
+        itemId: newItemId.trim(),
+        packId: newPackId.trim(),
+        mrp: parseFloat(newMrp) || parseFloat(newPrice),
+        sellingPrice: parseFloat(newPrice),
+        stock: parseInt(newStock, 10) || 0,
+        quantity: parseFloat(newQuantity) || 0,
+        unit: newUnit,
+        brand: newBrand.trim(),
+        category: newCategory.trim(),
+        description: newDescription.trim(),
+      });
 
       if (r.success) {
-        Alert.alert("Added!", `${newItemId} added to catalog.`);
+        showAlert("Added!", `${newItemId} added to catalog.`);
         setAddModal(false);
-       setNewItemId("");
-setNewPackId("");
-setNewMrp("");
-setNewPrice("");
-setNewStock("100");
-
-setNewQuantity("");
-setNewUnit("kg");
-
-setNewBrand("");
-setNewCategory("");
-setNewDescription("");
+        setNewItemId("");
+        setNewPackId("");
+        setNewMrp("");
+        setNewPrice("");
+        setNewStock("100");
+        setNewQuantity("");
+        setNewUnit("kg");
+        setNewBrand("");
+        setNewCategory("");
+        setNewDescription("");
         await refetch();
       } else {
-        Alert.alert("Error", r.message || "Failed to add.");
+        showAlert("Error", r.message || "Failed to add.");
       }
     } catch (e: any) {
-      Alert.alert("Error", e?.message || "Connection failed.");
+      showAlert("Error", e?.message || "Connection failed.");
     } finally {
       setAdding(false);
     }
@@ -120,7 +110,7 @@ setNewDescription("");
       await updateCatalogStock(catalogId, { stockQuantity: newStockVal });
       await refetch();
     } catch {
-      Alert.alert("Error", "Failed to update stock.");
+      showAlert("Error", "Failed to update stock.");
     }
   };
 
@@ -168,28 +158,13 @@ setNewDescription("");
           </View>
         ) : (
           items.map((item, i) => {
-           const id =
-  item.input_item_id || `item-${i}`;
-
-const pack =
-  item.input_pack_id || "Standard";
-
-const mrp = Number(
-  item.mrp_rupees || 0
-);
-
-const price = Number(
-  item.vendor_selling_price || 0
-);
-
-const stock =
-  item.stock_quantity ?? 0;
-
-const status =
-  item.availability_status ||
-  "in_stock";
-
-const catId = item.id || 0;
+          const id = item.input_item_id || `item-${i}`;
+          const pack = item.input_pack_id || "Standard";
+          const mrp = Number( item.mrp_rupees || 0);
+          const price = Number( item.vendor_selling_price || 0);
+          const stock = item.stock_quantity ?? 0;
+          const status = item.availability_status || "in_stock";
+          const catId = item.id || 0;
 
             return (
               <View key={i} style={styles.itemCard}>
@@ -198,21 +173,21 @@ const catId = item.id || 0;
                     <Text style={styles.itemName}>{id}</Text>
                     <Text style={styles.itemPack}>Pack: {pack}</Text>
                     <Text style={styles.itemMeta}>
-  Quantity: {item.quantity || "-"}{" "}
-  {item.unit || ""}
-</Text>
+                      Quantity: {item.quantity || "-"}{" "}
+                      {item.unit || ""}
+                    </Text>
 
-{!!item.brand && (
-  <Text style={styles.itemMeta}>
-    Brand: {item.brand}
-  </Text>
-)}
+                    {!!item.brand && (
+                      <Text style={styles.itemMeta}>
+                        Brand: {item.brand}
+                      </Text>
+                    )}
 
-{!!item.category && (
-  <Text style={styles.itemMeta}>
-    Category: {item.category}
-  </Text>
-)}
+                    {!!item.category && (
+                      <Text style={styles.itemMeta}>
+                        Category: {item.category}
+                      </Text>
+                    )}
                   </View>
                   <View style={{ alignItems: "flex-end" }}>
                     <Text style={styles.itemPrice}>{formatRupees(price)}</Text>
@@ -243,228 +218,185 @@ const catId = item.id || 0;
       <Modal visible={addModal} transparent animationType="slide">
         <View style={styles.modalBg}>
           <View style={styles.modal}>
-  <ScrollView
-    showsVerticalScrollIndicator={false}
-    contentContainerStyle={{
-      paddingBottom: 20,
-    }}
-  >
-    <Text style={styles.modalTitle}>
-      Add Product
-    </Text>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                paddingBottom: 20,
+              }}
+            >
+              <Text style={styles.modalTitle}>
+                Add Product
+              </Text>
 
-    {/* Item Name */}
-    <Text style={styles.label}>
-      Item Name *
-    </Text>
+              {/* Item Name */}
+              <Text style={styles.label}>
+                Item Name *
+              </Text>
 
-    <TextInput
-      style={styles.modalInput}
-      placeholder="e.g. DAP FERTILIZER"
-      value={newItemId}
-      onChangeText={setNewItemId}
-      autoCapitalize="characters"
-    />
+              <TextInput
+                style={styles.modalInput}
+                placeholder="e.g. DAP FERTILIZER"
+                value={newItemId}
+                onChangeText={setNewItemId}
+                autoCapitalize="characters"
+              />
 
-    {/* Pack ID */}
-    <Text style={styles.label}>
-      Pack ID *
-    </Text>
+              {/* Pack ID */}
+              <Text style={styles.label}>
+                Pack ID *
+              </Text>
 
-    <TextInput
-      style={styles.modalInput}
-      placeholder="e.g. PK-1"
-      value={newPackId}
-      onChangeText={setNewPackId}
-    />
+              <TextInput
+                style={styles.modalInput}
+                placeholder="e.g. PK-1"
+                value={newPackId}
+                onChangeText={setNewPackId}
+              />
 
-    {/* Quantity */}
-    <Text style={styles.label}>
-      Quantity *
-    </Text>
+              {/* Quantity */}
+              <Text style={styles.label}>
+                Quantity *
+              </Text>
 
-    <TextInput
-      style={styles.modalInput}
-      placeholder="e.g. 50"
-      value={newQuantity}
-      onChangeText={setNewQuantity}
-      keyboardType="numeric"
-    />
+              <TextInput
+                style={styles.modalInput}
+                placeholder="e.g. 50"
+                value={newQuantity}
+                onChangeText={setNewQuantity}
+                keyboardType="numeric"
+              />
 
-    {/* Unit */}
-    <Text style={styles.label}>
-      Unit *
-    </Text>
+              {/* Unit */}
+              <Text style={styles.label}>
+                Unit *
+              </Text>
 
-    <View style={styles.pickerWrapper}>
-      <Picker
-        selectedValue={newUnit}
-        onValueChange={(itemValue) =>
-          setNewUnit(itemValue)
-        }
-      >
-        {units.map((unit) => (
-          <Picker.Item
-            key={unit}
-            label={unit}
-            value={unit}
-          />
-        ))}
-      </Picker>
-    </View>
+              <View style={styles.pickerWrapper}>
+                <Picker
+                  selectedValue={newUnit}
+                  onValueChange={(itemValue) =>
+                    setNewUnit(itemValue)
+                  }
+                >
+                  {units.map((unit) => (
+                    <Picker.Item
+                      key={unit}
+                      label={unit}
+                      value={unit}
+                    />
+                  ))}
+                </Picker>
+              </View>
 
-    {/* Brand */}
-    {/* <Text style={styles.label}>
-      Brand
-    </Text> */}
+              {/* Price Row */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 8,
+                }}
+              >
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.label}>
+                    MRP (₹)
+                  </Text>
 
-    {/* <TextInput
-      style={styles.modalInput}
-      placeholder="e.g. Tata"
-      value={newBrand}
-      onChangeText={setNewBrand}
-    /> */}
+                  <TextInput
+                    style={styles.modalInput}
+                    placeholder="MRP"
+                    value={newMrp}
+                    onChangeText={setNewMrp}
+                    keyboardType="numeric"
+                  />
+                </View>
 
-    {/* Category */}
-    {/* <Text style={styles.label}>
-      Category
-    </Text> */}
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.label}>
+                    Selling Price (₹) *
+                  </Text>
 
-    {/* <TextInput
-      style={styles.modalInput}
-      placeholder="e.g. Fertilizer"
-      value={newCategory}
-      onChangeText={setNewCategory}
-    /> */}
+                  <TextInput
+                    style={styles.modalInput}
+                    placeholder="Selling price"
+                    value={newPrice}
+                    onChangeText={setNewPrice}
+                    keyboardType="numeric"
+                  />
+                </View>
+              </View>
 
-    {/* Description */}
-    {/* <Text style={styles.label}>
-      Description
-    </Text> */}
+              {/* Stock */}
+              <Text style={styles.label}>
+                Initial Stock *
+              </Text>
 
-    {/* <TextInput
-      style={[
-        styles.modalInput,
-        {
-          height: 100,
-          textAlignVertical: "top",
-        },
-      ]}
-      multiline
-      placeholder="Product description"
-      value={newDescription}
-      onChangeText={setNewDescription}
-    /> */}
+              <TextInput
+                style={styles.modalInput}
+                placeholder="100"
+                value={newStock}
+                onChangeText={setNewStock}
+                keyboardType="numeric"
+              />
 
-    {/* Price Row */}
-    <View
-      style={{
-        flexDirection: "row",
-        gap: 8,
-      }}
-    >
-      <View style={{ flex: 1 }}>
-        <Text style={styles.label}>
-          MRP (₹)
-        </Text>
+              {/* Buttons */}
+              <View
+                style={{
+                  flexDirection: "row",
+                  gap: 8,
+                  marginTop: 20,
+                }}
+              >
+                <TouchableOpacity
+                  style={[
+                    styles.modalBtn,
+                    {
+                      backgroundColor:
+                        "#f3f4f6",
+                    },
+                  ]}
+                  onPress={() =>
+                    setAddModal(false)
+                  }
+                >
+                  <Text
+                    style={{
+                      color: "#666",
+                      fontWeight: "700",
+                    }}
+                  >
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
 
-        <TextInput
-          style={styles.modalInput}
-          placeholder="MRP"
-          value={newMrp}
-          onChangeText={setNewMrp}
-          keyboardType="numeric"
-        />
-      </View>
-
-      <View style={{ flex: 1 }}>
-        <Text style={styles.label}>
-          Selling Price (₹) *
-        </Text>
-
-        <TextInput
-          style={styles.modalInput}
-          placeholder="Selling price"
-          value={newPrice}
-          onChangeText={setNewPrice}
-          keyboardType="numeric"
-        />
-      </View>
-    </View>
-
-    {/* Stock */}
-    <Text style={styles.label}>
-      Initial Stock *
-    </Text>
-
-    <TextInput
-      style={styles.modalInput}
-      placeholder="100"
-      value={newStock}
-      onChangeText={setNewStock}
-      keyboardType="numeric"
-    />
-
-    {/* Buttons */}
-    <View
-      style={{
-        flexDirection: "row",
-        gap: 8,
-        marginTop: 20,
-      }}
-    >
-      <TouchableOpacity
-        style={[
-          styles.modalBtn,
-          {
-            backgroundColor:
-              "#f3f4f6",
-          },
-        ]}
-        onPress={() =>
-          setAddModal(false)
-        }
-      >
-        <Text
-          style={{
-            color: "#666",
-            fontWeight: "700",
-          }}
-        >
-          Cancel
-        </Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
-        style={[
-          styles.modalBtn,
-          {
-            backgroundColor:
-              "#d97706",
-          },
-        ]}
-        onPress={handleAdd}
-        disabled={adding}
-      >
-        {adding ? (
-          <ActivityIndicator
-            color="#fff"
-            size="small"
-          />
-        ) : (
-          <Text
-            style={{
-              color: "#fff",
-              fontWeight: "700",
-            }}
-          >
-            Add Item
-          </Text>
-        )}
-      </TouchableOpacity>
-    </View>
-  </ScrollView>
-</View>
+                <TouchableOpacity
+                  style={[
+                    styles.modalBtn,
+                    {
+                      backgroundColor:
+                        "#d97706",
+                    },
+                  ]}
+                  onPress={handleAdd}
+                  disabled={adding}
+                >
+                  {adding ? (
+                    <ActivityIndicator
+                      color="#fff"
+                      size="small"
+                    />
+                  ) : (
+                    <Text
+                      style={{
+                        color: "#fff",
+                        fontWeight: "700",
+                      }}
+                    >
+                      Add Item
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
+          </View>
         </View>
       </Modal>
     </>

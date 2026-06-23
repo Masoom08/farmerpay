@@ -3,11 +3,12 @@
  * Creates/updates vendor_credit_ledger entry.
  */
 import { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator } from "react-native";
 import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import { formatRupees } from "../../src/utils/currency";
 
 import { farmerApi } from "../../src/api/modules/farmer.api";
+import { showAlert } from "../../src/utils/showAlert";
 
 const CREDIT_REASONS = [
   { key: "input_purchase", emoji: "🌱", label: "Input purchase on credit" },
@@ -31,9 +32,15 @@ export default function GiveCreditScreen() {
 
   const handleSubmit = async () => {
     const farmerMobile = farmerId ? "" : mobile.replace(/\D/g, "").slice(-10);
-    if (!farmerId && farmerMobile.length < 10) { Alert.alert("Enter farmer mobile"); return; }
-    if (!amount || parseFloat(amount) <= 0) { Alert.alert("Enter credit amount"); return; }
+    if (!farmerId && farmerMobile.length < 10) {
+      showAlert("Validation", "Enter farmer mobile");
+      return;
+    }
 
+    if (!amount || parseFloat(amount) <= 0) {
+      showAlert("Validation", "Enter credit amount");
+      return;
+    }
     setSubmitting(true);
     try {
       const r = await await farmerApi.giveCredit({
@@ -56,7 +63,7 @@ export default function GiveCreditScreen() {
 setSubmitted(true);
       
     } catch (e: any) {
-      Alert.alert("Error", e?.message || "Connection failed.");
+      showAlert("Error", e?.message || "Connection failed.");
     } finally {
       setSubmitting(false);
     }

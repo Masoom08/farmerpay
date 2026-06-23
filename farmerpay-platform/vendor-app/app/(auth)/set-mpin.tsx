@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Alert,
+  Platform 
 } from "react-native";
 import {
   Stack,
@@ -14,6 +15,7 @@ import {
   useLocalSearchParams,
 } from "expo-router";
 import { useSetMpin } from "../../src/hooks/useSetMpin";
+import { showAlert } from "../../src/utils/showAlert";
 
 export default function SetMpinScreen() {
   const router = useRouter();
@@ -29,22 +31,22 @@ export default function SetMpinScreen() {
 
   const onSetMpin = async () => {
     if (!otpRequestId || !mobile) {
-      Alert.alert("Error", "Required information is missing.");
+      showAlert("Error", "Required information is missing.");
       return;
     }
 
     if (mpin.length !== 4) {
-      Alert.alert("Validation Error", "Enter a 4-digit MPIN.");
+      showAlert("Validation Error", "Enter a 4-digit MPIN.");
       return;
     }
 
     if (confirmMpin.length !== 4) {
-      Alert.alert("Validation Error", "Confirm your 4-digit MPIN.");
+      showAlert("Validation Error", "Confirm your 4-digit MPIN.");
       return;
     }
 
     if (mpin !== confirmMpin) {
-      Alert.alert("Validation Error", "MPINs do not match.");
+      showAlert("Validation Error", "MPINs do not match.");
       return;
     }
 
@@ -56,18 +58,13 @@ export default function SetMpinScreen() {
         confirmMpin,
       });
 
-      Alert.alert(
+      showAlert(
         "Success",
         "MPIN set successfully.",
-        [
-          {
-            text: "Continue to Login",
-            onPress: () => router.replace("/login"),
-          },
-        ]
+        () => router.replace("/login")
       );
     } catch (error: any) {
-      Alert.alert(
+      showAlert(
         "Failed",
         error?.message || "Unable to set MPIN."
       );

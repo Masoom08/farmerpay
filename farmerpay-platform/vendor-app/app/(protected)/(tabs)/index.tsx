@@ -2,7 +2,7 @@
  * Vendor Home — Dashboard overview with KPIs.
  */
 import { useEffect, useState, useCallback } from "react";
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, RefreshControl, Alert,Image } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, RefreshControl,Image } from "react-native";
 import { Ionicons, MaterialCommunityIcons, } from "@expo/vector-icons";
 import { useRouter, useFocusEffect } from "expo-router";
 import { getUser } from "../../../src/lib/storage";
@@ -68,19 +68,6 @@ export default function VendorHome() {
   useEffect(() => { load(); }, [load]);
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
-  const handleLogout = () => {
-  Alert.alert("Logout", "Are you sure?", [
-    { text: "Cancel", style: "cancel" },
-    {
-      text: "Logout",
-      style: "destructive",
-      onPress: async () => {
-        await logoutUser();
-        router.replace("/login");
-      },
-    },
-  ]);
-};
 
   return (
     <ScrollView

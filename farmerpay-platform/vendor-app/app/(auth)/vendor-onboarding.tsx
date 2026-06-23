@@ -18,9 +18,7 @@ import {
   getBlocks,
 } from "../../src/api/modules/lgd.api";
 import { useVendor } from "../../src/hooks/useVendor";
-
-
-// import { registerVendor } from "../../src/api/modules/vendor.api";
+import { showAlert } from "../../src/utils/showAlert";
 
 export default function VendorOnboardingScreen() {
   const router = useRouter();
@@ -85,42 +83,42 @@ export default function VendorOnboardingScreen() {
 
   const onSubmit = async () => {
   if (!vendorName.trim()) {
-    return Alert.alert(
+    return showAlert(
       "Validation",
       "Vendor Name is required"
     );
   }
 
   if (!vendorType) {
-    return Alert.alert(
+    return showAlert(
       "Validation",
       "Vendor Type is required"
     );
   }
 
   if (!shopName.trim()) {
-    return Alert.alert(
+    return showAlert(
       "Validation",
       "Shop Name is required"
     );
   }
 
   if (!selectedState) {
-    return Alert.alert(
+    return showAlert(
       "Validation",
       "Please select state"
     );
   }
 
   if (!selectedDistrict) {
-    return Alert.alert(
+    return showAlert(
       "Validation",
       "Please select district"
     );
   }
 
   if (!selectedBlock) {
-    return Alert.alert(
+    return showAlert(
       "Validation",
       "Please select block"
     );
@@ -137,9 +135,9 @@ export default function VendorOnboardingScreen() {
       blockId: selectedBlock.blockId,
     };
     console.log(
-  "VENDOR PAYLOAD",
-  JSON.stringify(payload, null, 2)
-);
+      "VENDOR PAYLOAD",
+      JSON.stringify(payload, null, 2)
+    );
 
     const response =
       await handleVendorOnboarding(payload);
@@ -149,16 +147,10 @@ export default function VendorOnboardingScreen() {
       response
     );
 
-    Alert.alert(
+    showAlert(
       "Success",
       "Vendor onboarding completed successfully",
-      [
-        {
-          text: "Continue",
-          onPress: () =>
-            router.replace("/(protected)/(tabs)"),
-        },
-      ]
+      () => router.replace("/(protected)/(tabs)")
     );
   } catch (error: any) {
   console.log(
@@ -171,7 +163,7 @@ export default function VendorOnboardingScreen() {
     error?.response?.status
   );
 
-  Alert.alert(
+  showAlert(
     "Error",
     error?.response?.data?.message ||
       "Unable to complete onboarding"

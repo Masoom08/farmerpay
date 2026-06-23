@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { useRegister } from "../../src/hooks/useRegister";
+import { showAlert } from "../../src/utils/showAlert";
+import { showChoiceAlert } from "../../src/utils/showChoiceAlert";
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -25,17 +27,17 @@ export default function RegisterScreen() {
     const cleanMobile = mobile.replace(/\D/g, "").slice(-10);
 
     if (!firstName.trim()) {
-      Alert.alert("Validation Error", "Enter first name.");
+      showAlert("Validation Error", "Enter first name.");
       return;
     }
 
     if (!lastName.trim()) {
-      Alert.alert("Validation Error", "Enter last name.");
+      showAlert("Validation Error", "Enter last name.");
       return;
     }
 
     if (cleanMobile.length !== 10) {
-      Alert.alert("Validation Error", "Enter valid 10-digit mobile number.");
+      showAlert("Validation Error", "Enter valid 10-digit mobile number.");
       return;
     }
 
@@ -47,7 +49,7 @@ export default function RegisterScreen() {
          ...(email.trim() ? { email: email.trim() } : {}),
       });
 
-      Alert.alert("OTP Sent", response.message || "Verification code sent.");
+      showAlert("OTP Sent", response.message || "Verification code sent.");
 
       router.push({
         pathname: "/(auth)/verify-otp",
@@ -60,32 +62,23 @@ export default function RegisterScreen() {
   const response = error?.response?.data;
 
   if (response?.errorCode === "ACCOUNT_ALREADY_EXISTS") {
-    Alert.alert(
+    showChoiceAlert(
       "Account Already Exists",
       response.message,
-      [
-        {
-          text: "Forgot MPIN",
-          onPress: () =>
-            router.push({
-              pathname: "/(auth)/forgot-mpin",
-              params: { mobile: cleanMobile },
-            }),
-        },
-        {
-          text: "Sign In",
-          onPress: () => router.replace("/(auth)/login"),
-        },
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-      ]
+      {
+        forgotMpin: () =>
+          router.push({
+            pathname: "/(auth)/forgot-mpin",
+            params: { mobile: cleanMobile },
+          }),
+        signIn: () =>
+          router.replace("/(auth)/login"),
+      }
     );
     return;
   }
 
-  Alert.alert(
+  showAlert(
     "Registration Failed",
     response?.message || error?.message || "Unable to register."
   );

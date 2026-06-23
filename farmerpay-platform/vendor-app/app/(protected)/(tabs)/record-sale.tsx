@@ -21,6 +21,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Platform,
   ActivityIndicator,
   TextInput,
 } from "react-native";

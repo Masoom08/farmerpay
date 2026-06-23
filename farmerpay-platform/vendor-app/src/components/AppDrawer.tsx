@@ -8,7 +8,8 @@ import {
   Pressable,
   Animated,
   Dimensions,
-  Alert
+  Alert,
+  Platform 
 } from "react-native";
 
 import { Ionicons, MaterialIcons} from "@expo/vector-icons";
@@ -61,30 +62,43 @@ export default function AppDrawer({ visible, onClose}: Props) {
     });
   };
 
-  const handleLogout = () => {
-  Alert.alert(
-    "Logout",
-    "Are you sure you want to logout?",
-    [
-      {
-        text: "Cancel",
-        style: "cancel",
-      },
-      {
-        text: "Logout",
-        style: "destructive",
-        onPress: async () => {
-          closeDrawer();
+  const handleLogout = async () => {
+    if (Platform.OS === "web") {
+      const confirmed = window.confirm(
+        "Are you sure you want to logout?"
+      );
 
-          setTimeout(async () => {
-            await logoutUser();
-            router.replace("/login");
-          }, 250);
+      if (!confirmed) return;
+
+      closeDrawer();
+
+      setTimeout(async () => {
+        await logoutUser();
+        router.replace("/login");
+      }, 250);
+
+      return;
+    }
+
+    Alert.alert(
+      "Logout",
+      "Are you sure you want to logout?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Logout",
+          style: "destructive",
+          onPress: async () => {
+            closeDrawer();
+            setTimeout(async () => {
+              await logoutUser();
+              router.replace("/login");
+            }, 250);
+          },
         },
-      },
-    ]
-  );
-};
+      ]
+    );
+  };
 
   if (!showModal) return null;
 

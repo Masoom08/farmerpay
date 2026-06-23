@@ -14,6 +14,7 @@ import {
   useLocalSearchParams,
 } from "expo-router";
 import { useVerifyOtp } from "../../src/hooks/useVerifyOtp";
+import { showAlert } from "../../src/utils/showAlert";
 
 export default function VerifyOtpScreen() {
   const router = useRouter();
@@ -28,12 +29,12 @@ export default function VerifyOtpScreen() {
 
   const onVerifyOtp = async () => {
     if (!otpRequestId) {
-      Alert.alert("Error", "OTP request ID is missing.");
+      showAlert("Error", "OTP request ID is missing.");
       return;
     }
 
     if (otpCode.length !== 6) {
-      Alert.alert("Validation Error", "Enter the 6-digit OTP.");
+      showAlert("Validation Error", "Enter the 6-digit OTP.");
       return;
     }
 
@@ -43,17 +44,20 @@ export default function VerifyOtpScreen() {
         otpCode,
       });
 
-      Alert.alert("Verified", "OTP verified successfully.");
-
-      router.push({
-        pathname: "/set-mpin",
-        params: {
-          otpRequestId,
-          mobile,
-        },
-      });
+      showAlert(
+        "Verified",
+        "OTP verified successfully.",
+        () =>
+          router.push({
+            pathname: "/set-mpin",
+            params: {
+              otpRequestId,
+              mobile,
+            },
+          })
+      );
     } catch (error: any) {
-      Alert.alert(
+      showAlert(
         "Verification Failed",
         error?.message || "Invalid OTP."
       );

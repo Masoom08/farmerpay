@@ -16,13 +16,9 @@ import {
 } from "react-native";
 
 import { Stack, useRouter } from "expo-router";
-
 import { farmerApi } from "../../src/api/modules/farmer.api";
-
-import type {
-  RegisterFarmerPayload,
-  RegisterFarmerResponse,
-} from "../../src/types/farmer.types";
+import { showAlert } from "../../src/utils/showAlert";
+import type {RegisterFarmerPayload, RegisterFarmerResponse,} from "../../src/types/farmer.types";
 
 export default function AddFarmerScreen() {
   const router = useRouter();
@@ -31,70 +27,39 @@ export default function AddFarmerScreen() {
   const [mobile, setMobile] = useState("");
   const [village, setVillage] = useState("");
 
-  const [giveCredit, setGiveCredit] =
-    useState(false);
-
-  const [creditLimit, setCreditLimit] =
-    useState("5000");
-
-  const [submitting, setSubmitting] =
-    useState(false);
-
-  const [submitted, setSubmitted] =
-    useState(false);
-
-  const [result, setResult] =
-    useState<
-      RegisterFarmerResponse["data"] | null
-    >(null);
+  const [giveCredit, setGiveCredit] = useState(false);
+  const [creditLimit, setCreditLimit] = useState("5000");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [result, setResult] = useState<RegisterFarmerResponse["data"] | null>(null);
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      Alert.alert("Name required");
+      showAlert("Validation","Name required");
       return;
     }
 
-    if (
-      !mobile.trim() ||
-      mobile.replace(/\D/g, "").length < 10
-    ) {
-      Alert.alert(
-        "Enter valid 10-digit mobile"
-      );
-
+    if (!mobile.trim() || mobile.replace(/\D/g, "").length < 10) {
+      showAlert("Validation","Enter valid 10-digit mobile");
       return;
     }
 
     try {
       setSubmitting(true);
-
       const payload: RegisterFarmerPayload =
         {
           name: name.trim(),
-
-          mobile: mobile
-            .replace(/\D/g, "")
-            .slice(-10),
-
+          mobile: mobile.replace(/\D/g, "").slice(-10),
           giveCredit,
-
-          creditLimit: giveCredit
-            ? parseFloat(creditLimit) || 5000
-            : 0,
+          creditLimit: giveCredit ? parseFloat(creditLimit) || 5000 : 0,
         };
-
-      const data =
-        await farmerApi.registerFarmer(
-          payload
-        );
-
+      const data = await farmerApi.registerFarmer( payload );
       setResult(data);
-
       setSubmitted(true);
     } catch (err: any) {
       console.log(err);
 
-      Alert.alert(
+      showAlert(
         "Error",
         err?.response?.data?.message ||
           err?.message ||

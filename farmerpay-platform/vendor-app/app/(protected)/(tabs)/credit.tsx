@@ -2,13 +2,14 @@
  * Credit Ledger — Who owes how much, payment tracking.
  */
 import { useEffect, useState, useCallback } from "react";
-import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, Alert, Modal, RefreshControl } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, TextInput, StyleSheet, ActivityIndicator, Modal, RefreshControl } from "react-native";
 import { useFocusEffect } from "expo-router";
 import { formatRupees } from "../../../src/utils/currency";
 import {
   getCreditLedger,
   recordPayment,
 } from "../../../src/api/modules/credit.api";
+import { showAlert } from "../../../src/utils/showAlert";
 
 export default function CreditLedgerScreen() {
   const [entries, setEntries] = useState<any[]>([]);
@@ -44,7 +45,7 @@ const handlePayment = async () => {
   );
 
   if (isNaN(amount) || amount <= 0) {
-    Alert.alert(
+    showAlert(
       "Invalid Amount",
       "Please enter valid amount"
     );
@@ -52,7 +53,7 @@ const handlePayment = async () => {
   }
 
   if (!payFarmerId) {
-    Alert.alert(
+    showAlert(
       "Error",
       "Farmer ID missing"
     );
@@ -77,7 +78,7 @@ const handlePayment = async () => {
     console.log("SUCCESS =>", r);
 
     if (r.success) {
-      Alert.alert(
+      showAlert(
         "Payment Recorded",
         `${formatRupees(amount)} received from ${payFarmerName}.`
       );
@@ -87,7 +88,7 @@ const handlePayment = async () => {
 
       await load();
     } else {
-      Alert.alert(
+      showAlert(
         "Error",
         r.message || "Failed"
       );
@@ -99,7 +100,7 @@ const handlePayment = async () => {
       e?.response?.data
     );
 
-    Alert.alert(
+    showAlert(
       "Payment Failed",
       e?.response?.data?.message ||
       "Something went wrong"
@@ -146,11 +147,11 @@ const handlePayment = async () => {
           entries.map((e, i) => {
             const balance = Number(e.current_balance || e.currentBalance || 0);
             const fName =
-  e.farmer
-    ? `${e.farmer.first_name} ${e.farmer.last_name}`
-    : e.farmer_name ||
-      e.farmerName ||
-      `Farmer #${e.farmer_id || e.farmerId}`;
+              e.farmer
+                ? `${e.farmer.first_name} ${e.farmer.last_name}`
+                : e.farmer_name ||
+                  e.farmerName ||
+                  `Farmer #${e.farmer_id || e.farmerId}`;
             const fId = e.farmer_id || e.farmerId;
             const given = Number(e.total_credit_given || e.totalCreditGiven || 0);
             const received = Number(e.total_payments_received || e.totalPaymentsReceived || 0);

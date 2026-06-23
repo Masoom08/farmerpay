@@ -7,44 +7,13 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,
 import { Stack, useRouter } from "expo-router";
 import { useLogin } from "../../src/hooks/useLogin";
 import { getVendorProfile } from "../../src/api/modules/vendor.api";
+import { showAlert } from "../../src/utils/showAlert";
 
 export default function VendorLoginScreen() {
   const router = useRouter();
   const [mobile, setMobile] = useState("");
   const [mpin, setMpin] = useState("");
-//   const [loading, setLoading] = useState(false);
-    const { loading, handleLogin } =useLogin();
-
-//   const handleLogin = async () => {
-//     if (mobile.replace(/\D/g, "").length < 10) { Alert.alert("Enter valid mobile"); return; }
-//     if (mpin.length !== 4) { Alert.alert("Enter 4-digit MPIN"); return; }
-
-//     setLoading(true);
-//     try {
-        
-//         console.log("LOGIN START");
-//         console.log("API BASE", process.env.EXPO_PUBLIC_API_BASE_URL);
-//       const r = await apiPost("/auth/login", {
-//         mobile: mobile.replace(/\D/g, "").slice(-10),
-//         mpin,
-//       });
-//       if (r.success && r.data?.accessToken) {
-//         await setToken(r.data.accessToken);
-//         await setUser({
-//           name: `${r.data.user?.firstName || ""} ${r.data.user?.lastName || ""}`.trim(),
-//           mobile: r.data.user?.mobile,
-//           role: r.data.user?.role,
-//         });
-//         router.replace("/(tabs)" as any);
-//       } else {
-//         Alert.alert("Login Failed", r.message || "Check your credentials.");
-//       }
-//     } catch (e: any) {
-//       Alert.alert("Error", e?.message === "UNAUTHORIZED" ? "Invalid mobile or MPIN." : "Cannot connect to server.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+  const { loading, handleLogin } =useLogin();
 
 const onLogin = async () => {
 
@@ -52,12 +21,12 @@ const onLogin = async () => {
     mobile.replace(/\D/g, "").slice(-10);
 
   if (cleanMobile.length < 10) {
-    Alert.alert("Enter valid mobile");
+    showAlert("Validation Error", "Enter valid mobile");
     return;
   }
 
   if (mpin.length !== 4) {
-    Alert.alert("Enter 4-digit MPIN");
+    showAlert("Validation Error", "Enter 4-digit MPIN");
     return;
   }
 
@@ -108,14 +77,14 @@ const onLogin = async () => {
     errorCode === "AUTH_001" ||
     e?.message === "UNAUTHORIZED"
   ) {
-    Alert.alert(
+    showAlert(
       "Account Not Found",
       "Your account doesn't exist. Please register before signing in."
     );
     return;
   }
 
-  Alert.alert(
+  showAlert(
     "Login Failed",
     "Unable to sign in. Please try again."
   );
