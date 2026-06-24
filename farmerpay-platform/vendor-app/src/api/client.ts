@@ -1,4 +1,5 @@
-import axios,{ AxiosError, InternalAxiosRequestConfig,} from "axios";
+import axios,{ AxiosError, InternalAxiosRequestConfig} from "axios";
+import { Platform } from "react-native";
 import {
   getAccessToken,
   getRefreshToken,
@@ -9,12 +10,13 @@ import {
 import { clearUser } from "../lib/storage";
 import { API } from "./endpoints";
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL;
+const API_BASE_URL =
+  Platform.OS === "web"
+    ? "/api/v1"
+    : process.env.EXPO_PUBLIC_API_BASE_URL;
 
 if (!API_BASE_URL) {
-  throw new Error(
-    "EXPO_PUBLIC_API_BASE_URL is not defined in .env"
-  );
+  throw new Error("API base URL is not defined");
 }
 
 const client = axios.create({
