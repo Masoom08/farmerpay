@@ -173,6 +173,7 @@ else {
     }
 
     console.log("STEP 4 before farmer link upsert");
+    console.time("farmerLinkUpsert");
     // Update farmer link
     await VendorFarmerLink.upsert({
       vendor_id: vendorId, farmer_id: data.farmerId,
@@ -181,27 +182,11 @@ else {
       transaction_count: seq.literal('COALESCE(transaction_count, 0) + 1'),
       total_value: seq.literal(`COALESCE(total_value, 0) + ${totalAmount}`),
     }, { transaction });
+    console.timeEnd("farmerLinkUpsert");
 
     console.log("STEP 5 after farmer link upsert");
 
     await transaction.commit();
-
-    // Publish event for VYAPAR-ROOTS bridge (non-blocking)
-    try {
-      const { getChannel } = require('../../../config/rabbitmq');
-      const config = require('../../../config');
-      const channel = await getChannel();
-      if (channel) {
-        channel.publish(
-          config.rabbitmq.exchange,
-          'vyapar.transaction.created',
-          Buffer.from(JSON.stringify({ transactionId: txn.id, vendorId, farmerId: data.farmerId, amount: totalAmount })),
-          { persistent: true }
-        );
-      }
-    } catch (pubErr) {
-      logger.warn('Failed to publish vyapar.transaction.created event', { error: pubErr.message });
-    }
 
     logger.info(`Transaction created: ${txn.transaction_uuid}, vendor: ${vendorId}, amount: ${totalAmount}`);
     return { transactionId: txn.id, transactionUuid: txn.transaction_uuid, amount: totalAmount };
