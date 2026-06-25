@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { searchFarmers } from "../api/modules/farmer.api";
-import type { Farmer } from "../types/sale.types";
+import type { Farmer } from "../types/farmer.types";
 
 export const useFarmerSearch = (query: string) => {
   const [farmers, setFarmers] = useState<Farmer[]>([]);
@@ -9,18 +9,14 @@ export const useFarmerSearch = (query: string) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Clear results for short queries
-    if (query.trim().length < 2) {
-      setFarmers([]);
-      return;
-    }
+    const searchTerm = query.trim();
 
     const timer = setTimeout(async () => {
       try {
         setLoading(true);
         setError(null);
 
-        const response = await searchFarmers(query.trim());
+        const response = await searchFarmers(searchTerm);
 
         if (response.success) {
           setFarmers(response.data || []);

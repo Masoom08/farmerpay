@@ -42,19 +42,14 @@ const FarmerSearchInput: React.FC<FarmerSearchInputProps> = ({
   setOpen(false);
 };
 
-  const defaultFarmers = farmers;
-
-  const filteredFarmers =
-    query.trim().length === 0
-      ? []
+  const displayFarmers =
+    query.trim() === ""
+      ? farmers
       : farmers.filter((farmer) => {
-          const search =
-            query.toLowerCase();
+          const search = query.toLowerCase();
 
           return (
-            farmer.name
-              .toLowerCase()
-              .includes(search) ||
+            farmer.name.toLowerCase().includes(search) ||
             farmer.mobile.includes(search)
           );
         });
@@ -107,122 +102,41 @@ const FarmerSearchInput: React.FC<FarmerSearchInputProps> = ({
               keyboardShouldPersistTaps="handled"
               style={styles.dropdownScroll}
             >
-              {query.trim().length === 0 ? (
-                defaultFarmers.length === 0 ? (
-                  <Text style={styles.emptyText}>
-                    No farmers available
-                  </Text>
-                ) : (
-                  defaultFarmers.map((farmer) => (
-                    <TouchableOpacity
-                      key={farmer.farmerId}
-                      style={[
-                        styles.resultItem,
-                        selectedFarmer?.farmerId ===
-                          farmer.farmerId && {
-                          backgroundColor:
-                            "#fef3c7",
-                        },
-                      ]}
-                      onPress={() =>
-                        handleSelect(farmer)
-                      }
-                    >
-                      <View>
-                        <Text
-                          style={
-                            styles.resultName
-                          }
-                        >
-                          {farmer.name}
-                        </Text>
+              {displayFarmers.length === 0 ? (
+  <Text style={styles.emptyText}>
+    {query.trim() === ""
+      ? "No farmers available"
+      : "No matching farmers"}
+  </Text>
+) : (
+  displayFarmers.map((farmer) => (
+    <TouchableOpacity
+      key={farmer.farmerId}
+      style={[
+        styles.resultItem,
+        selectedFarmer?.farmerId === farmer.farmerId && {
+          backgroundColor: "#fef3c7",
+        },
+      ]}
+      onPress={() => handleSelect(farmer)}
+    >
+      <View>
+        <Text style={styles.resultName}>
+          {farmer.name}
+        </Text>
+        <Text style={styles.resultMobile}>
+          {farmer.mobile}
+        </Text>
+      </View>
 
-                        <Text
-                          style={
-                            styles.resultMobile
-                          }
-                        >
-                          {farmer.mobile}
-                        </Text>
-                      </View>
-
-                      <View
-                        style={
-                          styles.badgeContainer
-                        }
-                      >
-                        <Text
-                          style={styles.badge}
-                        >
-                          {farmer.linkType.replace(
-                            "_",
-                            " "
-                          )}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  ))
-                )
-              ) : filteredFarmers.length ===
-                0 ? (
-                <Text style={styles.emptyText}>
-                  No matching farmers
-                </Text>
-              ) : (
-                filteredFarmers.map(
-                  (farmer) => (
-                    <TouchableOpacity
-                      key={farmer.farmerId}
-                      style={[
-                        styles.resultItem,
-                        selectedFarmer?.farmerId ===
-                          farmer.farmerId && {
-                          backgroundColor:
-                            "#fef3c7",
-                        },
-                      ]}
-                      onPress={() =>
-                        handleSelect(
-                          farmer
-                        )
-                      }
-                    >
-                      <View>
-                        <Text
-                          style={
-                            styles.resultName
-                          }
-                        >
-                          {farmer.name}
-                        </Text>
-
-                        <Text
-                          style={
-                            styles.resultMobile
-                          }
-                        >
-                          {farmer.mobile}
-                        </Text>
-                      </View>
-
-                      <View
-                        style={
-                          styles.badgeContainer
-                        }
-                      >
-                        <Text
-                          style={styles.badge}
-                        >
-                          {farmer.linkType.replace(
-                            "_",
-                            " "
-                          )}
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  )
-                )
-              )}
+      <View style={styles.badgeContainer}>
+        <Text style={styles.badge}>
+          {farmer.linkType.replace("_", " ")}
+        </Text>
+      </View>
+    </TouchableOpacity>
+  ))
+)}
             </ScrollView>
           )}
         </View>
