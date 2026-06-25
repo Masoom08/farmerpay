@@ -16,6 +16,7 @@ export default function FarmerLayout() {
       <Stack.Screen name="add-farmer" options={{ title: "Add Farmer", }} />
       <Stack.Screen name="add-transaction" options={{ title: "Add Transaction",}} />
       <Stack.Screen name="give-credit" options={{ title: "Give Credit", }} />
+      <Stack.Screen name="[farmerId]" options={{ title: "Transaction List" }} />
     </Stack>
   );
 }

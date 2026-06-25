@@ -92,18 +92,6 @@ export default function TransactionScreen() {
       contentContainerStyle={styles.content}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} colors={["#d97706"]} />}
     >
-      {/* <TouchableOpacity
-        style={styles.floatingBtn}
-        onPress={() =>
-          router.push(
-            "/farmer/add-transaction" as any
-          )
-        }
-      >
-        <Text style={styles.addTxnText}>
-          + Add Transaction
-        </Text>
-      </TouchableOpacity> */}
       <Text style={styles.sectionLabel}>FARMER TRANSACTIONS ({farmers.length})</Text>
 
       {farmers.length === 0 ? (
@@ -117,23 +105,23 @@ export default function TransactionScreen() {
           <TouchableOpacity
             key={i}
             style={styles.farmerCard}
-            // onPress={() => {
-            //   console.log("OPEN FARMER", f);
-
-            //   router.push({
-            //     pathname: "/farmer/[farmerId]",
-            //     params: {
-            //       farmerId:
-            //         f.farmerId ||
-            //         f.id ||
-            //         f.farmer_id,
-            //     },
-            //   });
-            // }}
+            onPress={() => {
+              router.push({
+                pathname: "/farmer/[farmerId]",
+                params: {
+                  farmerId: String(f.farmerId),
+                },
+              });
+            }}
           >
-            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4 }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 4, alignItems: "center", }}>
               <Text style={styles.farmerName}>{f.name}</Text>
-              <Text style={styles.farmerTotal}>{formatRupees(f.totalSpent)}</Text>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <Text style={styles.farmerTotal}>
+                  {formatRupees(f.totalSpent)}
+                </Text>
+                <Text style={{ color: "#d97706", fontSize: 18 }}>›</Text>
+              </View>
             </View>
             {f.mobile ? <Text style={styles.farmerMobile}>📞 {f.mobile}</Text> : null}
             <View style={styles.farmerStats}>
@@ -156,7 +144,20 @@ const styles = StyleSheet.create({
   center: { flex: 1, justifyContent: "center", alignItems: "center" },
   sectionLabel: { fontSize: 11, fontWeight: "800", color: "#888", letterSpacing: 1, marginBottom: 8 },
 
-  farmerCard: { backgroundColor: "#fff", borderRadius: 12, padding: 14, marginBottom: 8 },
+  farmerCard: {
+  backgroundColor: "#fff",
+  borderRadius: 14,
+  padding: 14,
+  marginBottom: 10,
+  borderLeftWidth: 4,
+  borderLeftColor: "#d97706",
+
+  elevation: 3,
+  shadowColor: "#000",
+  shadowOffset: { width: 0, height: 2 },
+  shadowOpacity: 0.08,
+  shadowRadius: 4,
+},
   farmerName: { fontSize: 15, fontWeight: "700", color: "#1a1a1a" },
   farmerTotal: { fontSize: 15, fontWeight: "700", color: "#d97706" },
   farmerMobile: { fontSize: 12, color: "#888", marginBottom: 4 },

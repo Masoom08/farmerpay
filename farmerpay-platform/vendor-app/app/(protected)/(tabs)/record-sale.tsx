@@ -25,7 +25,7 @@ import {
   ActivityIndicator,
   TextInput,
 } from "react-native";
-import { formatRupees } from "../../../lib/api";
+import { formatRupees } from "../../../src/utils/currency";
 import type { PaymentType } from "../../../src/types/payment.types";
 import FarmerSearchInput from "../../../src/components/FarmerSearchInput";
 import PaymentTypeSelector from "../../../src/components/PaymentTypeSelector";
