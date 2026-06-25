@@ -25,6 +25,9 @@ export const useLogin = () => {
         mpin,
       });
 
+      console.log("===== LOGIN API RESPONSE =====");
+      console.log(JSON.stringify(response, null, 2));
+
       if (
         !response.success ||
         !response.data?.accessToken

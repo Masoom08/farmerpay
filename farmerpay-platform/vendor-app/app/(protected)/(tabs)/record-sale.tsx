@@ -36,6 +36,9 @@ import { detectSeason } from "../../../src/utils/season.util";
 import {TRANSACTION_CATEGORIES} from "../../../src/constants/categories";
 import { Ionicons } from "@expo/vector-icons";
 
+import { showAlert } from "../../../src/utils/showAlert";
+import { showChoiceAlert } from "../../../src/utils/showChoiceAlert";
+
 export default function RecordSaleScreen() {
   // const { catalog, loading: catalogLoading } = useCatalog();
   const [farmerQuery, setFarmerQuery] = useState("");
@@ -113,24 +116,24 @@ export default function RecordSaleScreen() {
       const errorMsg = result.error || "Failed to record sale.";
 
       if (errorMsg.includes("Credit limit not configured")) {
-        Alert.alert(
+        showAlert(
           "Credit Not Set",
           "This farmer has no credit limit. Please add credit in Give Credit first."
         );
         return;
       }
       if (errorMsg.includes("Credit limit exceeded")) {
-        Alert.alert(
+        showAlert(
           "Credit Limit Exceeded",
           errorMsg +
             "\n\nPlease increase credit in Give Credit."
         );
         return;
       }
-      Alert.alert("Error", errorMsg);
+      showAlert("Error", errorMsg);
       return;
     }
-    Alert.alert("Success","Sale recorded successfully.");
+    showAlert("Success","Sale recorded successfully.");
   };
 
   // Reset form
@@ -270,7 +273,7 @@ export default function RecordSaleScreen() {
         style={styles.addBtn}
         onPress={() => {
           if (!selectedCategory) {
-            Alert.alert(
+            showAlert(
               "Error",
               "Select a category"
             );
@@ -278,7 +281,7 @@ export default function RecordSaleScreen() {
           }
 
           if (!amount) {
-            Alert.alert(
+            showAlert(
               "Error",
               "Enter amount"
             );
