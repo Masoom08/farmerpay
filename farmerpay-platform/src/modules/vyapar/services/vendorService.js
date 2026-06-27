@@ -57,6 +57,62 @@ const getProfile = async (vendorId) => {
   return { profile, kycStatus: profile.kyc?.kyc_status || 'pending', shops: profile.shops, serviceAreas: profile.serviceAreas };
 };
 
+const updateProfile = async (vendorId, data) => {
+  const {
+    VendorProfile,
+    VendorShop,
+    VendorServiceArea
+  } = getDb();
+
+  const profile = await VendorProfile.findByPk(vendorId);
+
+  if (!profile) {
+    const err = new Error("Vendor not found");
+    err.statusCode = 404;
+    throw err;
+  }
+
+  await profile.update({
+    vendor_name: data.vendorName ?? profile.vendor_name,
+  });
+
+  const shop = await VendorShop.findOne({
+    where: {
+      vendor_id: vendorId,
+      is_active: true
+    }
+  });
+
+  if (shop) {
+    await shop.update({
+      shop_address: data.shopAddress ?? shop.shop_address,
+      lgd_state_id: data.stateId ?? shop.lgd_state_id,
+      lgd_district_id: data.districtId ?? shop.lgd_district_id,
+      lgd_block_id: data.blockId ?? shop.lgd_block_id,
+    });
+  }
+
+  const serviceArea = await VendorServiceArea.findOne({
+    where: {
+      vendor_id: vendorId,
+      is_active: true
+    }
+  });
+
+  if (serviceArea) {
+    await serviceArea.update({
+      lgd_state_id: data.stateId ?? serviceArea.lgd_state_id,
+      lgd_district_id: data.districtId ?? serviceArea.lgd_district_id,
+      lgd_block_id: data.blockId ?? serviceArea.lgd_block_id,
+    });
+  }
+
+  return {
+    vendorId,
+    updated: true
+  };
+};
+
 const getCatalog = async (vendorId, filters = {}, query = {}) => {
   const { VendorProductCatalog } = getDb();
   const { page, limit, offset } = parsePagination(query);
@@ -250,6 +306,7 @@ const recordCreditPayment = async (
 module.exports = { 
   registerVendor, 
   getProfile, 
+  updateProfile,
   getCatalog, 
   addCatalogItem, 
   updateCatalogItem, 

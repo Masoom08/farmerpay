@@ -48,6 +48,18 @@ router.get('/profile', vendorController.getProfile);
 
 /**
  * @swagger
+ * /vyapar/profile:
+ *   put:
+ *     tags: [Vyapar]
+ *     summary: Update vendor profile and service area
+ *     security: [{ bearerAuth: [] }]
+ *     responses:
+ *       200: { description: Vendor profile updated }
+ */
+router.put('/profile', vendorController.updateProfile);
+
+/**
+ * @swagger
  * /vyapar/catalog:
  *   get:
  *     tags: [Vyapar]

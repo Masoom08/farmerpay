@@ -53,6 +53,8 @@ export const API = {
 
   VENDOR: {
     REGISTER: "/vyapar/register",
+    PROFILE: "/vyapar/profile",
+    UPDATE_PROFILE: "/vyapar/profile",
     DASHBOARD: "/vendor/dashboard",
   },
 
@@ -60,7 +62,7 @@ export const API = {
     LIST: "/vyapar/ratings",
   },
 
-LOCATION: {
+  LOCATION: {
     STATES: "/location/states",
     DISTRICTS: (stateId: number) =>
       `/location/states/${stateId}/districts`,

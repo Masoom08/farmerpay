@@ -4,6 +4,8 @@ import { API } from "../endpoints";
 import {
   VendorOnboardingPayload,
   VendorOnboardingResponse,
+  UpdateVendorProfilePayload,
+  UpdateVendorProfileResponse,
 } from "../../types/vendor.types";
 
 export const registerVendor = async (
@@ -35,5 +37,34 @@ export const getVendorProfile = async () => {
     "/vyapar/profile"
   );
 
-  return response.data.data;
+  console.log("profile", response.data.data )
+
+  return response.data;
+};
+
+export const updateVendorProfile = async (
+  payload: UpdateVendorProfilePayload
+): Promise<UpdateVendorProfileResponse> => {
+  try {
+    console.log("UPDATE VENDOR REQUEST", payload);
+
+    const response = await client.put(
+      API.VENDOR.UPDATE_PROFILE,
+      payload
+    );
+
+    console.log(
+      "UPDATE VENDOR RESPONSE",
+      response.data
+    );
+
+    return response.data.data;
+  } catch (error: any) {
+    console.log(
+      "UPDATE VENDOR ERROR",
+      error?.response || error
+    );
+
+    throw error;
+  }
 };

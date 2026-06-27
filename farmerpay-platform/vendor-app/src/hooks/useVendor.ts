@@ -1,10 +1,9 @@
 import { useState } from "react";
-
-import { registerVendor } from "../api/modules/vendor.api";
-
+import { registerVendor, updateVendorProfile  } from "../api/modules/vendor.api";
 import {
   VendorOnboardingPayload,
   VendorOnboardingResponse,
+  UpdateVendorProfilePayload 
 } from "../types/vendor.types";
 
 export const useVendor = () => {
@@ -28,5 +27,25 @@ export const useVendor = () => {
   return {
     loading,
     handleVendorOnboarding,
+  };
+};
+
+export const useUpdateVendorProfile = () => {
+  const [loading, setLoading] = useState(false);
+
+  const handleUpdateProfile = async (
+    payload: UpdateVendorProfilePayload
+  ) => {
+    try {
+      setLoading(true);
+      return await updateVendorProfile(payload);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    loading,
+    handleUpdateProfile,
   };
 };

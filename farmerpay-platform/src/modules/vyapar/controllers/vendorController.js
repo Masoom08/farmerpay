@@ -39,6 +39,26 @@ const getProfile = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+/** PUT /vyapar/profile:*/
+const updateProfile = async (req, res, next) => {
+  try {
+    const userId = await resolveUserId(req);
+    const vendorId = await resolveVendorId(userId);
+
+    const result = await vendorService.updateProfile(
+      vendorId,
+      req.body
+    );
+
+    return success(res, {
+      message: "Vendor profile updated",
+      data: result
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 /** GET /vyapar/catalog */
 const getCatalog = async (req, res, next) => {
   try {
@@ -173,7 +193,7 @@ const recordCreditPayment = async (
 };
 
 module.exports = {
-  register, getProfile, getCatalog, addCatalogItem, updateCatalogItem,
+  register, getProfile, updateProfile, getCatalog, addCatalogItem, updateCatalogItem,
   getPerformance, getRatings, getInventory,
   getCreditLedger, getFarmerCreditDetail, recordCreditPayment,
 };

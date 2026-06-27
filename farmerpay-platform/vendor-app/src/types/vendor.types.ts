@@ -13,3 +13,19 @@ export interface VendorOnboardingResponse {
   vendorUuid: string;
   status: string;
 }
+
+export interface UpdateVendorProfilePayload
+  extends Pick<
+    VendorOnboardingPayload,
+    "vendorName" |
+    "stateId" |
+    "districtId" |
+    "blockId"
+  > {
+  shopAddress: string;
+}
+
+export interface UpdateVendorProfileResponse {
+  vendorId: number;
+  updated: boolean;
+}
